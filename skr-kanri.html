@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKR 仕入・出納 管理システム</title>
+<style>
+:root{
+  --bg:#f4f6fa;
+  --panel:#ffffff;
+  --border:#d4dae6;
+  --ink:#1f2937;
+  --ink-soft:#5b6678;
+  --brand:#1565c0;
+  --brand-dark:#0d47a1;
+  --brand-soft:#e3f0ff;
+  --green:#2e7d32;
+  --green-soft:#e6f4e6;
+  --red:#c62828;
+  --amber:#b26a00;
+  --row-alt:#f7f9fc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;font-size:17px;line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 80px}
+
+/* ヘッダー */
+header{background:var(--brand);color:#fff;border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;box-shadow:0 3px 10px rgba(13,71,161,.25)}
+header h1{font-size:24px;letter-spacing:.04em;display:flex;align-items:center;gap:12px}
+.logo-mark{width:42px;height:42px;border-radius:10px;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:18px}
+header .sub{font-size:13px;opacity:.9}
+
+/* タブ */
+.tabs{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}
+.tab{flex:1;min-width:140px;padding:14px 10px;background:var(--panel);border:2px solid var(--border);border-radius:12px;font-size:18px;font-weight:700;color:var(--ink-soft);cursor:pointer;text-align:center;transition:.15s}
+.tab:hover{border-color:var(--brand)}
+.tab.active{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 3px 8px rgba(21,101,192,.3)}
+.tab .ico{display:block;font-size:24px;margin-bottom:2px}
+
+/* パネル */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.04);margin-bottom:18px}
+.panel h2{font-size:20px;color:var(--brand-dark);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--brand-soft);display:flex;align-items:center;gap:10px}
+
+/* フォーム */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:16px}
+.field label{display:block;font-size:14px;font-weight:700;color:var(--ink-soft);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;font-size:17px;border:2px solid var(--border);border-radius:10px;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.field .calc{font-size:14px;color:var(--green);font-weight:700;margin-top:4px;min-height:18px}
+
+/* ボタン */
+.btn{padding:13px 26px;font-size:17px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:.15s}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-green{background:var(--green);color:#fff}
+.btn-ghost{background:#fff;color:var(--ink-soft);border:2px solid var(--border)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.btn-sm{padding:7px 14px;font-size:14px}
+.btn-del{background:#fff;color:var(--red);border:2px solid #f3c0c0}
+.btn-del:hover{background:var(--red);color:#fff}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* テーブル */
+.table-wrap{overflow-x:auto;margin-top:8px;border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:16px;min-width:560px}
+th{background:var(--brand-soft);color:var(--brand-dark);padding:12px 12px;text-align:left;font-size:14px;white-space:nowrap;position:sticky;top:0}
+td{padding:11px 12px;border-top:1px solid var(--border);white-space:nowrap}
+tr:nth-child(even) td{background:var(--row-alt)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tag-in{color:var(--green);font-weight:700}
+.tag-out{color:var(--red);font-weight:700}
+.empty{padding:30px;text-align:center;color:var(--ink-soft)}
+
+/* サマリーカード */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.card .label{font-size:13px;color:var(--ink-soft);font-weight:700}
+.card .value{font-size:26px;font-weight:800;margin-top:4px}
+.card.green .value{color:var(--green)}
+.card.red .value{color:var(--red)}
+.card.brand .value{color:var(--brand)}
+
+/* 検索 */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.search{flex:1;min-width:200px;padding:11px 14px;font-size:16px;border:2px solid var(--border);border-radius:10px}
+
+/* フッター */
+.foot{text-align:center;color:var(--ink-soft);font-size:13px;margin-top:24px}
+.save-note{display:inline-flex;align-items:center;gap:6px;background:var(--green-soft);color:var(--green);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700}
+
+.hide{display:none}
+
+/* 印刷 */
+@media print{
+  body{background:#fff}
+  .tabs,.btn,.toolbar,header .sub,.no-print,.btn-row,th:last-child,td:last-child{display:none!important}
+  .panel{box-shadow:none;border:none;padding:0}
+  .tab-page{display:block!important}
+  header{background:#fff;color:#000;box-shadow:none;border-bottom:2px solid #000;border-radius:0}
+  .logo-mark{background:#000;color:#fff}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1><span class="logo-mark">SKR</span> 仕入・出納 管理システム</h1>
+  <span class="sub">データはこのPC内に自動保存されます</span>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="shiire"><span class="ico">📥</span>買取・仕入れ</button>
+  <button class="tab" data-tab="suito"><span class="ico">💴</span>出納帳</button>
+  <button class="tab" data-tab="torihiki"><span class="ico">🤝</span>取引先</button>
+  <button class="tab" data-tab="zaiko"><span class="ico">📦</span>在庫</button>
+</div>
+
+<!-- ========== 買取・仕入れ ========== -->
+<section class="tab-page" id="tab-shiire">
+  <div class="panel no-print">
+    <h2>📥 買取・仕入れの登録</h2>
+    <div class="form-grid">
+      <div class="field"><label>日付</label><input type="date" id="s-date"></div>
+      <div class="field"><label>取引先</label><input list="torihiki-list" id="s-torihiki" placeholder="業者・個人名"></div>
+      <div class="field"><label>品目</label><input id="s-hinmoku" placeholder="例：銅・鉄・アルミ"></div>
+      <div class="field"><label>重量(kg)</label><input type="number" id="s-juryo" step="0.1" placeholder="0"><div class="calc" id="s-calc"></div></div>
+      <div class="field"><label>単価(円/kg)</label><input type="number" id="s-tanka" step="1" placeholder="0"></div>
+      <div class="field"><label>支払方法</label><select id="s-pay"><option>現金</option><option>振込</option><option>未払い</option></select></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>メモ</label><input id="s-memo" placeholder="任意"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addShiire()">＋ 登録する</button>
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 印刷</button>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>買取・仕入れ 一覧</h2>
+    <div class="toolbar no-print"><input class="search" id="s-search" placeholder="🔍 品目・取引先で検索" oninput="renderShiire()"></div>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>日付</th><th>取引先</th><th>品目</th><th class="num">重量</th><th class="num">単価</th><th class="num">金額</th><th>支払</th><th>メモ</th><th class="no-print"></th>
+      </tr></thead><tbody id="s-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 出納帳 ========== -->
+<section class="tab-page hide" id="tab-suito">
+  <div class="cards">
+    <div class="card green"><div class="label">入金 合計</div><div class="value" id="sum-in">¥0</div></div>
+    <div class="card red"><div class="label">出金 合計</div><div class="value" id="sum-out">¥0</div></div>
+    <div class="card brand"><div class="label">現在の残高</div><div class="value" id="sum-bal">¥0</div></div>
+  </div>
+  <div class="panel no-print">
+    <h2>💴 入出金の登録</h2>
+    <div class="form-grid">
+      <div class="field"><label>日付</label><input type="date" id="k-date"></div>
+      <div class="field"><label>種別</label><select id="k-type"><option value="in">入金（＋）</option><option value="out">出金（－）</option></select></div>
+      <div class="field"><label>科目</label><input list="kamoku-list" id="k-kamoku" placeholder="例：買取支払・売上・経費"><datalist id="kamoku-list"><option>買取支払</option><option>売上入金</option><option>燃料費</option><option>消耗品</option><option>運搬費</option></datalist></div>
+      <div class="field"><label>金額(円)</label><input type="number" id="k-kingaku" step="1" placeholder="0"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>摘要</label><input id="k-memo" placeholder="任意"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addSuito()">＋ 登録する</button>
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 印刷</button>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>出納帳 一覧</h2>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>日付</th><th>科目</th><th>摘要</th><th class="num">入金</th><th class="num">出金</th><th class="num">残高</th><th class="no-print"></th>
+      </tr></thead><tbody id="k-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 取引先 ========== -->
+<section class="tab-page hide" id="tab-torihiki">
+  <div class="panel no-print">
+    <h2>🤝 取引先の登録</h2>
+    <div class="form-grid">
+      <div class="field"><label>名称</label><input id="t-name" placeholder="業者・個人名"></div>
+      <div class="field"><label>区分</label><select id="t-kubun"><option>仕入先</option><option>販売先</option><option>両方</option></select></div>
+      <div class="field"><label>電話</label><input id="t-tel" placeholder="000-0000-0000"></div>
+      <div class="field"><label>担当者</label><input id="t-tanto" placeholder="任意"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>住所・メモ</label><input id="t-memo" placeholder="任意"></div>
+    <button class="btn btn-primary" onclick="addTorihiki()">＋ 登録する</button>
+  </div>
+  <div class="panel">
+    <h2>取引先 一覧</h2>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>名称</th><th>区分</th><th>電話</th><th>担当者</th><th>住所・メモ</th><th class="no-print"></th>
+      </tr></thead><tbody id="t-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 在庫 ========== -->
+<section class="tab-page hide" id="tab-zaiko">
+  <div class="panel no-print">
+    <h2>📦 在庫の登録</h2>
+    <div class="form-grid">
+      <div class="field"><label>品目</label><input id="z-hinmoku" placeholder="例：銅線・鉄スクラップ"></div>
+      <div class="field"><label>数量・重量</label><input type="number" id="z-suryo" step="0.1" placeholder="0"></div>
+      <div class="field"><label>単位</label><select id="z-tani"><option>kg</option><option>個</option><option>台</option><option>t</option></select></div>
+      <div class="field"><label>状態</label><select id="z-jotai"><option>保管中</option><option>出荷待ち</option><option>出荷済み</option></select></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>メモ</label><input id="z-memo" placeholder="任意"></div>
+    <button class="btn btn-primary" onclick="addZaiko()">＋ 登録する</button>
+  </div>
+  <div class="panel">
+    <h2>在庫 一覧</h2>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>品目</th><th class="num">数量</th><th>単位</th><th>状態</th><th>メモ</th><th class="no-print"></th>
+      </tr></thead><tbody id="z-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<datalist id="torihiki-list"></datalist>
+
+<div class="foot no-print">
+  <span class="save-note">💾 入力すると自動保存されます</span>
+  <div style="margin-top:14px" class="btn-row" style="justify-content:center">
+    <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ バックアップ保存</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">⬆ バックアップ復元</button>
+    <input type="file" id="import-file" class="hide" accept=".json" onchange="importData(event)">
+  </div>
+  <p style="margin-top:14px">SKR管理システム ／ ローカル保存・インターネット不要</p>
+</div>
+
+</div>
+
+<script>
+const DB_KEY = "skr-kanri-v1";
+let db = load();
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || blank(); }
+  catch(e){ return blank(); }
+}
+function blank(){ return {shiire:[], suito:[], torihiki:[], zaiko:[]}; }
+function save(){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+const yen = n => "¥" + (Number(n)||0).toLocaleString("ja-JP");
+const today = () => new Date().toISOString().slice(0,10);
+const esc = s => String(s||"").replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+
+/* タブ切替 */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.querySelectorAll(".tab-page").forEach(p=>p.classList.add("hide"));
+    document.getElementById("tab-"+t.dataset.tab).classList.remove("hide");
+  };
+});
+
+/* ===== 買取・仕入れ ===== */
+const sJuryo=document.getElementById("s-juryo"), sTanka=document.getElementById("s-tanka");
+function sCalc(){
+  const g=(Number(sJuryo.value)||0)*(Number(sTanka.value)||0);
+  document.getElementById("s-calc").textContent = g? "金額 "+yen(g):"";
+}
+sJuryo.oninput=sTanka.oninput=sCalc;
+
+function addShiire(){
+  const hin=document.getElementById("s-hinmoku").value.trim();
+  if(!hin){ alert("品目を入力してください"); return; }
+  const j=Number(sJuryo.value)||0, t=Number(sTanka.value)||0;
+  db.shiire.unshift({
+    date:document.getElementById("s-date").value||today(),
+    torihiki:document.getElementById("s-torihiki").value.trim(),
+    hinmoku:hin, juryo:j, tanka:t, kingaku:j*t,
+    pay:document.getElementById("s-pay").value,
+    memo:document.getElementById("s-memo").value.trim()
+  });
+  save();
+  ["s-hinmoku","s-juryo","s-tanka","s-memo","s-torihiki"].forEach(id=>document.getElementById(id).value="");
+  sCalc(); renderShiire();
+}
+function renderShiire(){
+  const q=(document.getElementById("s-search").value||"").toLowerCase();
+  const rows=db.shiire.filter(r=>!q||(r.hinmoku+r.torihiki).toLowerCase().includes(q));
+  const b=document.getElementById("s-body");
+  if(!rows.length){ b.innerHTML='<tr><td colspan="9" class="empty">データがありません</td></tr>'; return; }
+  b.innerHTML=rows.map(r=>{
+    const i=db.shiire.indexOf(r);
+    return `<tr><td>${esc(r.date)}</td><td>${esc(r.torihiki)}</td><td>${esc(r.hinmoku)}</td>
+      <td class="num">${r.juryo}</td><td class="num">${yen(r.tanka)}</td><td class="num">${yen(r.kingaku)}</td>
+      <td>${esc(r.pay)}</td><td>${esc(r.memo)}</td>
+      <td class="no-print"><button class="btn btn-del btn-sm" onclick="del('shiire',${i})">削除</button></td></tr>`;
+  }).join("");
+}
+
+/* ===== 出納帳 ===== */
+function addSuito(){
+  const k=document.getElementById("k-kamoku").value.trim();
+  const amt=Number(document.getElementById("k-kingaku").value)||0;
+  if(!amt){ alert("金額を入力してください"); return; }
+  db.suito.push({
+    date:document.getElementById("k-date").value||today(),
+    type:document.getElementById("k-type").value,
+    kamoku:k, kingaku:amt,
+    memo:document.getElementById("k-memo").value.trim()
+  });
+  db.suito.sort((a,b)=>a.date.localeCompare(b.date));
+  save();
+  ["k-kamoku","k-kingaku","k-memo"].forEach(id=>document.getElementById(id).value="");
+  renderSuito();
+}
+function renderSuito(){
+  const b=document.getElementById("k-body");
+  let bal=0,tin=0,tout=0;
+  if(!db.suito.length){ b.innerHTML='<tr><td colspan="7" class="empty">データがありません</td></tr>'; }
+  else{
+    b.innerHTML=db.suito.map((r,i)=>{
+      const isIn=r.type==="in";
+      bal += isIn? r.kingaku : -r.kingaku;
+      if(isIn) tin+=r.kingaku; else tout+=r.kingaku;
+      return `<tr><td>${esc(r.date)}</td><td>${esc(r.kamoku)}</td><td>${esc(r.memo)}</td>
+        <td class="num tag-in">${isIn?yen(r.kingaku):""}</td>
+        <td class="num tag-out">${isIn?"":yen(r.kingaku)}</td>
+        <td class="num"><b>${yen(bal)}</b></td>
+        <td class="no-print"><button class="btn btn-del btn-sm" onclick="del('suito',${i})">削除</button></td></tr>`;
+    }).join("");
+  }
+  document.getElementById("sum-in").textContent=yen(tin);
+  document.getElementById("sum-out").textContent=yen(tout);
+  document.getElementById("sum-bal").textContent=yen(bal);
+}
+
+/* ===== 取引先 ===== */
+function addTorihiki(){
+  const n=document.getElementById("t-name").value.trim();
+  if(!n){ alert("名称を入力してください"); return; }
+  db.torihiki.push({
+    name:n, kubun:document.getElementById("t-kubun").value,
+    tel:document.getElementById("t-tel").value.trim(),
+    tanto:document.getElementById("t-tanto").value.trim(),
+    memo:document.getElementById("t-memo").value.trim()
+  });
+  save();
+  ["t-name","t-tel","t-tanto","t-memo"].forEach(id=>document.getElementById(id).value="");
+  renderTorihiki();
+}
+function renderTorihiki(){
+  const b=document.getElementById("t-body");
+  if(!db.torihiki.length){ b.innerHTML='<tr><td colspan="6" class="empty">データがありません</td></tr>'; }
+  else{
+    b.innerHTML=db.torihiki.map((r,i)=>
+      `<tr><td><b>${esc(r.name)}</b></td><td>${esc(r.kubun)}</td><td>${esc(r.tel)}</td>
+       <td>${esc(r.tanto)}</td><td>${esc(r.memo)}</td>
+       <td class="no-print"><button class="btn btn-del btn-sm" onclick="del('torihiki',${i})">削除</button></td></tr>`
+    ).join("");
+  }
+  // 取引先候補をフォームに反映
+  document.getElementById("torihiki-list").innerHTML=db.torihiki.map(r=>`<option value="${esc(r.name)}">`).join("");
+}
+
+/* ===== 在庫 ===== */
+function addZaiko(){
+  const h=document.getElementById("z-hinmoku").value.trim();
+  if(!h){ alert("品目を入力してください"); return; }
+  db.zaiko.push({
+    hinmoku:h, suryo:Number(document.getElementById("z-suryo").value)||0,
+    tani:document.getElementById("z-tani").value,
+    jotai:document.getElementById("z-jotai").value,
+    memo:document.getElementById("z-memo").value.trim()
+  });
+  save();
+  ["z-hinmoku","z-suryo","z-memo"].forEach(id=>document.getElementById(id).value="");
+  renderZaiko();
+}
+function renderZaiko(){
+  const b=document.getElementById("z-body");
+  if(!db.zaiko.length){ b.innerHTML='<tr><td colspan="6" class="empty">データがありません</td></tr>'; return; }
+  b.innerHTML=db.zaiko.map((r,i)=>
+    `<tr><td><b>${esc(r.hinmoku)}</b></td><td class="num">${r.suryo}</td><td>${esc(r.tani)}</td>
+     <td>${esc(r.jotai)}</td><td>${esc(r.memo)}</td>
+     <td class="no-print"><button class="btn btn-del btn-sm" onclick="del('zaiko',${i})">削除</button></td></tr>`
+  ).join("");
+}
+
+/* ===== 共通 ===== */
+function del(type,i){
+  if(!confirm("この行を削除しますか？")) return;
+  db[type].splice(i,1); save(); renderAll();
+}
+function renderAll(){ renderShiire(); renderSuito(); renderTorihiki(); renderZaiko(); }
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="skr-backup-"+today()+".json";
+  a.click();
+}
+function importData(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!confirm("現在のデータを上書きして復元しますか？")) return;
+      db={shiire:d.shiire||[],suito:d.suito||[],torihiki:d.torihiki||[],zaiko:d.zaiko||[]};
+      save(); renderAll(); alert("復元しました");
+    }catch(err){ alert("ファイルを読み込めませんでした"); }
+  };
+  r.readAsText(f);
+}
+
+/* 初期化 */
+document.getElementById("s-date").value=today();
+document.getElementById("k-date").value=today();
+renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKR 仕入買掛管理システム</title>
+<style>
+:root{
+  --bg:#eef1f6; --panel:#fff; --border:#c5cdda; --border-d:#9aa6bb;
+  --ink:#1b2433; --ink-soft:#5b6678;
+  --brand:#0b5fa5; --brand-d:#084a82; --brand-soft:#e0edfa;
+  --green:#1f7a33; --green-soft:#e3f3e6;
+  --red:#c0271f; --red-soft:#fbe6e4;
+  --amber:#9a6700; --amber-soft:#fff3d6;
+  --row-alt:#f5f8fc; --sel:#fff2b8;
+  --fkbar:#16365c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Segoe UI","Meiryo","Hiragino Kaku Gothic ProN",sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 14px 110px}
+
+/* ヘッダー */
+header{background:linear-gradient(135deg,var(--brand),var(--brand-d));color:#fff;border-radius:10px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+header h1{font-size:21px;letter-spacing:.03em;display:flex;align-items:center;gap:10px}
+.logo-mark{width:38px;height:38px;border-radius:8px;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:16px}
+header .clock{font-size:13px;opacity:.92;text-align:right}
+
+/* タブ */
+.tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
+.tab{padding:11px 16px;background:var(--panel);border:2px solid var(--border);border-radius:9px;font-size:16px;font-weight:700;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+.tab:hover{border-color:var(--brand)}
+.tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.tab .ico{margin-right:6px}
+
+/* パネル */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:14px}
+.panel h2{font-size:18px;color:var(--brand-d);margin-bottom:14px;padding-bottom:9px;border-bottom:2px solid var(--brand-soft);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.panel h2 .spacer{flex:1}
+.hint{font-size:13px;color:var(--ink-soft);font-weight:400}
+
+/* フォーム */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:4px}
+.field label .key{color:var(--brand);font-size:11px;margin-left:4px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;font-size:16px;border:2px solid var(--border);border-radius:8px;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.field input[readonly]{background:#f0f2f6;color:var(--ink-soft)}
+.field .sub{font-size:12px;color:var(--green);font-weight:700;margin-top:3px;min-height:16px}
+.field .sub.warn{color:var(--amber)}
+.with-btn{display:flex;gap:6px}
+.with-btn input{flex:1}
+.with-btn button{padding:0 12px;border:2px solid var(--brand);background:var(--brand-soft);color:var(--brand);border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+
+/* ボタン */
+.btn{padding:11px 22px;font-size:16px;font-weight:700;border:none;border-radius:8px;cursor:pointer}
+.btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:var(--brand-d)}
+.btn-green{background:var(--green);color:#fff}
+.btn-ghost{background:#fff;color:var(--ink-soft);border:2px solid var(--border)}.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.btn-sm{padding:7px 13px;font-size:13px}
+.btn-del{background:#fff;color:var(--red);border:2px solid #eab8b4}.btn-del:hover{background:var(--red);color:#fff}
+.btn-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+/* テーブル */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:9px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+th{background:var(--brand-soft);color:var(--brand-d);padding:10px 11px;text-align:left;font-size:13px;white-space:nowrap}
+td{padding:9px 11px;border-top:1px solid var(--border);white-space:nowrap}
+tr:nth-child(even) td{background:var(--row-alt)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.empty{padding:26px;text-align:center;color:var(--ink-soft)}
+.pill{display:inline-block;padding:2px 9px;border-radius:11px;font-size:12px;font-weight:700}
+.pill.tax{background:var(--brand-soft);color:var(--brand-d)}
+.pill.free{background:var(--amber-soft);color:var(--amber)}
+
+/* 明細入力テーブル */
+.lines{border:2px solid var(--border-d);border-radius:9px;overflow:hidden;margin-bottom:12px}
+.lines table{min-width:680px}
+.lines th{background:var(--brand);color:#fff}
+.lines td{padding:5px 7px;border-top:1px solid var(--border)}
+.lines input,.lines select{width:100%;padding:8px 9px;font-size:15px;border:1.5px solid var(--border);border-radius:6px}
+.lines input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-soft)}
+.lines input.code{width:90px}.lines input.qty{width:90px;text-align:right}.lines input.tanka{width:110px;text-align:right}
+.lines .amt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.lines .pname{min-width:160px}
+.line-del{color:var(--red);cursor:pointer;font-weight:700;border:none;background:none;font-size:18px;padding:0 6px}
+
+/* 合計バー */
+.totalbar{display:flex;justify-content:flex-end;gap:26px;background:var(--brand-soft);border:2px solid var(--brand);border-radius:9px;padding:12px 18px;margin-bottom:12px;flex-wrap:wrap}
+.totalbar .t{text-align:right}
+.totalbar .t .l{font-size:12px;color:var(--ink-soft);font-weight:700}
+.totalbar .t .v{font-size:22px;font-weight:800;color:var(--brand-d);font-variant-numeric:tabular-nums}
+.totalbar .t.big .v{font-size:28px;color:var(--green)}
+
+/* カード */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.card .l{font-size:12px;color:var(--ink-soft);font-weight:700}
+.card .v{font-size:23px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.card.green .v{color:var(--green)}.card.red .v{color:var(--red)}.card.brand .v{color:var(--brand)}
+
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
+.search{flex:1;min-width:180px;padding:10px 13px;font-size:15px;border:2px solid var(--border);border-radius:8px}
+select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);border-radius:8px;background:#fff}
+
+/* ファンクションキーバー */
+.fkbar{position:fixed;left:0;right:0;bottom:0;background:var(--fkbar);display:flex;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,.25);flex-wrap:wrap}
+.fkbar .fk{flex:1;color:#fff;text-align:center;padding:7px 4px;cursor:pointer;border-right:1px solid rgba(255,255,255,.12);font-size:12px;min-width:70px}
+.fkbar .fk:hover{background:rgba(255,255,255,.12)}
+.fkbar .fk b{display:block;font-size:11px;color:#9fd0ff;font-weight:800;letter-spacing:.05em}
+.fkbar .fk span{font-size:12px;font-weight:700}
+.fkbar .sep{width:1px;background:rgba(255,255,255,.15)}
+@media(max-width:680px){.fkbar .fk b{font-size:10px}.fkbar .fk span{font-size:10px}}
+
+/* キーボードナビ：フォーカス強調 */
+.lines input:focus{background:#fffde7!important;border-color:var(--brand)!important;box-shadow:0 0 0 3px rgba(11,95,165,.18)!important;font-size:17px!important}
+.lines tr:focus-within td{background:rgba(11,95,165,.05)!important}
+.field input:focus{background:#fffde7!important}
+
+/* モーダル */
+.modal{position:fixed;inset:0;background:rgba(10,20,35,.55);display:none;z-index:100;padding:20px;overflow:auto}
+.modal.open{display:flex;align-items:flex-start;justify-content:center}
+.modal-box{background:#fff;border-radius:13px;max-width:760px;width:100%;margin:auto;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.modal-box h3{font-size:19px;color:var(--brand-d);margin-bottom:14px;display:flex;align-items:center;gap:9px}
+.modal-box h3 .spacer{flex:1}
+.modal-close{border:none;background:var(--bg);width:34px;height:34px;border-radius:8px;font-size:20px;cursor:pointer;color:var(--ink-soft)}
+.lookup-list{max-height:50vh;overflow:auto;border:1px solid var(--border);border-radius:9px;margin-top:10px}
+.lookup-list table{min-width:auto}
+.lookup-list tr{cursor:pointer}
+.lookup-list tr:hover td{background:var(--sel)}
+
+/* 単価履歴ポップアップ */
+#tanka-hist-popup{
+  position:absolute;z-index:200;background:#fff;border:2px solid var(--brand);border-radius:9px;
+  box-shadow:0 4px 18px rgba(0,0,0,.18);padding:8px;min-width:200px;display:none;
+}
+#tanka-hist-popup .ph-title{font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+#tanka-hist-popup .ph-row{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:5px 8px;border-radius:6px;cursor:pointer;font-size:14px;
+}
+#tanka-hist-popup .ph-row:hover{background:var(--sel)}
+#tanka-hist-popup .ph-row .ph-date{color:var(--ink-soft);font-size:12px}
+#tanka-hist-popup .ph-row .ph-tanka{font-weight:800;color:var(--brand-d)}
+#tanka-hist-popup .ph-empty{font-size:13px;color:var(--ink-soft);text-align:center;padding:8px}
+.foot{text-align:center;color:var(--ink-soft);font-size:13px;margin-top:18px}
+.save-note{display:inline-flex;align-items:center;gap:6px;background:var(--green-soft);color:var(--green);padding:6px 13px;border-radius:18px;font-size:13px;font-weight:700}
+.hide{display:none}
+
+/* ===== 伝票印刷 ===== */
+#print-area{display:none}
+@page{size:A5 landscape;margin:7mm}
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{background:#fff;font-family:"MS Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;color:#000;font-size:9pt;margin:0;padding:0}
+  .wrap,.fkbar,.modal{display:none!important}
+  #print-area{display:block!important;margin:0;padding:0}
+
+  /* A5横 余白7mm → 印刷可能 194×134mm。高さ上限を設け確実に1ページに収める */
+  .denpyo{
+    width:194mm;height:132mm;
+    border:2px solid #000;
+    display:flex;flex-direction:row;overflow:hidden;
+    break-inside:avoid;page-break-inside:avoid;
+  }
+  .denpyo:first-child{break-after:page;page-break-after:always;}
+  .dp-page-break{display:contents}
+
+  /* 右端縦書きタイトルバー */
+  .dp-titlebar{
+    width:12mm;border-left:2px solid #000;
+    writing-mode:vertical-rl;text-orientation:mixed;
+    font-size:12pt;font-weight:900;letter-spacing:.3em;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:4mm 1mm;line-height:1;white-space:nowrap;
+  }
+  .dp-titlebar .dp-copy-lbl{
+    font-size:8pt;font-weight:400;letter-spacing:.1em;
+    border:1px solid #000;padding:1mm 1mm;margin-top:3mm;
+    writing-mode:vertical-rl;
+  }
+
+  /* 本体 */
+  .dp-body{flex:1;display:flex;flex-direction:column;padding:2mm 3mm 1.5mm 3mm;overflow:hidden}
+
+  /* 最上段 */
+  .dp-toprow{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1mm;border-bottom:1px solid #000;padding-bottom:1mm}
+  .dp-nodate{font-size:8.5pt;line-height:1.5}
+  .dp-nodate .dp-no{font-size:10pt;font-weight:700}
+  .dp-company-box{border:1px solid #000;padding:0.8mm 2mm;font-size:7.5pt;line-height:1.35;min-width:38mm}
+  .dp-company-box b{font-size:9.5pt}
+  .dp-staff{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:0.6mm}
+  .dp-staff span{border:1px solid #000;padding:0.2mm 2mm;font-size:8pt}
+
+  /* お客様名 */
+  .dp-customer{font-size:12pt;font-weight:700;border-bottom:1.5px solid #000;padding-bottom:0.8mm;margin-bottom:0.8mm;min-height:6mm;display:flex;align-items:flex-end}
+  .dp-customer .nm{flex:1}
+  .dp-customer .sama{font-size:11pt;margin-left:2mm}
+  .dp-addr{font-size:9pt;color:#000;margin-bottom:1.2mm;border-bottom:1px solid #000;padding-bottom:0.8mm;min-height:5mm;display:flex;align-items:flex-end}
+  .dp-addr .lbl{font-size:8pt;margin-right:2mm;white-space:nowrap}
+
+  /* 明細テーブル */
+  table.dp-table{width:100%;border-collapse:collapse;font-size:9pt;table-layout:fixed}
+  table.dp-table th{border:1px solid #000;padding:1mm 1mm;text-align:center;font-weight:700;background:#f0f0f0;font-size:8pt;line-height:1.15;word-break:break-all}
+  table.dp-table td{border:1px solid #000;padding:1mm 1.2mm;font-size:9pt;overflow:hidden;text-overflow:ellipsis}
+  table.dp-table td.r{text-align:right;font-variant-numeric:tabular-nums}
+  table.dp-table td.c{text-align:center}
+  table.dp-table tr.blank td{height:4.5mm}
+  table.dp-table.dust th{font-size:8pt;padding:0.8mm 0.8mm;white-space:nowrap}
+  table.dp-table.dust td{font-size:8.5pt;padding:0.8mm 1mm}
+
+  /* 合計 */
+  .dp-totals{border-top:1px solid #000;margin-top:0.8mm;display:flex;flex-direction:column;align-items:flex-end;gap:0.2mm;padding-top:0.8mm;padding-right:1mm}
+  .dp-totals .dp-row{display:flex;gap:4mm;font-size:9pt;align-items:center}
+  .dp-totals .dp-row .lbl{min-width:28mm;text-align:right;font-size:8pt}
+  .dp-totals .dp-row .val{min-width:28mm;text-align:right;font-weight:700;font-size:10pt;font-variant-numeric:tabular-nums}
+  .dp-totals .dp-row.grand .val{font-size:13pt;font-weight:900;border-top:2px solid #000;border-bottom:3px double #000;padding:0 2mm}
+  .dp-totals .dp-row.grand .lbl{font-size:10pt;font-weight:700}
+
+  /* 脚注 */
+  .dp-footer{margin-top:1.2mm;display:flex;justify-content:space-between;align-items:flex-end;gap:3mm}
+  .dp-sign-box{border:1px solid #000;width:56mm;height:9mm;padding:1mm 2mm;font-size:8pt}
+  .dp-note{font-size:8pt;color:#333;line-height:1.4;flex:1}
+
+  .dp-scissors{display:none}
+}
+
+/* ===== 帳表印刷（元帳・支払一覧・分析）A4縦 ===== */
+@page report{size:A4 portrait;margin:13mm}
+@media print{
+  .preport{page:report;font-family:"Meiryo","Hiragino Kaku Gothic ProN",sans-serif;color:#000}
+  .preport h1{font-size:16pt;font-weight:800;margin-bottom:3mm;border-bottom:2px solid #000;padding-bottom:2mm}
+  .preport .pr-sub{font-size:10pt;margin-bottom:5mm;color:#000}
+  .preport .pr-cards{display:flex;flex-wrap:wrap;gap:4mm;margin-bottom:6mm}
+  .preport .pr-card{border:1.5px solid #000;border-radius:2mm;padding:2.5mm 5mm;font-size:10pt}
+  .preport .pr-card b{display:block;font-size:9pt;font-weight:700;margin-bottom:1mm}
+  .preport .pr-card span{font-size:13pt;font-weight:800}
+  .preport table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  .preport th{background:#e8e8e8;border:1px solid #000;padding:1.8mm 2.5mm;text-align:left;font-weight:700}
+  .preport td{border:1px solid #000;padding:1.6mm 2.5mm}
+  .preport td.num,.preport th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .preport .pr-foot{margin-top:6mm;font-size:9pt;text-align:right;color:#000}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1><span class="logo-mark">SKR</span> 仕入買掛管理システム</h1>
+  <div class="clock"><div id="clock-date"></div><div style="font-size:11px;opacity:.8">データはこのPC内に自動保存</div></div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="shiire"><span class="ico">📥</span>仕入入力</button>
+  <button class="tab" data-tab="shiharai"><span class="ico">💴</span>支払入力</button>
+  <button class="tab" data-tab="motocho"><span class="ico">📒</span>元帳</button>
+  <button class="tab" data-tab="seikyu"><span class="ico">📋</span>支払一覧表</button>
+  <button class="tab" data-tab="bunseki"><span class="ico">📊</span>分析帳表</button>
+  <button class="tab" data-tab="master"><span class="ico">🗂</span>マスタ</button>
+</div>
+
+<!-- ============ 仕入入力 ============ -->
+<section class="tab-page" id="tab-shiire">
+  <div class="panel">
+    <h2>📥 仕入入力（伝票）<span class="spacer"></span><span class="hint">F2 照会／F3 緊急登録／F9 登録／F12 印刷</span></h2>
+    <div class="form-grid">
+      <div class="field"><label>伝票日付 <span class="key">[日付]</span></label><input type="date" id="sh-date"></div>
+      <div class="field"><label>伝票No</label><input id="sh-no" readonly></div>
+      <div class="field"><label>仕入先コード <span class="key">F2照会</span></label>
+        <div class="with-btn"><input id="sh-scode" list="sup-datalist" placeholder="コード入力 or F2" autocomplete="off"><button onclick="openLookup('supplier','sh')" tabindex="-1">🔍照会</button></div>
+        <div class="sub" id="sh-sname"></div>
+      </div>
+      <div class="field"><label>区分</label><input id="sh-stax" readonly placeholder="仕入先を選択"></div>
+      <div class="field"><label>工場・店舗名 <span class="key">伝票に印字</span></label>
+        <input id="sh-store" list="store-list" placeholder="例：○○工場" autocomplete="off">
+        <datalist id="store-list"></datalist>
+        <div class="sub">よく使う名称は次回から候補に出ます</div>
+      </div>
+      <div class="field"><label>担当者</label><input id="sh-tanto" placeholder="任意"></div>
+    </div>
+
+    <div class="lines">
+      <table>
+        <thead><tr>
+          <th style="width:96px">商品CD</th><th>商品名</th><th style="width:96px" class="num">数量</th><th style="width:64px">単位</th>
+          <th style="width:116px" class="num">単価</th><th style="width:60px">単価種</th><th style="width:120px" class="num">金額</th><th style="width:40px"></th>
+        </tr></thead>
+        <tbody id="sh-lines"></tbody>
+      </table>
+    </div>
+    <div class="btn-row" style="margin-bottom:12px">
+      <button class="btn btn-ghost btn-sm" onclick="addLine()">＋ 明細行を追加</button>
+      <span class="hint">商品CD欄でEnter→自動で次行。契約単価があれば自動表示します。</span>
+    </div>
+
+    <div id="sh-dustbar" style="padding:6px 14px;margin-bottom:6px;min-height:22px"></div>
+    <div class="totalbar">
+      <div class="t"><div class="l">正味重量計(kg)</div><div class="v" id="sh-tqty">0</div></div>
+      <div class="t big"><div class="l">仕入金額 合計（正味ベース）</div><div class="v" id="sh-total">¥0</div></div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field" id="sh-kojo-field" style="display:none"><label>仕入控除率（免税）</label>
+        <input id="sh-kojo" readonly><div class="sub warn">インボイス：免税事業者からの仕入</div></div>
+      <div class="field" style="grid-column:1/-1"><label>摘要・メモ</label><input id="sh-memo" placeholder="任意"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveShiire()">💾 伝票を登録（F9）</button>
+      <button class="btn btn-green" onclick="saveShiire(true)">🖨 登録して伝票印刷（F12）</button>
+      <button class="btn btn-ghost btn-sm" onclick="saveShiire(false,true)">📄 PDF保存（ネットプリント用）</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportBlankPdf()">📋 空白テンプレートPDF（手書き用）</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearShiire()">クリア</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>仕入伝票 一覧</h2>
+    <div class="toolbar"><input class="search" id="sh-search" placeholder="🔍 仕入先・商品で検索" oninput="renderShiireList()"></div>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>日付</th><th>伝票No</th><th>仕入先</th><th>明細</th><th class="num">金額</th><th>区分</th><th></th>
+      </tr></thead><tbody id="sh-list"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 支払入力 ============ -->
+<section class="tab-page hide" id="tab-shiharai">
+  <div class="panel">
+    <h2>💴 支払入力<span class="spacer"></span><span class="hint">F2 照会</span></h2>
+    <div class="form-grid">
+      <div class="field"><label>支払日付</label><input type="date" id="sp-date"></div>
+      <div class="field"><label>仕入先コード <span class="key">F2照会</span></label>
+        <div class="with-btn"><input id="sp-scode" placeholder="コード or F2" autocomplete="off"><button onclick="openLookup('supplier','sp')">🔍</button></div>
+        <div class="sub" id="sp-sname"></div>
+      </div>
+      <div class="field"><label>現在の買掛残</label><input id="sp-zan" readonly></div>
+      <div class="field"><label>支払項目 <span class="key">F2照会</span></label>
+        <div class="with-btn"><input id="sp-pcode" placeholder="コード or F2" autocomplete="off"><button onclick="openLookup('payitem','sp')">🔍</button></div>
+        <div class="sub" id="sp-pname"></div>
+      </div>
+      <div class="field"><label>支払方法</label><select id="sp-method"><option>現金</option><option>振込</option><option>手形</option><option>相殺</option></select></div>
+      <div class="field"><label>支払金額(円)</label><input type="number" id="sp-amt" step="1" placeholder="0"></div>
+    </div>
+    <div class="field" style="margin-bottom:14px"><label>摘要</label><input id="sp-memo" placeholder="任意"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveShiharai()">💾 支払を登録</button>
+      <button class="btn btn-green" onclick="saveShiharai(true)">🖨 登録して領収控を印刷</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearShiharai()">クリア</button>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>支払 一覧</h2>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>日付</th><th>仕入先</th><th>支払項目</th><th>方法</th><th class="num">金額</th><th>摘要</th><th></th>
+      </tr></thead><tbody id="sp-list"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 元帳 ============ -->
+<section class="tab-page hide" id="tab-motocho">
+  <div class="panel">
+    <h2>📒 仕入先元帳（自動転記）<span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" onclick="printMotocho()">🖨 元帳を印刷</button></h2>
+    <div class="toolbar">
+      <select class="inline" id="mc-supplier" onchange="renderMotocho()"></select>
+      <span class="hint">仕入＝買掛増／支払＝買掛減。取引明細が自動で元帳へ転記されます。</span>
+    </div>
+    <div class="cards" id="mc-cards"></div>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>日付</th><th>伝票No</th><th>摘要</th><th class="num">仕入(借)</th><th class="num">支払(貸)</th><th class="num">買掛残高</th>
+      </tr></thead><tbody id="mc-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 支払一覧表 ============ -->
+<section class="tab-page hide" id="tab-seikyu">
+  <div class="panel">
+    <h2>📋 支払一覧表（締日・支払漏れ防止）<span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" onclick="printSeikyu()">🖨 印刷</button></h2>
+    <div class="toolbar">
+      <span class="hint">締め月：</span>
+      <input type="month" class="search" style="max-width:180px" id="sk-month" onchange="renderSeikyu()">
+      <span class="hint">各仕入先の当月仕入・支払・残高を一覧で確認できます。</span>
+    </div>
+    <div class="cards" id="sk-cards"></div>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>仕入先</th><th>締日</th><th>区分</th><th class="num">前月繰越</th><th class="num">当月仕入</th><th class="num">当月支払</th><th class="num">当月残高</th>
+      </tr></thead><tbody id="sk-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 分析帳表 ============ -->
+<section class="tab-page hide" id="tab-bunseki">
+  <div class="panel">
+    <h2>📊 分析帳表<span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" onclick="printBunseki()">🖨 印刷</button></h2>
+    <div class="toolbar">
+      <input type="month" class="search" style="max-width:180px" id="bs-month" onchange="renderBunseki()">
+      <select class="inline" id="bs-mode" onchange="renderBunseki()">
+        <option value="supplier">仕入先別 集計</option>
+        <option value="product">商品別 集計</option>
+        <option value="tax">免税・課税別 仕入／消費税</option>
+      </select>
+    </div>
+    <div class="cards" id="bs-cards"></div>
+    <div class="table-wrap"><table id="bs-table"><thead id="bs-head"></thead><tbody id="bs-body"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ============ マスタ ============ -->
+<section class="tab-page hide" id="tab-master">
+  <div class="tabs" style="margin-bottom:10px">
+    <button class="tab active mtab" data-m="supplier">仕入先</button>
+    <button class="tab mtab" data-m="product">商品</button>
+    <button class="tab mtab" data-m="payitem">支払項目</button>
+    <button class="tab mtab" data-m="contract">契約単価</button>
+  </div>
+
+  <div class="m-page" id="m-supplier">
+    <div class="panel"><h2>🗂 仕入先マスタ</h2>
+      <div class="form-grid">
+        <div class="field"><label>コード</label><input id="ms-code" placeholder="自動 or 入力"></div>
+        <div class="field"><label>名称</label><input id="ms-name"></div>
+        <div class="field"><label>カナ（検索用）</label><input id="ms-kana" placeholder="あいまい検索に使用"></div>
+        <div class="field"><label>電話</label><input id="ms-tel"></div>
+        <div class="field"><label>担当者</label><input id="ms-tanto"></div>
+        <div class="field"><label>課税区分</label><select id="ms-tax"><option value="課税">課税事業者</option><option value="免税">免税事業者</option></select></div>
+        <div class="field"><label>締日</label><select id="ms-close"><option>末日</option><option>5日</option><option>10日</option><option>15日</option><option>20日</option><option>25日</option></select></div>
+        <div class="field" style="grid-column:1/-1"><label>住所</label><input id="ms-addr"></div>
+      </div>
+      <button class="btn btn-primary" onclick="addSupplier()">＋ 登録／更新</button>
+    </div>
+    <div class="panel"><h2>仕入先 一覧</h2>
+      <div class="toolbar"><input class="search" id="ms-search" placeholder="🔍 コード・名称・カナであいまい検索" oninput="renderSupplier()"></div>
+      <div class="table-wrap"><table><thead><tr><th>コード</th><th>名称</th><th>カナ</th><th>電話</th><th>担当</th><th>区分</th><th>締日</th><th></th></tr></thead><tbody id="ms-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="m-page hide" id="m-product">
+    <div class="panel"><h2>🗂 商品マスタ</h2>
+      <div class="form-grid">
+        <div class="field"><label>コード</label><input id="mp-code" placeholder="自動 or 入力"></div>
+        <div class="field"><label>商品名</label><input id="mp-name"></div>
+        <div class="field"><label>カナ（検索用）</label><input id="mp-kana"></div>
+        <div class="field"><label>単位</label><input id="mp-unit" placeholder="kg / 個 / 台"></div>
+        <div class="field"><label>マスタ単価(円)</label><input type="number" id="mp-tanka" step="1" placeholder="0"></div>
+      </div>
+      <button class="btn btn-primary" onclick="addProduct()">＋ 登録／更新</button>
+    </div>
+    <div class="panel"><h2>商品 一覧</h2>
+      <div class="toolbar"><input class="search" id="mp-search" placeholder="🔍 あいまい検索" oninput="renderProduct()"></div>
+      <div class="table-wrap"><table><thead><tr><th>コード</th><th>商品名</th><th>カナ</th><th>単位</th><th class="num">マスタ単価</th><th></th></tr></thead><tbody id="mp-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="m-page hide" id="m-payitem">
+    <div class="panel"><h2>🗂 支払項目マスタ</h2>
+      <div class="form-grid">
+        <div class="field"><label>コード</label><input id="mi-code" placeholder="自動 or 入力"></div>
+        <div class="field"><label>項目名</label><input id="mi-name" placeholder="買掛支払・経費など"></div>
+      </div>
+      <button class="btn btn-primary" onclick="addPayitem()">＋ 登録／更新</button>
+    </div>
+    <div class="panel"><h2>支払項目 一覧</h2>
+      <div class="table-wrap"><table><thead><tr><th>コード</th><th>項目名</th><th></th></tr></thead><tbody id="mi-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="m-page hide" id="m-contract">
+    <div class="panel"><h2>🗂 契約単価（取引先別単価）</h2>
+      <p class="hint" style="margin-bottom:12px">仕入先ごとに商品の個別単価を設定します。仕入入力時に自動で「契約」単価として呼び出されます（未設定時はマスタ単価）。</p>
+      <div class="form-grid">
+        <div class="field"><label>仕入先 <span class="key">F2照会</span></label>
+          <div class="with-btn"><input id="mc2-scode" placeholder="コード or F2"><button onclick="openLookup('supplier','mc2')">🔍</button></div>
+          <div class="sub" id="mc2-sname"></div></div>
+        <div class="field"><label>商品 <span class="key">F2照会</span></label>
+          <div class="with-btn"><input id="mc2-pcode" placeholder="コード or F2"><button onclick="openLookup('product','mc2')">🔍</button></div>
+          <div class="sub" id="mc2-pname"></div></div>
+        <div class="field"><label>契約単価(円)</label><input type="number" id="mc2-tanka" step="1" placeholder="0"></div>
+      </div>
+      <button class="btn btn-primary" onclick="addContract()">＋ 登録／更新</button>
+    </div>
+    <div class="panel"><h2>契約単価 一覧</h2>
+      <div class="table-wrap"><table><thead><tr><th>仕入先</th><th>商品</th><th class="num">契約単価</th><th>単価履歴（過去5回）</th><th></th></tr></thead><tbody id="mc2-body"></tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<div class="foot">
+  <span class="save-note">💾 入力すると自動保存されます（インターネット不要）</span>
+  <div style="margin-top:12px" class="btn-row" style="justify-content:center">
+    <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ バックアップ保存</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('imp').click()">⬆ バックアップ復元</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadSample()">サンプルデータ投入</button>
+    <button class="btn btn-primary btn-sm" onclick="loadProductMaster()">📦 商品コード表を一括登録（67品目）</button>
+    <button class="btn btn-green btn-sm" onclick="document.getElementById('imp-price').click()">📥 skr-price-compare.html から単価インポート</button>
+    <input type="file" id="imp" class="hide" accept=".json" onchange="importData(event)">
+    <input type="file" id="imp-price" class="hide" accept=".html,.htm" onchange="importPriceCompare(event)">
+  </div>
+  <p style="margin-top:10px">SKR 仕入買掛管理システム ／ ローカル保存</p>
+</div>
+</div>
+<!-- 単価履歴ポップアップ -->
+<div id="tanka-hist-popup">
+  <div class="ph-title">📊 単価履歴（クリックで適用）</div>
+  <div id="tanka-hist-list"></div>
+</div>
+
+<datalist id="prod-datalist"></datalist>
+<datalist id="sup-datalist"></datalist>
+
+<!-- ファンクションキーバー -->
+<div class="fkbar">
+  <div class="fk"><b>Enter↓</b><span>次へ進む</span></div>
+  <div class="fk"><b>↑</b><span>前へ戻る</span></div>
+  <div class="fk"><b>←→</b><span>列移動</span></div>
+  <div class="fk"><b>↑↓（行内）</b><span>行を上下</span></div>
+  <div class="sep"></div>
+  <div class="fk" onclick="fkLookup()"><b>F2</b><span>照会</span></div>
+  <div class="fk" onclick="fkQuick()"><b>F3</b><span>緊急登録</span></div>
+  <div class="fk" onclick="clearShiire()"><b>F5</b><span>クリア</span></div>
+  <div class="fk" onclick="saveShiire()"><b>F9</b><span>登録</span></div>
+  <div class="fk" onclick="saveShiire(true)"><b>F12</b><span>登録＋印刷</span></div>
+</div>
+
+<!-- 照会モーダル -->
+<div class="modal" id="lookup-modal">
+  <div class="modal-box">
+    <h3 id="lk-title">照会<span class="spacer"></span><button class="modal-close" onclick="closeModal('lookup-modal')">✕</button></h3>
+    <input class="search" id="lk-search" placeholder="🔍 コード・名称・カナであいまい検索（Escで閉じる）" oninput="renderLookup()" style="width:100%">
+    <div class="lookup-list"><table><tbody id="lk-body"></tbody></table></div>
+  </div>
+</div>
+
+<!-- 緊急登録モーダル -->
+<div class="modal" id="quick-modal">
+  <div class="modal-box">
+    <h3 id="qk-title">緊急登録<span class="spacer"></span><button class="modal-close" onclick="closeModal('quick-modal')">✕</button></h3>
+    <p class="hint" style="margin-bottom:12px">作業を中断せずに登録できます。登録後そのまま入力欄へ反映されます。</p>
+    <div id="qk-fields"></div>
+    <div class="btn-row" style="margin-top:14px"><button class="btn btn-primary" onclick="quickSave()">登録して反映</button></div>
+  </div>
+</div>
+
+<!-- ヘルプ -->
+<div class="modal" id="help-modal">
+  <div class="modal-box">
+    <h3>📖 操作ヘルプ<span class="spacer"></span><button class="modal-close" onclick="closeModal('help-modal')">✕</button></h3>
+    <div style="line-height:1.9;font-size:15px">
+      <b>■ ファンクションキー</b><br>
+      F2＝照会（コードがわからない時に一覧から選ぶ）／F3＝緊急登録（仕入先・商品をその場で追加）<br>
+      F4＝明細行追加／F5＝クリア／F9＝伝票登録／F12＝登録して印刷<br><br>
+      <b>■ 仕入入力の流れ</b><br>
+      ①日付 → ②仕入先コード（F2照会可）→ ③明細で商品CD入力（契約単価が自動表示）→ ④数量入力<br>
+      → ⑤Enterで次の行 → ⑥F9で登録 / F12で2枚複写の伝票を印刷<br><br>
+      <b>■ 伝票印刷</b><br>
+      「会社保管用（お客様サイン欄あり）」と「お客様控」の2枚が1度に印刷されます。<br><br>
+      <b>■ 単価</b><br>
+      契約単価（取引先別）＞マスタ単価 の優先で自動表示。過去5回の単価履歴を保存します。<br><br>
+      <b>■ データ</b><br>
+      すべてこのPC内に自動保存。バックアップ保存で別PCへ移行できます。
+    </div>
+  </div>
+</div>
+
+<!-- 印刷エリア -->
+<div id="print-area"></div>
+
+<script>
+/* ============ データ層 ============ */
+const KEY="skr-shiire-kaikake-v1";
+let db=load();
+function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY))||{});}catch(e){return blank();}}
+function blank(){return{suppliers:[],products:[],payitems:[],contracts:[],purchases:[],payments:[],stores:[],seq:{denpyo:1,sup:1,prod:1,item:1}};}
+function renderStoreList(){const el=document.getElementById("store-list");if(el)el.innerHTML=(db.stores||[]).map(s=>`<option value="${esc(s)}">`).join("");}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));}
+const yen=n=>"¥"+Math.round(Number(n)||0).toLocaleString("ja-JP");
+const num=n=>(Number(n)||0).toLocaleString("ja-JP");
+const today=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s==null?"":s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+const pad=(n,l)=>String(n).padStart(l,"0");
+
+/* インボイス：免税控除率（2023.10–2026.9=80%, 2026.10–2029.9=50%, 以降=0%） */
+function kojoRate(dateStr){
+  const d=new Date(dateStr||today());
+  if(d<new Date("2026-10-01"))return 80;
+  if(d<new Date("2029-10-01"))return 50;
+  return 0;
+}
+
+/* 検索（あいまい：コード/名称/カナ部分一致） */
+function fuzzy(arr,q,fields){
+  q=(q||"").trim().toLowerCase();
+  if(!q)return arr;
+  return arr.filter(o=>fields.some(f=>String(o[f]||"").toLowerCase().includes(q)));
+}
+const findSup=c=>db.suppliers.find(s=>s.code===c);
+const findProd=c=>db.products.find(p=>p.code===c);
+const findItem=c=>db.payitems.find(i=>i.code===c);
+function contractTanka(sc,pc){const c=db.contracts.find(x=>x.scode===sc&&x.pcode===pc);return c?c.tanka:null;}
+function priceHist(sc,pc){
+  const h=[];
+  db.purchases.forEach(pu=>pu.lines.forEach(l=>{if(pu.scode===sc&&l.pcode===pc)h.push({date:pu.date,tanka:l.tanka});}));
+  return h.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+}
+
+/* ---- 単価履歴ポップアップ ---- */
+let _phTarget=null; // 単価入力中の {lineIndex, inputEl}
+function showTankaHist(i,el){
+  const popup=document.getElementById("tanka-hist-popup");
+  const list=document.getElementById("tanka-hist-list");
+  const sc=document.getElementById("sh-scode").value.trim();
+  const pc=shLines[i]?shLines[i].pcode:"";
+  const pname=shLines[i]?shLines[i].pname:"";
+  const hist=priceHist(sc,pc);
+  // マスタ単価も候補に
+  const mp=findProd(pc);
+  const extras=[];
+  if(mp&&mp.tanka)extras.push({date:"マスタ",tanka:mp.tanka,tag:"マスタ"});
+  const ct=contractTanka(sc,pc);
+  if(ct!=null)extras.push({date:"契約",tanka:ct,tag:"契約"});
+  const all=[...extras,...hist.map(h=>({...h,tag:"履歴"}))];
+  if(!all.length){
+    list.innerHTML='<div class="ph-empty">履歴なし</div>';
+  } else {
+    list.innerHTML=all.map((h,idx)=>`
+      <div class="ph-row" onclick="applyTankaHist(${i},${h.tanka})">
+        <span class="ph-date">${h.date}${h.tag?'<span style="font-size:11px;color:var(--brand);margin-left:4px">['+h.tag+']</span>':''}</span>
+        <span class="ph-tanka">¥${Number(h.tanka).toLocaleString()}</span>
+      </div>`).join("");
+  }
+  _phTarget={i,el};
+  // ポジション: input直下
+  const rect=el.getBoundingClientRect();
+  const scrollY=window.scrollY||document.documentElement.scrollTop;
+  popup.style.left=(rect.left+window.scrollX)+"px";
+  popup.style.top=(rect.bottom+scrollY+4)+"px";
+  popup.style.display="block";
+}
+function hideTankaHist(){
+  document.getElementById("tanka-hist-popup").style.display="none";
+  _phTarget=null;
+}
+function applyTankaHist(i,tanka){
+  shLines[i].tanka=tanka;shLines[i].ttype="履歴";
+  renderLines();
+  lnFocus(i,".lntanka",20);
+  hideTankaHist();
+}
+document.addEventListener("mousedown",e=>{
+  const popup=document.getElementById("tanka-hist-popup");
+  if(popup.style.display==="block"&&!popup.contains(e.target)){
+    hideTankaHist();
+  }
+});
+
+/* ---- skr-price-compare.html から単価インポート ---- */
+function importPriceCompare(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    // まずUTF-8で読み込みcharsetを確認、Shift-JIS系なら再デコード
+    let html;
+    try{
+      const buf=e.target.result;
+      // charsetをバイト列から検索（UTF-8プレビューでcharset行を探す）
+      const probe=new TextDecoder("utf-8",{fatal:false}).decode(new Uint8Array(buf).slice(0,2048));
+      const csm=probe.match(/charset\s*=\s*["']?\s*([\w-]+)/i);
+      const cs=(csm?csm[1]:"utf-8").toLowerCase();
+      const enc=(cs.includes("shift")||cs==="sjis"||cs==="ms932"||cs==="cp932")?"shift-jis":"utf-8";
+      html=new TextDecoder(enc,{fatal:false}).decode(buf);
+    }catch(ex){
+      html=new TextDecoder("utf-8",{fatal:false}).decode(e.target.result);
+    }
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(html,"text/html");
+    const tables=Array.from(doc.querySelectorAll("table"));
+    let updated=0,skipped=0;
+    for(const table of tables){
+      // ヘッダー行（最初のtr）のセルでcolインデックスを決定
+      const hRow=table.querySelector("tr");
+      if(!hRow)continue;
+      const headerCells=Array.from(hRow.querySelectorAll("th,td")).map(td=>td.textContent.trim());
+      let skrCol=-1,nameCol=-1,codeCol=-1;
+      headerCells.forEach((h,idx)=>{
+        if(/SKR.*単価|買い入れ.*単価|買入.*単価/i.test(h))skrCol=idx;
+        if(/商品名|品名|item/i.test(h))nameCol=idx;
+        if(/コード|code/i.test(h))codeCol=idx;
+      });
+      if(skrCol<0)continue;
+      // データ行（2行目以降）
+      const rows=Array.from(table.querySelectorAll("tr")).slice(1);
+      rows.forEach(row=>{
+        const cells=Array.from(row.querySelectorAll("td")).map(td=>td.textContent.trim());
+        if(cells.length<=skrCol)return;
+        const tankaStr=cells[skrCol].replace(/[^\d.]/g,"");
+        const tanka=parseFloat(tankaStr);
+        if(!tanka||isNaN(tanka))return;
+        const name=nameCol>=0&&nameCol<cells.length?cells[nameCol]:"";
+        const code=codeCol>=0&&codeCol<cells.length?cells[codeCol]:"";
+        let prod=code?findProd(code):null;
+        if(!prod&&name)prod=db.products.find(p=>p.name===name||p.name.includes(name)||name.includes(p.name));
+        if(prod){prod.tanka=tanka;updated++;}
+        else skipped++;
+      });
+    }
+    if(updated===0&&skipped===0){
+      alert("「SKR買い入れ単価」列が見つかりませんでした。\nファイルのテーブル構造を確認してください。");
+    } else {
+      save();renderProduct();
+      alert(`単価インポート完了\n更新: ${updated}件 / スキップ(商品未登録): ${skipped}件`);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value="";
+}
+
+/* ============ タブ切替 ============ */
+document.querySelectorAll(".tabs .tab[data-tab]").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab[data-tab]").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  document.querySelectorAll(".tab-page").forEach(p=>p.classList.add("hide"));
+  document.getElementById("tab-"+t.dataset.tab).classList.remove("hide");
+  if(t.dataset.tab==="motocho")renderMotocho();
+  if(t.dataset.tab==="seikyu")renderSeikyu();
+  if(t.dataset.tab==="bunseki")renderBunseki();
+});
+document.querySelectorAll(".mtab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".mtab").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  document.querySelectorAll(".m-page").forEach(p=>p.classList.add("hide"));
+  document.getElementById("m-"+t.dataset.m).classList.remove("hide");
+});
+
+/* ============ 仕入入力 ============ */
+let shLines=[];
+function clearShiire(){
+  document.getElementById("sh-date").value=today();
+  document.getElementById("sh-no").value="（登録時に採番）";
+  document.getElementById("sh-scode").value="";
+  document.getElementById("sh-sname").textContent="";
+  document.getElementById("sh-stax").value="";
+  document.getElementById("sh-memo").value="";
+  document.getElementById("sh-kojo-field").style.display="none";
+  shLines=[{pcode:"",pname:"",qty:"",unit:"",tanka:"",ttype:"",dust:""}];
+  renderLines();
+}
+function addLine(){shLines.push({pcode:"",pname:"",qty:"",unit:"",tanka:"",ttype:"",dust:""});renderLines();}
+function calcLine(l){
+  const qty=Number(l.qty)||0, dust=Number(l.dust)||0, tanka=Number(l.tanka)||0;
+  const dustQty=Math.round(qty*dust/100*100)/100;     // ダスト量(kg)
+  const netQty=Math.round((qty-dustQty)*100)/100;     // 正味重量
+  const amt=Math.round(netQty*tanka);                 // 金額
+  return {qty,dust,dustQty,netQty,tanka,amt};
+}
+/* ---- ライン描画 ---- */
+function renderLines(){
+  const hdr=document.getElementById("sh-lines").closest("table").querySelector("thead tr");
+  hdr.innerHTML=`<th style="width:110px">商品CD</th><th>商品名</th>
+    <th style="width:90px" class="num">受入重量</th><th style="width:58px">単位</th>
+    <th style="width:76px" class="num">ダスト%</th><th style="width:82px" class="num">ダスト量</th>
+    <th style="width:82px" class="num">正味重量</th>
+    <th style="width:110px" class="num">単価</th><th style="width:50px">種別</th>
+    <th style="width:120px" class="num">金額</th><th style="width:36px"></th>`;
+  document.getElementById("sh-lines").innerHTML=shLines.map((l,i)=>{
+    const c=calcLine(l);
+    return `<tr>
+      <td><input class="code lncd" value="${esc(l.pcode)}" list="prod-datalist"
+        oninput="lineCodeInput(${i},this.value)"
+        onchange="lineCode(${i},this.value.split('：')[0].trim())"
+        onkeydown="lnKey_code(event,${i})"
+        onfocus="this.select()"
+        placeholder="CD or 品名"></td>
+      <td><input class="pname" value="${esc(l.pname)}" readonly tabindex="-1"
+        style="background:#f8f9fc;cursor:default" placeholder="（自動）"></td>
+      <td><input class="qty lnqty" type="number" step="0.01" value="${esc(l.qty)}"
+        oninput="shLines[${i}].qty=this.value;renderTotals()"
+        onkeydown="lnKey_qty(event,${i})"
+        onfocus="this.select()"
+        placeholder="0"></td>
+      <td><input class="lnunit" value="${esc(l.unit)}" tabindex="-1"
+        oninput="shLines[${i}].unit=this.value"
+        onfocus="this.select()"
+        style="width:52px" placeholder="単位"></td>
+      <td><input class="lndust" type="number" step="0.1" min="0" max="100" value="${esc(l.dust)}"
+        oninput="shLines[${i}].dust=this.value;renderTotals()"
+        onkeydown="lnKey_dust(event,${i})"
+        onfocus="this.select()"
+        placeholder="0" style="text-align:right"></td>
+      <td class="amt" style="color:var(--red);font-size:14px">${c.dust>0?num(c.dustQty):""}</td>
+      <td class="amt" style="color:var(--green);font-weight:800">${c.qty>0?num(c.netQty):""}</td>
+      <td><input class="tanka lntanka" type="number" step="1" value="${esc(l.tanka)}"
+        oninput="shLines[${i}].tanka=this.value;shLines[${i}].ttype='手入力';renderTotals()"
+        onkeydown="lnKey_tanka(event,${i})"
+        onfocus="this.select();showTankaHist(${i},this)"
+        placeholder="0"></td>
+      <td style="font-size:12px;color:var(--ink-soft)">${esc(l.ttype||"")}</td>
+      <td class="amt">${yen(c.amt)}</td>
+      <td><button class="line-del" onclick="shLines.splice(${i},1);renderLines()" tabindex="-1" title="削除">×</button></td>
+    </tr>`;
+  }).join("");
+  renderTotals();
+}
+
+/* ---- Enter ナビゲーション ユーティリティ ---- */
+function lnRow(i){return document.getElementById("sh-lines").children[i];}
+function lnFocus(i,cls,delay){
+  setTimeout(()=>{const r=lnRow(i);if(r){const el=r.querySelector(cls);if(el){el.focus();el.select&&el.select();}}},delay||20);
+}
+/* 商品CDでEnter/↓ → 品番確定・数量へ。十字キーは行列移動 */
+function lnKey_code(e,i){
+  lnArrow(e,i,0); if(e.defaultPrevented)return;
+  if(e.key!=="Enter"&&e.key!=="ArrowDown")return;
+  e.preventDefault();
+  const v=e.target.value.split("：")[0].trim();
+  lineCode(i,v,true);
+}
+/* 数量でEnter/↓ → ダスト%へ */
+function lnKey_qty(e,i){
+  lnArrow(e,i,1); if(e.defaultPrevented)return;
+  if(e.key!=="Enter"&&e.key!=="ArrowDown")return;
+  e.preventDefault();
+  shLines[i].qty=e.target.value;renderTotals();
+  lnFocus(i,".lndust");
+}
+/* ダスト%でEnter/↓ → 単価へ */
+function lnKey_dust(e,i){
+  lnArrow(e,i,2); if(e.defaultPrevented)return;
+  if(e.key!=="Enter"&&e.key!=="ArrowDown")return;
+  e.preventDefault();
+  shLines[i].dust=e.target.value;renderTotals();
+  lnFocus(i,".lntanka");
+}
+/* 単価でEnter/↓ → 次行CDへ（最終行なら新行追加） */
+function lnKey_tanka(e,i){
+  lnArrow(e,i,3); if(e.defaultPrevented)return;
+  if(e.key!=="Enter"&&e.key!=="ArrowDown")return;
+  e.preventDefault();
+  shLines[i].tanka=e.target.value;shLines[i].ttype="手入力";renderTotals();
+  if(i===shLines.length-1)addLine();
+  lnFocus(i+1,".lncd",40);
+}
+
+/* ---- 商品コード確定 ---- */
+function lineCodeInput(i,v){
+  const code=v.split("：")[0].trim();
+  if(findProd(code))lineCode(i,code,false);
+  else shLines[i].pcode=v;
+}
+function lineCode(i,v,fromEnter){
+  const code=v.trim();
+  shLines[i].pcode=code;
+  const p=findProd(code);
+  if(p){
+    shLines[i].pname=p.name;shLines[i].unit=p.unit;
+    const sc=document.getElementById("sh-scode").value.trim();
+    const ct=contractTanka(sc,p.code);
+    if(ct!=null){shLines[i].tanka=ct;shLines[i].ttype="契約";}
+    else if(p.tanka){shLines[i].tanka=p.tanka;shLines[i].ttype="マスタ";}
+    renderLines();
+    lnFocus(i,".lnqty",30);
+  } else if(fromEnter){
+    // コードが見つからない場合でも次へ
+    lnFocus(i,".lnqty",20);
+  }
+}
+function renderTotals(){
+  let tRecv=0,tDust=0,tNet=0,tAmt=0;
+  shLines.forEach(l=>{
+    const c=calcLine(l);
+    tRecv+=c.qty; tDust+=c.dustQty; tNet+=c.netQty; tAmt+=c.amt;
+  });
+  document.getElementById("sh-tqty").textContent=num(Math.round(tNet*100)/100);
+  document.getElementById("sh-total").textContent=yen(tAmt);
+  // 合計バーに受入・ダスト・正味を表示
+  const bar=document.getElementById("sh-dustbar");
+  if(bar)bar.innerHTML=tDust>0?
+    `<span style="color:var(--ink-soft);font-size:14px">受入計 ${num(Math.round(tRecv*100)/100)} kg
+     ／ <span style="color:var(--red)">ダスト計 ${num(Math.round(tDust*100)/100)} kg</span>
+     ／ <span style="color:var(--green);font-weight:800">正味計 ${num(Math.round(tNet*100)/100)} kg</span></span>`:"";
+}
+function onSupplierPicked(scope,sc){
+  const s=findSup(sc);
+  if(scope==="sh"){
+    document.getElementById("sh-scode").value=sc;
+    document.getElementById("sh-sname").textContent=s?s.name:"該当なし";
+    document.getElementById("sh-stax").value=s?s.tax:"";
+    const free=s&&s.tax==="免税";
+    document.getElementById("sh-kojo-field").style.display=free?"":"none";
+    if(free)document.getElementById("sh-kojo").value="控除率 "+kojoRate(document.getElementById("sh-date").value)+"%";
+    // 契約単価を既存明細に反映
+    shLines.forEach(l=>{if(l.pcode){const ct=contractTanka(sc,l.pcode);if(ct!=null){l.tanka=ct;l.ttype="契約";}}});
+    renderLines();
+  }else if(scope==="sp"){
+    document.getElementById("sp-scode").value=sc;
+    document.getElementById("sp-sname").textContent=s?s.name:"該当なし";
+    document.getElementById("sp-zan").value=yen(supplierBalance(sc));
+  }else if(scope==="mc2"){
+    document.getElementById("mc2-scode").value=sc;
+    document.getElementById("mc2-sname").textContent=s?s.name:"";
+  }
+}
+document.getElementById("sh-scode").addEventListener("change",e=>{
+  const v=e.target.value.split("：")[0].trim();
+  onSupplierPicked("sh",v);
+  e.target.value=v;
+});
+
+/* ============================================================
+   テンキー＋十字キー ナビゲーション
+   Enter/↓  … 次フィールド
+   ↑        … 前フィールド
+   →/←     … 明細テーブル内で列移動
+   ↑↓(行内) … 明細テーブル内で行移動（同列）
+   ============================================================ */
+
+/* フォーム全体のフォーカス順を動的に生成 */
+const HDR_IDS=["sh-date","sh-scode","sh-store","sh-tanto"];
+const LN_COLS=[".lncd",".lnqty",".lndust",".lntanka"];
+function getFormOrder(){
+  const els=HDR_IDS.map(id=>document.getElementById(id)).filter(Boolean);
+  shLines.forEach((_,i)=>{
+    const row=lnRow(i);
+    if(!row)return;
+    LN_COLS.forEach(c=>{const el=row.querySelector(c);if(el)els.push(el);});
+  });
+  const memo=document.getElementById("sh-memo");
+  if(memo)els.push(memo);
+  return els;
+}
+function formMove(delta){
+  const order=getFormOrder();
+  const cur=document.activeElement;
+  const idx=order.findIndex(el=>el===cur);
+  if(idx<0)return;
+  const next=order[idx+delta];
+  if(next){next.focus();next.select&&next.select();}
+}
+
+/* ヘッダーフィールド共通キーハンドラ */
+function hdrKey(e,nextId){
+  if(e.key==="Enter"||e.key==="ArrowDown"){
+    e.preventDefault();
+    if(nextId==="line0"){lnFocus(0,".lncd",20);}
+    else{const el=document.getElementById(nextId);if(el){el.focus();el.select&&el.select();}}
+  } else if(e.key==="ArrowUp"){
+    e.preventDefault();
+    formMove(-1);
+  }
+}
+document.getElementById("sh-date").addEventListener("keydown",e=>hdrKey(e,"sh-scode"));
+document.getElementById("sh-scode").addEventListener("keydown",e=>{
+  if(e.key==="Enter"||e.key==="ArrowDown"){
+    e.preventDefault();
+    const v=e.target.value.split("：")[0].trim();
+    onSupplierPicked("sh",v);e.target.value=v;
+    document.getElementById("sh-store").focus();
+  } else if(e.key==="ArrowUp"){e.preventDefault();formMove(-1);}
+});
+document.getElementById("sh-store").addEventListener("keydown",e=>hdrKey(e,"sh-tanto"));
+document.getElementById("sh-tanto").addEventListener("keydown",e=>hdrKey(e,"line0"));
+document.getElementById("sh-memo").addEventListener("keydown",e=>{
+  if(e.key==="Enter"||e.key==="ArrowDown"){e.preventDefault();saveShiire();}
+  else if(e.key==="ArrowUp"){e.preventDefault();formMove(-1);}
+});
+
+/* 明細テーブル内 十字キーナビ */
+function lnArrow(e,i,colIdx){
+  const k=e.key;
+  if(!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(k))return;
+  e.preventDefault();
+  if(k==="ArrowDown"){
+    if(i<shLines.length-1)lnFocus(i+1,LN_COLS[colIdx],10);
+    else{addLine();lnFocus(i+1,LN_COLS[colIdx],50);}
+  } else if(k==="ArrowUp"){
+    if(i>0)lnFocus(i-1,LN_COLS[colIdx],10);
+    else{const el=document.getElementById("sh-tanto");if(el){el.focus();el.select&&el.select();}}
+  } else if(k==="ArrowRight"){
+    if(colIdx<LN_COLS.length-1)lnFocus(i,LN_COLS[colIdx+1],10);
+    else if(i<shLines.length-1)lnFocus(i+1,LN_COLS[0],10);
+  } else if(k==="ArrowLeft"){
+    if(colIdx>0)lnFocus(i,LN_COLS[colIdx-1],10);
+    else if(i>0)lnFocus(i-1,LN_COLS[LN_COLS.length-1],10);
+  }
+}
+
+/* refreshSupplierDatalist */
+function refreshSupplierDatalist(){
+  const el=document.getElementById("sup-datalist");
+  if(el)el.innerHTML=db.suppliers.map(s=>`<option value="${esc(s.code)}">${esc(s.code)}：${esc(s.name)}</option>`).join("");
+}
+
+function saveShiire(print,pdf){
+  const sc=document.getElementById("sh-scode").value.trim();
+  const s=findSup(sc);   // 仕入先は任意（未登録でも登録可）
+  const lines=shLines.filter(l=>l.pname&&(Number(l.qty)||Number(l.tanka)));
+  if(!lines.length){alert("明細を1行以上入力してください");return;}
+  const date=document.getElementById("sh-date").value||today();
+  const no="D"+pad(db.seq.denpyo++,6);
+  const recLines=lines.map(l=>{const c=calcLine(l);return{pcode:l.pcode,pname:l.pname,qty:c.qty,unit:l.unit,dust:c.dust,dustQty:c.dustQty,netQty:c.netQty,tanka:c.tanka,amount:c.amt,ttype:l.ttype};});
+  const total=recLines.reduce((a,l)=>a+l.amount,0);
+  const store=document.getElementById("sh-store").value.trim();
+  const tanto=document.getElementById("sh-tanto").value.trim();
+  if(store&&!db.stores.includes(store)){db.stores.push(store);renderStoreList();}
+  const stax=s?s.tax:"";
+  const rec={
+    id:Date.now(),date,no,scode:sc,tax:stax,
+    store,tanto,
+    kojo:stax==="免税"?kojoRate(date):null,
+    lines:recLines,
+    total,memo:document.getElementById("sh-memo").value.trim()
+  };
+  db.purchases.unshift(rec);save();
+  renderShiireList();refreshSelectors();
+  if(pdf){exportPdfDenpyo(rec);clearShiire();return;}
+  if(print)printDenpyo(rec);
+  clearShiire();
+  if(!print)toast("伝票 "+no+" を登録しました");
+}
+function renderShiireList(){
+  const q=(document.getElementById("sh-search").value||"").toLowerCase();
+  const rows=db.purchases.filter(r=>{
+    if(!q)return true;
+    const s=findSup(r.scode);
+    return (s&&s.name.toLowerCase().includes(q))||r.lines.some(l=>l.pname.toLowerCase().includes(q));
+  });
+  const b=document.getElementById("sh-list");
+  if(!rows.length){b.innerHTML='<tr><td colspan="7" class="empty">伝票がありません</td></tr>';return;}
+  b.innerHTML=rows.map(r=>{
+    const s=findSup(r.scode);
+    const meisai=r.lines.map(l=>l.pname).join("、");
+    return `<tr>
+      <td>${esc(r.date)}</td><td>${esc(r.no)}</td><td>${esc(s?s.name:r.scode)}</td>
+      <td style="white-space:normal;max-width:240px">${esc(meisai)}</td>
+      <td class="num"><b>${yen(r.total)}</b></td>
+      <td><span class="pill ${r.tax==="免税"?"free":"tax"}">${esc(r.tax)}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="printDenpyoById(${r.id})">🖨</button>
+          <button class="btn btn-del btn-sm" onclick="delPurchase(${r.id})">削除</button></td></tr>`;
+  }).join("");
+}
+function delPurchase(id){if(!confirm("この伝票を削除しますか？"))return;db.purchases=db.purchases.filter(r=>r.id!==id);save();renderShiireList();}
+
+/* ============ 伝票印刷（縦A4・モノクロ・2枚複写） ============ */
+function printDenpyoById(id){const r=db.purchases.find(x=>x.id===id);if(r)printDenpyo(r);}
+function wareki(dateStr){
+  const d=new Date(dateStr||today());
+  const y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();
+  const ry=y>=2019?y-2018:(y>=1989?y-1988:y);
+  const era=y>=2019?"令和":(y>=1989?"平成":"昭和");
+  return `${era}${ry}年 ${m}月 ${day}日`;
+}
+function printDenpyo(rec){
+  const s=findSup(rec.scode)||{name:rec.scode,tel:"",addr:""};
+  const hasDust=rec.lines.some(l=>(l.dust||0)>0);
+  const tRecv=rec.lines.reduce((a,l)=>a+(l.qty||0),0);
+  const tDust=rec.lines.reduce((a,l)=>a+(l.dustQty||0),0);
+  const tNet=rec.lines.reduce((a,l)=>a+(l.netQty!=null?l.netQty:l.qty),0);
+
+  // 列幅はA5本体幅(約119mm)に収まるよう調整。ダストあり時は特殊加算額列を省略
+  const thDust=hasDust?`<th style="width:15mm">ダスト%</th><th style="width:17mm">ダスト量</th><th style="width:17mm">正味重量</th>`:"";
+  const colCount=hasDust?9:9;
+  const ROWS=4;
+  const rowsHtml=rec.lines.map((l,i)=>`<tr>
+    <td class="c">${i+1}</td>
+    <td>${esc(l.pname)}</td>
+    <td class="r">${num(l.qty)}</td>
+    <td class="c">${esc(l.unit||"kg")}</td>
+    ${hasDust?`<td class="r">${(l.dust||0)>0?l.dust+"%":""}</td><td class="r">${(l.dustQty||0)>0?num(Math.round(l.dustQty*100)/100):""}</td><td class="r">${num(Math.round((l.netQty!=null?l.netQty:l.qty)*100)/100)}</td>`:""}
+    <td class="r">${num(l.tanka)}</td>
+    ${hasDust?"":`<td class="r"></td>`}
+    <td class="r">${num(l.amount)}</td></tr>`).join("");
+  const blankRows=Array.from({length:Math.max(0,ROWS-rec.lines.length)}).map(()=>
+    `<tr class="blank">${Array.from({length:colCount}).map(()=>"<td></td>").join("")}</tr>`).join("");
+  const kojoNote=rec.tax==="免税"?`<div class="dp-note">※ 免税事業者からの仕入（インボイス制度：仕入控除率 ${rec.kojo}%）</div>`:"";
+
+  function sheet(copyLabel,withSign){
+    return `<div class="denpyo${hasDust?" has-dust":""}">
+  <div class="dp-body">
+    <!-- 最上段 -->
+    <div class="dp-toprow">
+      <div class="dp-nodate">
+        <div class="dp-no">No. ${esc(rec.no)}</div>
+        <div>${wareki(rec.date)}</div>
+      </div>
+      <div class="dp-company-box">
+        <b>株式会社 S.K.R</b><br>
+        金属買取・解体業<br>
+        工場・店舗：${esc(rec.store||"　　　　　　")}
+        <div class="dp-staff">
+          <span>工番　　　</span><span>担当　${esc(rec.tanto||"")}</span>
+          <span>受　　　　</span><span>調　　　　</span>
+        </div>
+      </div>
+    </div>
+    <!-- お客様名 -->
+    <div class="dp-customer"><span class="nm">${esc(s.name||"")}</span><span class="sama">様</span></div>
+    <div class="dp-addr"><span class="lbl">ご住所</span><span>${esc(s.addr||"")}${s.tel?"　TEL "+esc(s.tel):""}</span></div>
+    <!-- 明細テーブル -->
+    <table class="dp-table${hasDust?" dust":""}">
+      <thead><tr>
+        <th style="width:8mm">番号</th><th>品　名</th>
+        <th style="width:${hasDust?"16":"16"}mm">重量<br>(受入)</th><th style="width:9mm">単位</th>
+        ${thDust}
+        <th style="width:${hasDust?"16":"14"}mm">単価</th>
+        ${hasDust?"":`<th style="width:9mm">特殊<br>加算額</th>`}
+        <th style="width:${hasDust?"22":"19"}mm">金　額</th>
+      </tr></thead>
+      <tbody>${rowsHtml}${blankRows}</tbody>
+    </table>
+    <!-- 合計 -->
+    <div class="dp-totals">
+      ${hasDust?`<div class="dp-row"><span class="lbl">受入合計</span><span class="val">${num(Math.round(tRecv*100)/100)} kg</span></div>
+      <div class="dp-row"><span class="lbl">ダスト量</span><span class="val">△ ${num(Math.round(tDust*100)/100)} kg</span></div>
+      <div class="dp-row"><span class="lbl">正味重量</span><span class="val">${num(Math.round(tNet*100)/100)} kg</span></div>`:""}
+      <div class="dp-row"><span class="lbl">繰　込　勘　定</span><span class="val">${yen(0)}</span></div>
+      <div class="dp-row grand"><span class="lbl">合　計</span><span class="val">${yen(rec.total)}</span></div>
+    </div>
+    ${kojoNote}
+    ${rec.memo?`<div class="dp-note">摘要：${esc(rec.memo)}</div>`:""}
+    <!-- 脚注 -->
+    <div class="dp-footer">
+      ${withSign
+        ?`<div class="dp-sign-box"><div style="font-size:8pt">お客様　受領サイン・印</div></div>`
+        :`<div class="dp-note" style="font-size:8pt">この伝票はお客様控です。大切にお保管ください。</div>`}
+      <div class="dp-note" style="text-align:right;font-size:8pt">上記のとおり受領いたしました。</div>
+    </div>
+  </div>
+  <!-- 右端縦書きタイトルバー -->
+  <div class="dp-titlebar">仕入買取業　領収書<span class="dp-copy-lbl">${copyLabel}</span></div>
+</div>`;
+  }
+
+  document.getElementById("print-area").innerHTML=
+    sheet("会社保管用",true)+
+    `<div class="dp-page-break">`+sheet("お客様控",false)+`</div>`;
+  window.print();
+}
+
+/* ============ 空白テンプレートPDF（手書き用） ============ */
+function exportBlankPdf(){
+  const ROWS=5;
+  const blankRows=Array.from({length:ROWS}).map((_,i)=>`<tr>
+    <td class="c">${i+1}</td><td></td><td></td><td class="c">kg</td>
+    <td></td><td></td><td></td><td></td><td></td></tr>`).join("");
+  function blankSheet(copyLabel,withSign){
+    return `<div class="denpyo">
+  <div class="dp-body">
+    <div class="dp-toprow">
+      <div class="dp-nodate">
+        <div class="dp-no">No. 　　　　　</div>
+        <div>　　年　　月　　日</div>
+      </div>
+      <div class="dp-company-box">
+        <b>株式会社 S.K.R</b><br>
+        金属買取・解体業<br>
+        工場・店舗：
+        <div class="dp-staff">
+          <span>工番　　　</span><span>担当　　　</span>
+          <span>受　　　　</span><span>調　　　　</span>
+        </div>
+      </div>
+    </div>
+    <div class="dp-customer"><span class="nm"></span><span class="sama">様</span></div>
+    <div class="dp-addr"><span class="lbl">ご住所</span><span></span></div>
+    <table class="dp-table dust">
+      <thead><tr>
+        <th style="width:8mm">番号</th><th>品　名</th>
+        <th style="width:16mm">重量<br>(受入)</th><th style="width:9mm">単位</th>
+        <th style="width:15mm">ダスト%</th><th style="width:17mm">ダスト量</th><th style="width:17mm">正味重量</th>
+        <th style="width:16mm">単価</th>
+        <th style="width:22mm">金　額</th>
+      </tr></thead>
+      <tbody>${blankRows}</tbody>
+    </table>
+    <div class="dp-totals">
+      <div class="dp-row"><span class="lbl">受入合計</span><span class="val">　　　　 kg</span></div>
+      <div class="dp-row"><span class="lbl">ダスト量</span><span class="val">△ 　　　 kg</span></div>
+      <div class="dp-row"><span class="lbl">正味重量</span><span class="val">　　　　 kg</span></div>
+      <div class="dp-row"><span class="lbl">繰　込　勘　定</span><span class="val">¥</span></div>
+      <div class="dp-row grand"><span class="lbl">合　計</span><span class="val">¥</span></div>
+    </div>
+    <div class="dp-footer">
+      ${withSign
+        ?`<div class="dp-sign-box"><div style="font-size:8pt">お客様　受領サイン・印</div></div>`
+        :`<div class="dp-note" style="font-size:8pt">この伝票はお客様控です。大切にお保管ください。</div>`}
+      <div class="dp-note" style="text-align:right;font-size:8pt">上記のとおり受領いたしました。</div>
+    </div>
+  </div>
+  <div class="dp-titlebar">仕入買取業　領収書<span class="dp-copy-lbl">${copyLabel}</span></div>
+</div>`;
+  }
+  const css=Array.from(document.styleSheets).map(ss=>{
+    try{return Array.from(ss.cssRules).map(r=>r.cssText).join("\n");}catch(e){return "";}
+  }).join("\n");
+  const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<title>SKR伝票_手書き用テンプレート</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A5 landscape;margin:7mm}
+html,body{background:#fff;font-family:"MS Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;color:#000;margin:0;padding:0}
+#print-area{display:block;margin:0;padding:0}
+${css}
+.denpyo{width:194mm;height:132mm;overflow:hidden}
+.denpyo:first-child{break-after:page;page-break-after:always}
+.dp-page-break{display:contents}
+</style></head><body>
+<div id="print-area">
+  ${blankSheet("会社保管用",true)}
+  <div class="dp-page-break">${blankSheet("お客様控",false)}</div>
+</div>
+<script>window.onload=function(){window.print()};<\/script>
+</body></html>`;
+  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,"_blank");
+  if(w){setTimeout(()=>URL.revokeObjectURL(url),60000);}
+  toast("空白テンプレートを開きました。「PDFとして保存」を選んでください");
+}
+
+/* ============ PDF出力（ネットプリント用） ============ */
+function exportPdfDenpyo(rec){
+  // 伝票HTMLを組み立て
+  printDenpyo(rec);  // print-area にHTMLを生成
+  const body=document.getElementById("print-area").innerHTML;
+  // 現在の印刷用CSSを全部取得
+  const css=Array.from(document.styleSheets).map(ss=>{
+    try{return Array.from(ss.cssRules).map(r=>r.cssText).join("\n");}catch(e){return "";}
+  }).join("\n");
+  const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<title>SKR伝票_${esc(rec.no)}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A5 landscape;margin:7mm}
+html,body{background:#fff;font-family:"MS Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;color:#000;margin:0;padding:0}
+#print-area{display:block;margin:0;padding:0}
+${css}
+.denpyo{width:194mm;height:132mm;overflow:hidden}
+.denpyo:first-child{break-after:page;page-break-after:always}
+.dp-page-break{display:contents}
+</style></head><body>
+<div id="print-area">${body}</div>
+<script>
+window.onload=function(){
+  window.print();
+};
+<\/script>
+</body></html>`;
+  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,"_blank");
+  // ウィンドウが開いたらBlobURLを解放
+  if(w){setTimeout(()=>URL.revokeObjectURL(url),60000);}
+  toast("新しいウィンドウで印刷ダイアログが開きます。「PDFとして保存」を選んでください");
+}
+
+/* ============ 支払入力 ============ */
+function supplierBalance(sc){
+  let bal=0;
+  db.purchases.forEach(p=>{if(p.scode===sc)bal+=p.total;});
+  db.payments.forEach(p=>{if(p.scode===sc)bal-=p.amount;});
+  return bal;
+}
+function clearShiharai(){
+  document.getElementById("sp-date").value=today();
+  ["sp-scode","sp-pcode","sp-amt","sp-memo"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("sp-sname").textContent="";document.getElementById("sp-pname").textContent="";
+  document.getElementById("sp-zan").value="";
+}
+document.getElementById("sp-scode").addEventListener("change",e=>onSupplierPicked("sp",e.target.value.trim()));
+document.getElementById("sp-pcode").addEventListener("change",e=>{const it=findItem(e.target.value.trim());document.getElementById("sp-pname").textContent=it?it.name:"";});
+
+/* ---- 支払入力：Enter/十字キーで次フィールドへ ---- */
+const SP_ORDER=["sp-date","sp-scode","sp-pcode","sp-method","sp-amt","sp-memo"];
+function spMove(cur,delta){
+  const i=SP_ORDER.indexOf(cur);if(i<0)return;
+  const next=SP_ORDER[i+delta];
+  if(next){const el=document.getElementById(next);if(el){el.focus();el.select&&el.select();}}
+}
+SP_ORDER.forEach(id=>{
+  const el=document.getElementById(id);if(!el)return;
+  el.addEventListener("keydown",e=>{
+    if(e.key==="Enter"||e.key==="ArrowDown"){
+      e.preventDefault();
+      if(id==="sp-scode"){onSupplierPicked("sp",e.target.value.split("：")[0].trim());e.target.value=e.target.value.split("：")[0].trim();}
+      if(id==="sp-pcode"){const it=findItem(e.target.value.trim());document.getElementById("sp-pname").textContent=it?it.name:"";}
+      if(id==="sp-memo"){saveShiharai();return;}
+      spMove(id,1);
+    }else if(e.key==="ArrowUp"){e.preventDefault();spMove(id,-1);}
+  });
+});
+function saveShiharai(print){
+  const sc=document.getElementById("sp-scode").value.trim();
+  const s=findSup(sc);
+  if(!s){alert("仕入先を選択してください");return;}
+  const amt=Number(document.getElementById("sp-amt").value)||0;
+  if(!amt){alert("支払金額を入力してください");return;}
+  const it=findItem(document.getElementById("sp-pcode").value.trim());
+  const rec={id:Date.now(),date:document.getElementById("sp-date").value||today(),scode:sc,
+    pcode:it?it.code:"",pname:it?it.name:"買掛支払",method:document.getElementById("sp-method").value,
+    amount:amt,memo:document.getElementById("sp-memo").value.trim()};
+  db.payments.unshift(rec);save();renderShiharaiList();
+  if(print)printReceipt(rec,s);
+  clearShiharai();
+  if(!print)toast("支払を登録しました");
+}
+function renderShiharaiList(){
+  const b=document.getElementById("sp-list");
+  if(!db.payments.length){b.innerHTML='<tr><td colspan="7" class="empty">支払がありません</td></tr>';return;}
+  b.innerHTML=db.payments.map(r=>{
+    const s=findSup(r.scode);
+    return `<tr><td>${esc(r.date)}</td><td>${esc(s?s.name:r.scode)}</td><td>${esc(r.pname)}</td>
+      <td>${esc(r.method)}</td><td class="num"><b>${yen(r.amount)}</b></td><td>${esc(r.memo)}</td>
+      <td><button class="btn btn-del btn-sm" onclick="delPayment(${r.id})">削除</button></td></tr>`;
+  }).join("");
+}
+function delPayment(id){if(!confirm("この支払を削除しますか？"))return;db.payments=db.payments.filter(r=>r.id!==id);save();renderShiharaiList();}
+function printReceipt(rec,s){
+  function sheet(copyLabel){
+    return `<div class="denpyo">
+  <div class="dp-body">
+    <div class="dp-toprow">
+      <div class="dp-nodate">
+        <div class="dp-no">支払 No. ${esc(rec.id)}</div>
+        <div>${wareki(rec.date)}</div>
+      </div>
+      <div class="dp-company-box">
+        <b>株式会社 S.K.R</b><br>
+        金属買取・解体業
+      </div>
+    </div>
+    <div class="dp-customer">${esc(s.name)}　様</div>
+    <div class="dp-addr">${esc(s.addr||"")}&emsp;${esc(s.tel||"")}</div>
+    <table class="dp-table">
+      <thead><tr><th>支払項目</th><th style="width:24mm">方法</th><th style="width:30mm">金　額</th></tr></thead>
+      <tbody>
+        <tr><td>${esc(rec.pname)}</td><td class="c">${esc(rec.method)}</td><td class="r">${num(rec.amount)}</td></tr>
+        <tr class="blank"><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+    <div class="dp-totals">
+      <div class="dp-row grand"><span class="lbl">支払金額</span><span class="val">${yen(rec.amount)}</span></div>
+    </div>
+    ${rec.memo?`<div class="dp-note">摘要：${esc(rec.memo)}</div>`:""}
+    <div class="dp-footer">
+      <div class="dp-sign-box"><div style="font-size:8pt">受領印・サイン</div></div>
+      <div class="dp-note" style="text-align:right;font-size:8pt">上記のとおり受領いたしました。</div>
+    </div>
+  </div>
+  <div class="dp-titlebar">支　払　控<span class="dp-copy-lbl">${copyLabel}</span></div>
+</div>`;
+  }
+  document.getElementById("print-area").innerHTML=
+    sheet("会社保管用")+
+    `<div class="dp-page-break">`+sheet("お客様控")+`</div>`;
+  window.print();
+}
+
+/* ============ 元帳 ============ */
+function renderMotocho(){
+  const sel=document.getElementById("mc-supplier");
+  const cur=sel.value;
+  sel.innerHTML=db.suppliers.map(s=>`<option value="${esc(s.code)}">${esc(s.code)}：${esc(s.name)}</option>`).join("")||'<option value="">仕入先未登録</option>';
+  if(cur)sel.value=cur;
+  const sc=sel.value;
+  const ev=[];
+  db.purchases.forEach(p=>{if(p.scode===sc)ev.push({date:p.date,no:p.no,memo:"仕入 "+p.lines.map(l=>l.pname).join("、"),debit:p.total,credit:0});});
+  db.payments.forEach(p=>{if(p.scode===sc)ev.push({date:p.date,no:"",memo:p.pname+"（"+p.method+"）",debit:0,credit:p.amount});});
+  ev.sort((a,b)=>a.date.localeCompare(b.date));
+  let bal=0,td=0,tc=0;
+  document.getElementById("mc-body").innerHTML=ev.length?ev.map(e=>{
+    bal+=e.debit-e.credit;td+=e.debit;tc+=e.credit;
+    return `<tr><td>${esc(e.date)}</td><td>${esc(e.no)}</td><td style="white-space:normal">${esc(e.memo)}</td>
+      <td class="num">${e.debit?yen(e.debit):""}</td><td class="num">${e.credit?yen(e.credit):""}</td><td class="num"><b>${yen(bal)}</b></td></tr>`;
+  }).join(""):'<tr><td colspan="6" class="empty">取引がありません</td></tr>';
+  document.getElementById("mc-cards").innerHTML=
+    `<div class="card brand"><div class="l">仕入合計（借）</div><div class="v">${yen(td)}</div></div>
+     <div class="card green"><div class="l">支払合計（貸）</div><div class="v">${yen(tc)}</div></div>
+     <div class="card red"><div class="l">買掛残高</div><div class="v">${yen(bal)}</div></div>`;
+}
+/* ===== 帳表印刷 共通ヘルパー ===== */
+function cardsToPrint(containerId){
+  const c=document.getElementById(containerId);
+  if(!c)return"";
+  const cards=[...c.querySelectorAll(".card")].map(card=>{
+    const l=card.querySelector(".l")?card.querySelector(".l").textContent:"";
+    const v=card.querySelector(".v")?card.querySelector(".v").textContent:"";
+    return `<div class="pr-card"><b>${esc(l)}</b><span>${esc(v)}</span></div>`;
+  }).join("");
+  return cards?`<div class="pr-cards">${cards}</div>`:"";
+}
+function tableToPrint(tableEl){
+  if(!tableEl)return"";
+  // tbodyが空（empty行のみ）でもそのまま出す
+  return tableEl.outerHTML;
+}
+function printReport(title,sub,bodyHtml){
+  const area=document.getElementById("print-area");
+  area.innerHTML=`<div class="preport">
+    <h1>${esc(title)}</h1>
+    ${sub?`<div class="pr-sub">${esc(sub)}</div>`:""}
+    ${bodyHtml}
+    <div class="pr-foot">株式会社 S.K.R　／　印刷日 ${wareki(today())}</div>
+  </div>`;
+  window.print();
+  setTimeout(()=>{area.innerHTML="";},400);
+}
+
+function printMotocho(){
+  const sel=document.getElementById("mc-supplier");
+  const sname=sel&&sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].text:"";
+  const tbl=document.querySelector("#tab-motocho table");
+  printReport("仕入先元帳",sname,cardsToPrint("mc-cards")+tableToPrint(tbl));
+}
+function printSeikyu(){
+  const m=document.getElementById("sk-month").value||today().slice(0,7);
+  const tbl=document.querySelector("#tab-seikyu table");
+  printReport("支払一覧表","対象締め月："+m,cardsToPrint("sk-cards")+tableToPrint(tbl));
+}
+function printBunseki(){
+  const m=document.getElementById("bs-month").value||today().slice(0,7);
+  const mode=document.getElementById("bs-mode");
+  const modeLabel=mode&&mode.options[mode.selectedIndex]?mode.options[mode.selectedIndex].text:"";
+  const tbl=document.getElementById("bs-table");
+  printReport("分析帳表",m+"　"+modeLabel,cardsToPrint("bs-cards")+tableToPrint(tbl));
+}
+
+/* ============ 支払一覧表 ============ */
+function renderSeikyu(){
+  const m=document.getElementById("sk-month").value||today().slice(0,7);
+  let tBuy=0,tPay=0,tBal=0;
+  const rows=db.suppliers.map(s=>{
+    let prevBuy=0,prevPay=0,curBuy=0,curPay=0;
+    db.purchases.forEach(p=>{if(p.scode===s.code){if(p.date.slice(0,7)<m)prevBuy+=p.total;else if(p.date.slice(0,7)===m)curBuy+=p.total;}});
+    db.payments.forEach(p=>{if(p.scode===s.code){if(p.date.slice(0,7)<m)prevPay+=p.amount;else if(p.date.slice(0,7)===m)curPay+=p.amount;}});
+    const carry=prevBuy-prevPay;const bal=carry+curBuy-curPay;
+    tBuy+=curBuy;tPay+=curPay;tBal+=bal;
+    return {s,carry,curBuy,curPay,bal};
+  }).filter(r=>r.carry||r.curBuy||r.curPay);
+  document.getElementById("sk-cards").innerHTML=
+    `<div class="card brand"><div class="l">当月仕入 計</div><div class="v">${yen(tBuy)}</div></div>
+     <div class="card green"><div class="l">当月支払 計</div><div class="v">${yen(tPay)}</div></div>
+     <div class="card red"><div class="l">買掛残高 計</div><div class="v">${yen(tBal)}</div></div>`;
+  document.getElementById("sk-body").innerHTML=rows.length?rows.map(r=>
+    `<tr><td>${esc(r.s.name)}</td><td>${esc(r.s.close||"")}</td>
+      <td><span class="pill ${r.s.tax==="免税"?"free":"tax"}">${esc(r.s.tax)}</span></td>
+      <td class="num">${yen(r.carry)}</td><td class="num">${yen(r.curBuy)}</td><td class="num">${yen(r.curPay)}</td>
+      <td class="num"><b>${yen(r.bal)}</b></td></tr>`).join(""):'<tr><td colspan="7" class="empty">該当データがありません</td></tr>';
+}
+
+/* ============ 分析帳表 ============ */
+function renderBunseki(){
+  const m=document.getElementById("bs-month").value||today().slice(0,7);
+  const mode=document.getElementById("bs-mode").value;
+  const head=document.getElementById("bs-head"),body=document.getElementById("bs-body"),cards=document.getElementById("bs-cards");
+  const inMonth=p=>p.date.slice(0,7)===m;
+  if(mode==="supplier"){
+    const map={};
+    db.purchases.filter(inMonth).forEach(p=>{map[p.scode]=(map[p.scode]||0)+p.total;});
+    const rows=Object.entries(map).map(([c,v])=>({name:(findSup(c)||{name:c}).name,v})).sort((a,b)=>b.v-a.v);
+    const total=rows.reduce((a,r)=>a+r.v,0);
+    head.innerHTML='<tr><th>順位</th><th>仕入先</th><th class="num">仕入金額</th><th class="num">構成比</th></tr>';
+    body.innerHTML=rows.length?rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td class="num">${yen(r.v)}</td><td class="num">${total?(r.v/total*100).toFixed(1):0}%</td></tr>`).join(""):'<tr><td colspan="4" class="empty">データなし</td></tr>';
+    cards.innerHTML=`<div class="card brand"><div class="l">当月仕入 合計</div><div class="v">${yen(total)}</div></div><div class="card"><div class="l">仕入先数</div><div class="v">${rows.length}</div></div>`;
+  }else if(mode==="product"){
+    const map={};
+    db.purchases.filter(inMonth).forEach(p=>p.lines.forEach(l=>{const k=l.pname;if(!map[k])map[k]={qty:0,amt:0};map[k].qty+=l.qty;map[k].amt+=l.amount;}));
+    const rows=Object.entries(map).map(([n,o])=>({name:n,...o})).sort((a,b)=>b.amt-a.amt);
+    const total=rows.reduce((a,r)=>a+r.amt,0);
+    head.innerHTML='<tr><th>順位</th><th>商品</th><th class="num">数量</th><th class="num">金額</th><th class="num">構成比</th></tr>';
+    body.innerHTML=rows.length?rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td class="num">${num(r.qty)}</td><td class="num">${yen(r.amt)}</td><td class="num">${total?(r.amt/total*100).toFixed(1):0}%</td></tr>`).join(""):'<tr><td colspan="5" class="empty">データなし</td></tr>';
+    cards.innerHTML=`<div class="card brand"><div class="l">当月仕入 合計</div><div class="v">${yen(total)}</div></div><div class="card"><div class="l">品目数</div><div class="v">${rows.length}</div></div>`;
+  }else{
+    let tax=0,free=0;
+    db.purchases.filter(inMonth).forEach(p=>{if(p.tax==="免税")free+=p.total;else tax+=p.total;});
+    const taxVat=Math.round(tax*10/110), freeVat=Math.round(free*10/110);
+    head.innerHTML='<tr><th>区分</th><th class="num">仕入金額(税込)</th><th class="num">うち消費税(10%)</th><th class="num">仕入控除可能額</th></tr>';
+    const rate=kojoRate(m+"-15");
+    body.innerHTML=
+      `<tr><td><span class="pill tax">課税事業者</span></td><td class="num">${yen(tax)}</td><td class="num">${yen(taxVat)}</td><td class="num">${yen(taxVat)}</td></tr>
+       <tr><td><span class="pill free">免税事業者</span></td><td class="num">${yen(free)}</td><td class="num">${yen(freeVat)}</td><td class="num">${yen(Math.round(freeVat*rate/100))}（控除率${rate}%）</td></tr>`;
+    cards.innerHTML=`<div class="card brand"><div class="l">課税仕入</div><div class="v">${yen(tax)}</div></div><div class="card red"><div class="l">免税仕入</div><div class="v">${yen(free)}</div></div><div class="card green"><div class="l">控除可能消費税</div><div class="v">${yen(taxVat+Math.round(freeVat*rate/100))}</div></div>`;
+  }
+}
+
+/* ============ マスタ ============ */
+function addSupplier(){
+  const name=document.getElementById("ms-name").value.trim();
+  if(!name){alert("名称を入力してください");return;}
+  let code=document.getElementById("ms-code").value.trim()||("S"+pad(db.seq.sup++,4));
+  const ex=findSup(code);
+  const o={code,name,kana:document.getElementById("ms-kana").value.trim(),tel:document.getElementById("ms-tel").value.trim(),
+    tanto:document.getElementById("ms-tanto").value.trim(),tax:document.getElementById("ms-tax").value,
+    close:document.getElementById("ms-close").value,addr:document.getElementById("ms-addr").value.trim()};
+  if(ex)Object.assign(ex,o);else db.suppliers.push(o);
+  save();renderSupplier();refreshSelectors();refreshSupplierDatalist();
+  ["ms-code","ms-name","ms-kana","ms-tel","ms-tanto","ms-addr"].forEach(id=>document.getElementById(id).value="");
+  toast("仕入先を保存しました");
+}
+function renderSupplier(){
+  const rows=fuzzy(db.suppliers,document.getElementById("ms-search").value,["code","name","kana"]);
+  document.getElementById("ms-body").innerHTML=rows.length?rows.map(s=>
+    `<tr><td>${esc(s.code)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.kana)}</td><td>${esc(s.tel)}</td><td>${esc(s.tanto)}</td>
+     <td><span class="pill ${s.tax==="免税"?"free":"tax"}">${esc(s.tax)}</span></td><td>${esc(s.close)}</td>
+     <td><button class="btn btn-ghost btn-sm" onclick="editSupplier('${esc(s.code)}')">編集</button>
+         <button class="btn btn-del btn-sm" onclick="delSupplier('${esc(s.code)}')">削除</button></td></tr>`).join(""):'<tr><td colspan="8" class="empty">未登録</td></tr>';
+}
+function editSupplier(c){const s=findSup(c);if(!s)return;
+  document.getElementById("ms-code").value=s.code;document.getElementById("ms-name").value=s.name;
+  document.getElementById("ms-kana").value=s.kana||"";document.getElementById("ms-tel").value=s.tel||"";
+  document.getElementById("ms-tanto").value=s.tanto||"";document.getElementById("ms-tax").value=s.tax;
+  document.getElementById("ms-close").value=s.close||"末日";document.getElementById("ms-addr").value=s.addr||"";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function delSupplier(c){if(!confirm("削除しますか？"))return;db.suppliers=db.suppliers.filter(s=>s.code!==c);save();renderSupplier();refreshSelectors();refreshSupplierDatalist();}
+
+function addProduct(){
+  const name=document.getElementById("mp-name").value.trim();
+  if(!name){alert("商品名を入力してください");return;}
+  let code=document.getElementById("mp-code").value.trim()||("P"+pad(db.seq.prod++,4));
+  const ex=findProd(code);
+  const o={code,name,kana:document.getElementById("mp-kana").value.trim(),unit:document.getElementById("mp-unit").value.trim(),tanka:Number(document.getElementById("mp-tanka").value)||0};
+  if(ex)Object.assign(ex,o);else db.products.push(o);
+  save();renderProduct();
+  ["mp-code","mp-name","mp-kana","mp-unit","mp-tanka"].forEach(id=>document.getElementById(id).value="");
+  toast("商品を保存しました");
+}
+function renderProduct(){
+  const rows=fuzzy(db.products,document.getElementById("mp-search").value,["code","name","kana"]);
+  document.getElementById("mp-body").innerHTML=rows.length?rows.map(p=>
+    `<tr><td>${esc(p.code)}</td><td><b>${esc(p.name)}</b></td><td>${esc(p.kana)}</td><td>${esc(p.unit)}</td><td class="num">${yen(p.tanka)}</td>
+     <td><button class="btn btn-ghost btn-sm" onclick="editProduct('${esc(p.code)}')">編集</button>
+         <button class="btn btn-del btn-sm" onclick="delProduct('${esc(p.code)}')">削除</button></td></tr>`).join(""):'<tr><td colspan="6" class="empty">未登録</td></tr>';
+}
+function editProduct(c){const p=findProd(c);if(!p)return;
+  document.getElementById("mp-code").value=p.code;document.getElementById("mp-name").value=p.name;
+  document.getElementById("mp-kana").value=p.kana||"";document.getElementById("mp-unit").value=p.unit||"";document.getElementById("mp-tanka").value=p.tanka||"";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function delProduct(c){if(!confirm("削除しますか？"))return;db.products=db.products.filter(p=>p.code!==c);save();renderProduct();}
+
+function addPayitem(){
+  const name=document.getElementById("mi-name").value.trim();
+  if(!name){alert("項目名を入力してください");return;}
+  let code=document.getElementById("mi-code").value.trim()||("I"+pad(db.seq.item++,3));
+  const ex=findItem(code);
+  if(ex)ex.name=name;else db.payitems.push({code,name});
+  save();renderPayitem();
+  ["mi-code","mi-name"].forEach(id=>document.getElementById(id).value="");
+}
+function renderPayitem(){
+  document.getElementById("mi-body").innerHTML=db.payitems.length?db.payitems.map(i=>
+    `<tr><td>${esc(i.code)}</td><td>${esc(i.name)}</td><td><button class="btn btn-del btn-sm" onclick="delPayitem('${esc(i.code)}')">削除</button></td></tr>`).join(""):'<tr><td colspan="3" class="empty">未登録</td></tr>';
+}
+function delPayitem(c){if(!confirm("削除しますか？"))return;db.payitems=db.payitems.filter(i=>i.code!==c);save();renderPayitem();}
+
+document.getElementById("mc2-pcode").addEventListener("change",e=>{const p=findProd(e.target.value.trim());document.getElementById("mc2-pname").textContent=p?p.name:"";});
+function addContract(){
+  const sc=document.getElementById("mc2-scode").value.trim(),pc=document.getElementById("mc2-pcode").value.trim();
+  const tanka=Number(document.getElementById("mc2-tanka").value)||0;
+  if(!findSup(sc)){alert("仕入先を選択してください");return;}
+  if(!findProd(pc)){alert("商品を選択してください");return;}
+  const ex=db.contracts.find(x=>x.scode===sc&&x.pcode===pc);
+  if(ex)ex.tanka=tanka;else db.contracts.push({scode:sc,pcode:pc,tanka});
+  save();renderContract();
+  document.getElementById("mc2-tanka").value="";
+  toast("契約単価を保存しました");
+}
+function renderContract(){
+  document.getElementById("mc2-body").innerHTML=db.contracts.length?db.contracts.map((c,i)=>{
+    const s=findSup(c.scode),p=findProd(c.pcode);
+    const hist=priceHist(c.scode,c.pcode).map(h=>h.date.slice(5)+"→"+num(h.tanka)).join(" / ")||"履歴なし";
+    return `<tr><td>${esc(s?s.name:c.scode)}</td><td>${esc(p?p.name:c.pcode)}</td><td class="num"><b>${yen(c.tanka)}</b></td>
+      <td style="font-size:12px;white-space:normal">${esc(hist)}</td>
+      <td><button class="btn btn-del btn-sm" onclick="delContract(${i})">削除</button></td></tr>`;
+  }).join(""):'<tr><td colspan="5" class="empty">未登録</td></tr>';
+}
+function delContract(i){if(!confirm("削除しますか？"))return;db.contracts.splice(i,1);save();renderContract();}
+
+/* ============ 照会モーダル ============ */
+let lkType="",lkScope="";
+function openLookup(type,scope){
+  lkType=type;lkScope=scope;
+  document.getElementById("lk-title").firstChild.textContent=({supplier:"仕入先 照会",product:"商品 照会",payitem:"支払項目 照会"}[type]);
+  document.getElementById("lk-search").value="";
+  openModal("lookup-modal");renderLookup();
+  setTimeout(()=>document.getElementById("lk-search").focus(),50);
+}
+function renderLookup(){
+  const q=document.getElementById("lk-search").value;
+  let rows=[];
+  if(lkType==="supplier")rows=fuzzy(db.suppliers,q,["code","name","kana"]).map(s=>({code:s.code,a:s.name,b:s.kana+" "+(s.tel||"")}));
+  if(lkType==="product")rows=fuzzy(db.products,q,["code","name","kana"]).map(p=>({code:p.code,a:p.name,b:p.kana+" "+yen(p.tanka)}));
+  if(lkType==="payitem")rows=fuzzy(db.payitems,q,["code","name"]).map(i=>({code:i.code,a:i.name,b:""}));
+  document.getElementById("lk-body").innerHTML=rows.length?rows.map(r=>
+    `<tr onclick="pickLookup('${esc(r.code)}')"><td style="width:90px"><b>${esc(r.code)}</b></td><td>${esc(r.a)}</td><td style="color:var(--ink-soft);font-size:13px">${esc(r.b)}</td></tr>`).join(""):'<tr><td class="empty">該当なし（F3で緊急登録できます）</td></tr>';
+}
+function pickLookup(code){
+  closeModal("lookup-modal");
+  if(lkType==="supplier")onSupplierPicked(lkScope,code);
+  else if(lkType==="product"){
+    if(lkScope==="mc2"){document.getElementById("mc2-pcode").value=code;document.getElementById("mc2-pname").textContent=(findProd(code)||{}).name||"";}
+    else{ // 仕入明細：空行 or 新規行に入れる
+      let i=shLines.findIndex(l=>!l.pcode&&!l.pname);
+      if(i<0){addLine();i=shLines.length-1;}
+      lineCode(i,code);
+    }
+  }else if(lkType==="payitem"){
+    if(lkScope==="sp"){document.getElementById("sp-pcode").value=code;document.getElementById("sp-pname").textContent=(findItem(code)||{}).name||"";}
+  }
+}
+
+/* ============ 緊急登録モーダル ============ */
+let qkType="";
+function fkQuick(){
+  // 文脈で対象を判定：仕入入力中なら仕入先 or 商品
+  const active=document.querySelector(".tab[data-tab].active").dataset.tab;
+  if(active==="shiire")openQuick("supplier");
+  else openQuick("supplier");
+}
+function openQuick(type){
+  qkType=type;
+  document.getElementById("qk-title").firstChild.textContent=type==="supplier"?"仕入先 緊急登録":"商品 緊急登録";
+  const f=document.getElementById("qk-fields");
+  if(type==="supplier")f.innerHTML=`
+    <div class="form-grid">
+      <div class="field"><label>名称</label><input id="qk-name"></div>
+      <div class="field"><label>カナ</label><input id="qk-kana"></div>
+      <div class="field"><label>電話</label><input id="qk-tel"></div>
+      <div class="field"><label>課税区分</label><select id="qk-tax"><option value="課税">課税事業者</option><option value="免税">免税事業者</option></select></div>
+    </div>`;
+  else f.innerHTML=`
+    <div class="form-grid">
+      <div class="field"><label>商品名</label><input id="qk-name"></div>
+      <div class="field"><label>カナ</label><input id="qk-kana"></div>
+      <div class="field"><label>単位</label><input id="qk-unit" placeholder="kg/個"></div>
+      <div class="field"><label>マスタ単価</label><input type="number" id="qk-tanka"></div>
+    </div>`;
+  openModal("quick-modal");
+  setTimeout(()=>document.getElementById("qk-name").focus(),50);
+}
+function quickSave(){
+  const name=document.getElementById("qk-name").value.trim();
+  if(!name){alert("名称を入力してください");return;}
+  if(qkType==="supplier"){
+    const code="S"+pad(db.seq.sup++,4);
+    db.suppliers.push({code,name,kana:document.getElementById("qk-kana").value.trim(),tel:document.getElementById("qk-tel").value.trim(),tax:document.getElementById("qk-tax").value,close:"末日",addr:"",tanto:""});
+    save();refreshSelectors();renderSupplier();
+    closeModal("quick-modal");
+    // 仕入入力中なら反映
+    const active=document.querySelector(".tab[data-tab].active").dataset.tab;
+    if(active==="shiire")onSupplierPicked("sh",code);
+    else if(active==="shiharai")onSupplierPicked("sp",code);
+    toast("仕入先「"+name+"」を登録・反映しました");
+  }else{
+    const code="P"+pad(db.seq.prod++,4);
+    db.products.push({code,name,kana:document.getElementById("qk-kana").value.trim(),unit:document.getElementById("qk-unit").value.trim(),tanka:Number(document.getElementById("qk-tanka").value)||0});
+    save();renderProduct();
+    closeModal("quick-modal");
+    let i=shLines.findIndex(l=>!l.pcode&&!l.pname);if(i<0){addLine();i=shLines.length-1;}
+    lineCode(i,code);
+    toast("商品「"+name+"」を登録・反映しました");
+  }
+}
+
+/* ============ モーダル共通 ============ */
+function openModal(id){document.getElementById(id).classList.add("open");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open");}));
+
+/* ============ ファンクションキー ============ */
+function fkHelp(){openModal("help-modal");}
+function fkLookup(){
+  const active=document.querySelector(".tab[data-tab].active").dataset.tab;
+  const af=document.activeElement&&document.activeElement.id;
+  if(active==="shiire")openLookup("supplier","sh");
+  else if(active==="shiharai"){
+    if(af==="sp-pcode")openLookup("payitem","sp");
+    else openLookup("supplier","sp");
+  }
+  else openLookup("supplier","sh");
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open"));return;}
+  const sp=document.querySelector(".tab[data-tab].active").dataset.tab==="shiharai";
+  const map={F1:fkHelp,F2:fkLookup,F3:fkQuick,F4:addLine,
+    F5:()=>sp?clearShiharai():clearShiire(),
+    F9:()=>sp?saveShiharai():saveShiire(),
+    F12:()=>sp?saveShiharai(true):saveShiire(true)};
+  if(map[e.key]){e.preventDefault();map[e.key]();}
+});
+
+/* ============ セレクタ・トースト・初期化 ============ */
+function refreshSelectors(){
+  const sel=document.getElementById("mc-supplier");
+  if(sel){const cur=sel.value;sel.innerHTML=db.suppliers.map(s=>`<option value="${esc(s.code)}">${esc(s.code)}：${esc(s.name)}</option>`).join("")||'<option value="">仕入先未登録</option>';if(cur)sel.value=cur;}
+}
+function toast(msg){
+  const t=document.createElement("div");
+  t.textContent="✓ "+msg;
+  t.style.cssText="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:11px 22px;border-radius:24px;font-weight:700;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.25)";
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2200);
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="skr-shiire-backup-"+today()+".json";a.click();
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!confirm("現在のデータを上書きして復元しますか？"))return;db=Object.assign(blank(),d);save();initAll();alert("復元しました");}catch(err){alert("読み込めませんでした");}};
+  r.readAsText(f);
+}
+function loadSample(){
+  if((db.suppliers.length||db.purchases.length)&&!confirm("サンプルデータを追加します。よろしいですか？"))return;
+  db.suppliers.push(
+    {code:"S0001",name:"サンプル商会A",kana:"さんぷるしょうかいえー",tel:"",tanto:"",tax:"課税",close:"末日",addr:""},
+    {code:"S0002",name:"サンプル業者B",kana:"さんぷるぎょうしゃびー",tel:"",tanto:"",tax:"免税",close:"15日",addr:""});
+  db.payitems.push({code:"I001",name:"買掛支払"},{code:"I002",name:"運搬費"});
+  db.contracts.push({scode:"S0001",pcode:"1020",tanka:0});
+  db.seq.sup=3;db.seq.item=3;
+  loadProductMaster(true);
+  save();initAll();toast("サンプルデータを投入しました");
+}
+
+/* ===== 商品コード表 一括登録 ===== */
+const PRODUCT_MASTER=[
+  /* 銅系 */
+  {code:"1020",name:"特号A",       kana:"とくごうA",  unit:"kg",tanka:0,cat:"銅系"},
+  {code:"1021",name:"特号B",       kana:"とくごうB",  unit:"kg",tanka:0,cat:"銅系"},
+  {code:"1022",name:"銅パイプA",   kana:"どうぱいぷA",unit:"kg",tanka:0,cat:"銅系"},
+  {code:"1023",name:"銅パイプB",   kana:"どうぱいぷB",unit:"kg",tanka:0,cat:"銅系"},
+  {code:"1024",name:"二号銅(込銅)",kana:"にごうどう",  unit:"kg",tanka:0,cat:"銅系"},
+  {code:"1025",name:"湯沸かし(白釜)",kana:"ゆわかし",  unit:"kg",tanka:0,cat:"銅系"},
+  {code:"1026",name:"山行き90%",   kana:"やまゆき",   unit:"kg",tanka:0,cat:"銅系"},
+  /* 黄色銅系 */
+  {code:"1030",name:"真鍮 付無",   kana:"しんちゅうつきなし",unit:"kg",tanka:0,cat:"黄色銅系"},
+  {code:"1031",name:"鉄付込真鍮",  kana:"てつつきしんちゅう",unit:"kg",tanka:0,cat:"黄色銅系"},
+  {code:"1034",name:"砲金",        kana:"ほうきん",   unit:"kg",tanka:0,cat:"黄色銅系"},
+  {code:"1032",name:"半銅ラジエーター",kana:"はんどうらじ",unit:"kg",tanka:0,cat:"黄色銅系"},
+  {code:"1033",name:"異物つき半銅ラジ",kana:"いぶつはんどう",unit:"kg",tanka:0,cat:"黄色銅系"},
+  /* ステンレス */
+  {code:"1050",name:"18-8ステンレス",kana:"ステンレス",unit:"kg",tanka:0,cat:"ステンレス"},
+  {code:"1051",name:"ステンレス解体",kana:"ステンレスかいたい",unit:"kg",tanka:0,cat:"ステンレス"},
+  /* 雑品系 */
+  {code:"1082",name:"雑品S(-5%)",  kana:"ざっぴんS",  unit:"kg",tanka:0,cat:"雑品系"},
+  {code:"1083",name:"雑品B(-5%)",  kana:"ざっぴんB",  unit:"kg",tanka:0,cat:"雑品系"},
+  {code:"1084",name:"モーター(-5%)",kana:"もーたー",   unit:"kg",tanka:0,cat:"雑品系"},
+  {code:"1073",name:"エアコン(-25%)",kana:"えあこん",  unit:"台",tanka:0,cat:"雑品系"},
+  {code:"1072",name:"給湯器(-10%)",kana:"きゅうとうき",unit:"台",tanka:0,cat:"雑品系"},
+  {code:"1078",name:"ガスメーター",  kana:"がすめーたー",unit:"個",tanka:0,cat:"雑品系"},
+  {code:"1079",name:"ガスメーター(鉄付)",kana:"がすめーたーてつ",unit:"個",tanka:0,cat:"雑品系"},
+  {code:"1076",name:"トランス大型(-一油)",kana:"とらんすおおがた",unit:"台",tanka:0,cat:"雑品系"},
+  {code:"1077",name:"トランス角型(-一油)",kana:"とらんすかくがた",unit:"台",tanka:0,cat:"雑品系"},
+  {code:"1080",name:"溶接機",       kana:"ようせつき",  unit:"台",tanka:0,cat:"雑品系"},
+  {code:"1085",name:"セルダイナモ",  kana:"せるだいなも",unit:"個",tanka:0,cat:"雑品系"},
+  {code:"1094",name:"アルミラジ",   kana:"あるみらじ",  unit:"kg",tanka:0,cat:"雑品系"},
+  {code:"9095",name:"アルミラジ付有",kana:"あるみらじつきあり",unit:"kg",tanka:0,cat:"雑品系"},
+  /* アルミ系 */
+  {code:"1060",name:"アルミホイルA",kana:"あるみほいるA",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1061",name:"アルミホイルB",kana:"あるみほいるB",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1063",name:"アルミ付タイヤ14",kana:"あるみたいや14",unit:"本",tanka:0,cat:"アルミ系"},
+  {code:"1064",name:"アルミ付タイヤ13",kana:"あるみたいや13",unit:"本",tanka:0,cat:"アルミ系"},
+  {code:"1065",name:"アルミ付タイヤ12",kana:"あるみたいや12",unit:"本",tanka:0,cat:"アルミ系"},
+  {code:"1062",name:"ホイルMIX",    kana:"ほいるみっくす",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1066",name:"ホイル2P",     kana:"ほいる2P",   unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1090",name:"自動車鋳物",   kana:"じどうしゃいもの",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1091",name:"普通機械・AIキカイ屑",kana:"きかいくず",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1092",name:"ガラアルミ・鍋釜やかん",kana:"がらあるみ",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1098",name:"エアコンラジ",  kana:"えあこんらじ",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1099",name:"エアコンラジ 異物付",kana:"えあこんらじいぶつ",unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1070",name:"サッシ(63S)",  kana:"さっし63S",  unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1071",name:"サッシ(63B)",  kana:"さっし63B",  unit:"kg",tanka:0,cat:"アルミ系"},
+  {code:"1097",name:"アルミ缶",     kana:"あるみかん",  unit:"kg",tanka:0,cat:"アルミ系"},
+  /* 線系 */
+  {code:"1041",name:"パイプ皮付",   kana:"ぱいぷかわつき",unit:"kg",tanka:0,cat:"線系"},
+  {code:"1040",name:"上線",         kana:"じょうせん",  unit:"kg",tanka:0,cat:"線系"},
+  {code:"1042",name:"雑線A",        kana:"ざっせんA",   unit:"kg",tanka:0,cat:"線系"},
+  {code:"1043",name:"雑線B",        kana:"ざっせんB",   unit:"kg",tanka:0,cat:"線系"},
+  {code:"1045",name:"ハーネス",     kana:"はーねす",    unit:"kg",tanka:0,cat:"線系"},
+  {code:"1046",name:"黒線",         kana:"くろせん",    unit:"kg",tanka:0,cat:"線系"},
+  /* 鉄 */
+  {code:"1010",name:"鉄",           kana:"てつ",        unit:"kg",tanka:0,cat:"鉄"},
+  {code:"1011",name:"鉄(解体工事)", kana:"てつかいたい",unit:"kg",tanka:0,cat:"鉄"},
+  {code:"1012",name:"鉄板",         kana:"てっぱん",    unit:"kg",tanka:0,cat:"鉄"},
+  /* 切粉系 */
+  {code:"1052",name:"ステン切粉",   kana:"すてんきりこ",unit:"kg",tanka:0,cat:"切粉系"},
+  {code:"1096",name:"アルミ切粉",   kana:"あるみきりこ",unit:"kg",tanka:0,cat:"切粉系"},
+  {code:"1013",name:"鉄切粉",       kana:"てつきりこ",  unit:"kg",tanka:0,cat:"切粉系"},
+  /* 他 */
+  {code:"1081",name:"込丹入",       kana:"こみたんいり",unit:"kg",tanka:0,cat:"他"},
+  {code:"1086",name:"水道鉛",       kana:"すいどうなまり",unit:"kg",tanka:0,cat:"他"},
+  {code:"1074",name:"鉛",           kana:"なまり",      unit:"kg",tanka:0,cat:"他"},
+  {code:"1100",name:"バッテリー(-40%)",kana:"ばってりー",unit:"個",tanka:0,cat:"他"},
+  {code:"1110",name:"バッテリー(自動車以外)",kana:"ばってりーいがい",unit:"個",tanka:0,cat:"他"},
+  {code:"1200",name:"廃家電",       kana:"はいかでん",  unit:"台",tanka:0,cat:"他"},
+  {code:"1210",name:"廃車両",       kana:"はいしゃりょう",unit:"台",tanka:0,cat:"他"},
+  {code:"1300",name:"処分代",       kana:"しょぶんだい",unit:"式",tanka:0,cat:"他"},
+  {code:"1310",name:"雑収入(家賃)", kana:"ざっしゅうにゅう",unit:"式",tanka:0,cat:"他"},
+  {code:"1430",name:"ベアチューブF3×2",kana:"べあちゅーぶ",unit:"m",tanka:0,cat:"他"},
+  {code:"1400",name:"ベアチューブF3×1.6",kana:"べあちゅーぶ",unit:"m",tanka:0,cat:"他"},
+  {code:"1410",name:"ベアチューブF2×2",kana:"べあちゅーぶ",unit:"m",tanka:0,cat:"他"},
+  {code:"1420",name:"ベアチューブF2×1.6",kana:"べあちゅーぶ",unit:"m",tanka:0,cat:"他"},
+  {code:"900000",name:"解体工事",   kana:"かいたいこうじ",unit:"式",tanka:0,cat:"工事"},
+  {code:"910000",name:"電気工事",   kana:"でんきこうじ", unit:"式",tanka:0,cat:"工事"},
+];
+function loadProductMaster(silent){
+  const added=[];
+  PRODUCT_MASTER.forEach(p=>{
+    if(!findProd(p.code)){db.products.push({...p});added.push(p.name);}
+  });
+  if(!silent){save();renderProduct();refreshProductDatalist();toast("商品マスタを登録しました（"+added.length+"件）");}
+  else{refreshProductDatalist();}
+}
+function refreshProductDatalist(){
+  const el=document.getElementById("prod-datalist");
+  if(el)el.innerHTML=db.products.map(p=>`<option value="${esc(p.code)}">${esc(p.code)}：${esc(p.name)}（${esc(p.cat||"")}）</option>`).join("");
+}
+function initAll(){
+  clearShiire();clearShiharai();
+  renderShiireList();renderShiharaiList();renderSupplier();renderProduct();renderPayitem();renderContract();
+  refreshSelectors();renderMotocho();renderStoreList();refreshProductDatalist();refreshSupplierDatalist();
+  document.getElementById("sk-month").value=today().slice(0,7);
+  document.getElementById("bs-month").value=today().slice(0,7);
+  renderSeikyu();renderBunseki();
+}
+document.getElementById("clock-date").textContent=new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
+initAll();
+// 起動時に日付欄にフォーカス
+setTimeout(()=>{const d=document.getElementById("sh-date");if(d)d.focus();},100);
+</script>
+</body>
+</html>

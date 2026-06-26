@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S.K.R AI ツールカタログ</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#0d1117;
+    color:#c9d1d9;
+    font-family:'Segoe UI','Hiragino Sans','Noto Sans JP',sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .container{
+    max-width:1100px;
+    margin:0 auto;
+    padding:2rem 1rem;
+    flex:1;
+  }
+  /* Header */
+  .header{
+    text-align:center;
+    padding:3rem 1rem 2rem;
+  }
+  .header h1{
+    font-size:1.8rem;
+    font-weight:700;
+    color:#e6edf3;
+    letter-spacing:.04em;
+  }
+  .header p{
+    margin-top:.5rem;
+    font-size:.95rem;
+    color:#8b949e;
+  }
+  /* Section */
+  .section{margin-bottom:2.5rem}
+  .section-title{
+    font-size:1.15rem;
+    font-weight:600;
+    padding-bottom:.5rem;
+    margin-bottom:1rem;
+    border-bottom:2px solid;
+  }
+  .section-title--main{color:#58a6ff;border-color:#58a6ff}
+  .section-title--side{color:#7ee787;border-color:#7ee787}
+  .section-title--personal{color:#f0883e;border-color:#f0883e}
+  /* Grid */
+  .grid{
+    display:grid;
+    gap:.75rem;
+    grid-template-columns:1fr;
+  }
+  @media(min-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+  /* Card */
+  .card{
+    display:block;
+    background:#161b22;
+    border:1px solid #30363d;
+    border-radius:10px;
+    padding:1rem 1.1rem;
+    text-decoration:none;
+    color:inherit;
+    min-height:48px;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .card:hover,.card:focus-visible{
+    border-color:#58a6ff;
+    box-shadow:0 0 0 1px #58a6ff33;
+    outline:none;
+  }
+  .card-title{
+    font-size:.95rem;
+    font-weight:600;
+    color:#e6edf3;
+    margin-bottom:.25rem;
+  }
+  .card-desc{
+    font-size:.82rem;
+    color:#8b949e;
+    line-height:1.45;
+  }
+  /* Footer */
+  .footer{
+    text-align:center;
+    padding:1.5rem 1rem;
+    font-size:.75rem;
+    color:#484f58;
+    border-top:1px solid #21262d;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="header">
+    <h1>S.K.R AI ツールカタログ</h1>
+    <p>AIチームが制作した業務ツール・Webサイトの試作品一覧</p>
+  </header>
+
+  <!-- 本業用 -->
+  <section class="section">
+    <h2 class="section-title section-title--main">本業用（金属買取・解体）</h2>
+    <div class="grid">
+      <a class="card" href="shiire-kaikake.html">
+        <div class="card-title">仕入買掛管理システム</div>
+        <div class="card-desc">仕入・買掛金の管理。伝票印刷対応。事務所で実運用中</div>
+      </a>
+      <a class="card" href="skr-kanri.html">
+        <div class="card-title">仕入・出納管理</div>
+        <div class="card-desc">仕入/出納/取引先/在庫の4タブ統合管理</div>
+      </a>
+      <a class="card" href="mitsumori-sim.html">
+        <div class="card-title">解体見積→粗利シミュレーター</div>
+        <div class="card-desc">解体工事の見積作成と粗利計算</div>
+      </a>
+      <a class="card" href="soba-watch.html">
+        <div class="card-title">金属相場ウォッチ</div>
+        <div class="card-desc">金属相場の監視とメルマガ自動生成</div>
+      </a>
+      <a class="card" href="skr-price-compare.html">
+        <div class="card-title">金属単価比較表</div>
+        <div class="card-desc">業者間の買取単価を比較</div>
+      </a>
+      <a class="card" href="scrap-monitor.html">
+        <div class="card-title">SCRAP COMMAND CENTER</div>
+        <div class="card-desc">スクラップ統合監視ダッシュボード</div>
+      </a>
+      <a class="card" href="sim-manager.html">
+        <div class="card-title">SIM回線管理</div>
+        <div class="card-desc">法人SIM回線の管理台帳</div>
+      </a>
+      <a class="card" href="shinsei-guide.html">
+        <div class="card-title">申請ガイド</div>
+        <div class="card-desc">建設リサイクル法/特定建設/Gビズ/補助金の申請手順</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 副業用 -->
+  <section class="section">
+    <h2 class="section-title section-title--side">副業用（美容・ウェルネス）</h2>
+    <div class="grid">
+      <a class="card" href="wbl/index.html">
+        <div class="card-title">SKR SHOP トップ</div>
+        <div class="card-desc">厳選プロダクトのECサイト</div>
+      </a>
+      <a class="card" href="wbl/water.html">
+        <div class="card-title">ミネラルウォーター</div>
+        <div class="card-desc">商品ページ</div>
+      </a>
+      <a class="card" href="wbl/cosmetics.html">
+        <div class="card-title">コスメ</div>
+        <div class="card-desc">個性派コスメ商品ページ</div>
+      </a>
+      <a class="card" href="wbl/protein.html">
+        <div class="card-title">プロテイン</div>
+        <div class="card-desc">プロテイン商品ページ</div>
+      </a>
+      <a class="card" href="wbl/firewood.html">
+        <div class="card-title">キャンプ用薪</div>
+        <div class="card-desc">薪商品ページ</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 個人用 -->
+  <section class="section">
+    <h2 class="section-title section-title--personal">個人用（ユーティリティ）</h2>
+    <div class="grid">
+      <a class="card" href="mercari-lister.html">
+        <div class="card-title">残置物リユース出品ツール</div>
+        <div class="card-desc">解体現場の残置物をメルカリに出品</div>
+      </a>
+      <a class="card" href="image-compare.html">
+        <div class="card-title">画像比較ビューア</div>
+        <div class="card-desc">2画像の並列比較(グリッド/スライダー/並列)</div>
+      </a>
+      <a class="card" href="metacognition-simulator.html">
+        <div class="card-title">メタ認知シミュレーター</div>
+        <div class="card-desc">思考の構造化支援ツール</div>
+      </a>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">Powered by S.K.R AI Team</footer>
+
+</body>
+</html>
