@@ -924,7 +924,7 @@ const yen=n=>{const v=Math.round(Number(n)||0);return(v<0?"-¥":"¥")+Math.abs(v
 /* マイナス金額は赤字表示（会計表記） */
 const yenC=n=>{const v=Math.round(Number(n)||0);return v<0?`<span style="color:var(--red)">${yen(v)}</span>`:yen(v);};
 const num=n=>(Number(n)||0).toLocaleString("ja-JP");
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 const esc=s=>String(s==null?"":s).replace(/[<>&"'`]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;","`":"&#96;"}[c]));
 const pad=(n,l)=>String(n).padStart(l,"0");
 
@@ -1440,7 +1440,7 @@ function renderShiireList(){
   if(!rows.length){b.innerHTML='<tr><td colspan="7" class="empty">伝票がありません</td></tr>';return;}
   b.innerHTML=rows.map(r=>{
     const s=findSup(r.scode);
-    const meisai=r.lines.map(l=>l.pname).join("、");
+    const meisai=(r.lines||[]).map(l=>l.pname).join("、");
     return `<tr>
       <td>${esc(r.date)}</td><td>${esc(r.no)}</td><td>${esc(s?s.name:r.scode)}</td>
       <td style="white-space:normal;max-width:240px">${esc(meisai)}</td>
@@ -1477,7 +1477,7 @@ function printDenpyo(rec,skipPrint){
 
   // 列幅はA5本体幅(約119mm)に収まるよう調整。ダストあり時は特殊加算額列を省略
   const thDust=hasDust?`<th style="width:15mm">ダスト%</th><th style="width:17mm">ダスト量</th><th style="width:17mm">正味重量</th>`:"";
-  const colCount=hasDust?9:9;
+  const colCount=hasDust?9:7;
   const ROWS=4;
   const rowsHtml=rec.lines.map((l,i)=>`<tr>
     <td class="c">${i+1}</td>
@@ -1953,7 +1953,7 @@ function renderDailyCash(){
     const dnTag=item.denpyoNo?`<span style="font-size:10px;color:var(--ink-soft);margin-left:4px">[${esc(item.denpyoNo)}]</span>`:"";
     return `<tr><td class="lbl">${esc(item.label)}${dnTag}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px">${canDel?`<button class="line-del" onclick="dcDelIo('${type}',${item.refId})">×</button>`:`<span style="font-size:11px;color:var(--ink-soft)">自動</span>`}</td></tr>`;
   }
-  function dcOptsHtml(opts){return opts.map(o=>`<option value="${o}">${o}</option>`).join("");}
+  function dcOptsHtml(opts){return opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("");}
 
   let inHtml=allIn.map(x=>dcIoRow(x,'in')).join("")||'<tr><td class="empty" colspan="3">入金なし</td></tr>';
   let outHtml=allOut.map(x=>dcIoRow(x,'out')).join("")||'<tr><td class="empty" colspan="3">出金なし</td></tr>';
