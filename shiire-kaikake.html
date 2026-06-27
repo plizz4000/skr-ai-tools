@@ -1941,17 +1941,14 @@ function renderDailyCash(){
       <td class="calc" id="dc-bou-amt-${r}">0</td>
     </tr>`;
   });
-  // 入出金: 出納帳エントリから自動反映 + 手動行
+  // 入出金: 出納帳エントリから全取得（自動=支払/仕入、手動=cashbook）
   const dayEntries=cashEntries().filter(e=>e.date===d);
-  const autoIn=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income,auto:true}));
-  const autoOut=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense,auto:true}));
-  const manualIn=(rec.manualIn||[]).map((x,i)=>({...x,auto:false,idx:i}));
-  const manualOut=(rec.manualOut||[]).map((x,i)=>({...x,auto:false,idx:i}));
-  const allIn=[...autoIn,...manualIn], allOut=[...autoOut,...manualOut];
+  const allIn=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income,kind:e.kind,refId:e.refId}));
+  const allOut=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense,kind:e.kind,refId:e.refId}));
 
   function dcIoRow(item,type){
-    if(item.auto) return `<tr><td class="lbl">${esc(item.label)}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px;font-size:11px;color:var(--ink-soft)">自動</td></tr>`;
-    return `<tr><td class="lbl">${esc(item.label)}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px"><button class="line-del" onclick="dcDelIo('${type}',${item.idx})">×</button></td></tr>`;
+    const canDel=item.kind==="手動"&&item.refId;
+    return `<tr><td class="lbl">${esc(item.label)}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px">${canDel?`<button class="line-del" onclick="dcDelIo('${type}',${item.refId})">×</button>`:`<span style="font-size:11px;color:var(--ink-soft)">自動</span>`}</td></tr>`;
   }
   function dcOptsHtml(opts){return opts.map(o=>`<option value="${o}">${o}</option>`).join("");}
 
@@ -2037,8 +2034,8 @@ function dcCalc(){
   const dcDate=(document.getElementById("dc-date").value)||today();
   const dcDayEntries=cashEntries().filter(e=>e.date===dcDate);
   const dcRec=(db.dailycash&&db.dailycash[dcDate])||{};
-  let inSum=dcDayEntries.filter(e=>e.income>0).reduce((s,e)=>s+e.income,0)+(dcRec.manualIn||[]).reduce((s,x)=>s+x.amount,0);
-  let outSum=dcDayEntries.filter(e=>e.expense>0).reduce((s,e)=>s+e.expense,0)+(dcRec.manualOut||[]).reduce((s,x)=>s+x.amount,0);
+  let inSum=dcDayEntries.filter(e=>e.income>0).reduce((s,e)=>s+e.income,0);
+  let outSum=dcDayEntries.filter(e=>e.expense>0).reduce((s,e)=>s+e.expense,0);
   set("dc-in-sum",inSum);set("dc-out-sum",outSum);
   // 差異 = (金種合計+棒金合計)（実際に数えた現金）− 本日残（システム理論値）
   const diff=(amtSum+bouAmtSum)-f.honjitsu;
@@ -2046,7 +2043,7 @@ function dcCalc(){
   if(bal){
     const cashTotal=amtSum+bouAmtSum;
     bal.innerHTML=`<span>前日繰越 <b>${yen(f.carry)}</b> ＋ 入金 <b>${yen(f.dayIn)}</b> － 出金 <b>${yen(f.dayOut)}</b> ＝ 本日残 <span class="yen">${yen(f.honjitsu)}</span></span>
-      <span>現金合計（バラ${yen(amtSum)}＋棒金${yen(bouAmtSum)}）<b>${yen(cashTotal)}</b>　差異 <span class="diffbox" style="color:${diff===0?'var(--green)':'var(--red)'}">${diff===0?'±0（一致）':yen(diff)}</span></span>`;
+      <span>現金合計（実数え）<b>${cashTotal?yen(cashTotal):"—"}</b>　差異 <span class="diffbox" style="color:${cashTotal===0?'var(--ink-soft)':diff===0?'var(--green)':'var(--red)'}">${cashTotal===0?"金種未入力":diff===0?'±0（一致）':yen(diff)}</span></span>`;
   }
 }
 function dcCollect(){
@@ -2056,7 +2053,7 @@ function dcCollect(){
   const store=(document.getElementById("dc-store").value||"").trim();
   const d=(document.getElementById("dc-date").value)||today();
   const prev=(db.dailycash&&db.dailycash[d])||{};
-  return {store,cnt,asa,zen,bou,manualIn:prev.manualIn||[],manualOut:prev.manualOut||[]};
+  return {store,cnt,asa,zen,bou};
 }
 function dcAddIo(type){
   const d=(document.getElementById("dc-date").value)||today();
@@ -2066,21 +2063,16 @@ function dcAddIo(type){
   if(label==="__custom"){label=prompt("項目名を入力してください");if(!label)return;}
   const amount=Number(amtEl.value)||0;
   if(amount<=0){alert("金額を入力してください");return;}
-  if(!db.dailycash)db.dailycash={};
-  if(!db.dailycash[d])db.dailycash[d]=dcCollect();
-  const key=type==="in"?"manualIn":"manualOut";
-  if(!db.dailycash[d][key])db.dailycash[d][key]=[];
-  db.dailycash[d][key].push({label,amount});
+  db.cashbook=db.cashbook||[];
+  if(!db.seq.cash)db.seq.cash=1;
+  db.cashbook.push({id:db.seq.cash++,date:d,type:type==="in"?"収入":"支出",amount,memo:label});
   save();amtEl.value="";
-  renderDailyCash();
+  renderCashbook();renderDailyCash();
 }
-function dcDelIo(type,idx){
-  const d=(document.getElementById("dc-date").value)||today();
-  if(!db.dailycash||!db.dailycash[d])return;
-  const key=type==="in"?"manualIn":"manualOut";
-  if(!db.dailycash[d][key])return;
-  db.dailycash[d][key].splice(idx,1);
-  save();renderDailyCash();
+function dcDelIo(type,refId){
+  if(!confirm("この入出金を削除しますか？"))return;
+  db.cashbook=(db.cashbook||[]).filter(x=>x.id!==refId);
+  save();renderCashbook();renderDailyCash();
 }
 function dcSave(showToast){
   const d=(document.getElementById("dc-date").value)||today();
@@ -2143,11 +2135,25 @@ function printDailyCash(){
       <td class="cnt">${c||""}</td><td class="amt">${amt?amt.toLocaleString("ja-JP"):""}</td>
       <td class="cnt">${a||""}</td><td class="cnt">${z||""}</td></tr>`;
   }).join("");
-  const diff=amtSum-f.honjitsu;
-  let inSum=0;DC_IN.forEach((l,r)=>inSum+=dcVal(r,3));
-  let outSum=0;DC_OUT.forEach((l,r)=>outSum+=dcVal(r,4));
-  const inRows=DC_IN.map((l,r)=>{const x=dcVal(r,3);return `<tr><td class="lbl">${l}</td><td class="val">${x?yen(x):""}</td></tr>`;}).join("");
-  const outRows=DC_OUT.map((l,r)=>{const x=dcVal(r,4);return `<tr><td class="lbl">${l}</td><td class="val">${x?yen(x):""}</td></tr>`;}).join("");
+  // 棒金
+  let bouCntSum=0,bouAmtSum=0;
+  const bouRows=DC_BOUKIN.map((v,r)=>{
+    const b=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*b;bouCntSum+=b;bouAmtSum+=bAmt;
+    return `<tr><td class="den">${v.toLocaleString("ja-JP")}</td>
+      <td class="cnt">${b||""}</td><td class="amt">${bAmt?bAmt.toLocaleString("ja-JP"):""}</td>
+      <td class="cnt" colspan="2" style="font-size:8pt;color:#666;text-align:center">1本=${DC_BOUKIN_AMT[v].toLocaleString("ja-JP")}円</td></tr>`;
+  }).join("");
+  const cashTotal=amtSum+bouAmtSum;
+  const diff=cashTotal-f.honjitsu;
+  // 入出金（動的: 出納帳自動+手動エントリ）
+  const dayEntries=cashEntries().filter(e=>e.date===d);
+  const rec=(db.dailycash&&db.dailycash[d])||{};
+  const allIn=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income}));
+  const allOut=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense}));
+  let inSum=allIn.reduce((s,x)=>s+x.amount,0);
+  let outSum=allOut.reduce((s,x)=>s+x.amount,0);
+  const inRows=allIn.map(x=>`<tr><td class="lbl">${esc(x.label)}</td><td class="val">${yen(x.amount)}</td></tr>`).join("");
+  const outRows=allOut.map(x=>`<tr><td class="lbl">${esc(x.label)}</td><td class="val">${yen(x.amount)}</td></tr>`).join("");
   // 明細（出納帳から自動）。摘要行＝前日繰越＋当日明細＋本日残。
   const det=dcDetail(d);
   let detRows=`<tr class="carry"><td class="m">前日繰越</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
@@ -2186,7 +2192,9 @@ function printDailyCash(){
         <table class="kin">
           <thead><tr><th>金種</th><th>枚数</th><th>金額</th><th>朝追加</th><th>前日〜<br>追加</th></tr></thead>
           <tbody>${kinRows}
-            <tr class="sum"><td class="den">合計</td><td class="cnt">${cntSum||""}</td><td class="amt">${amtSum?yen(amtSum):""}</td><td></td><td></td></tr>
+            <tr class="sum"><td class="den">バラ計</td><td class="cnt">${cntSum||""}</td><td class="amt">${amtSum?yen(amtSum):""}</td><td></td><td></td></tr>
+            ${DC_BOUKIN.map((v,r)=>{const b=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*b;return b?`<tr><td class="den">棒${v.toLocaleString("ja-JP")}</td><td class="cnt">${b}</td><td class="amt">${yen(bAmt)}</td><td colspan="2"></td></tr>`:"";}).join("")}
+            ${bouCntSum?`<tr class="sum"><td class="den">棒金計</td><td class="cnt">${bouCntSum}</td><td class="amt">${yen(bouAmtSum)}</td><td></td><td></td></tr>`:""}
           </tbody>
         </table>
         <div class="io-wrap">
@@ -2209,9 +2217,9 @@ function printDailyCash(){
             <div class="rc-calc">前日繰越 <b>${yen(f.carry)}</b>　＋　入金 <b>${yen(f.dayIn)}</b>　－　出金 <b>${yen(f.dayOut)}</b></div>
             <div class="rc-eq"><span class="lab">＝　本日残</span><span class="yen">${yen(f.honjitsu)}</span></div>
           </div>
-          <div class="rc-cmp ${diff===0?'ok':'is-diff'}">
-            <div class="rc-row"><span class="k">金種合計（実際の現金）</span><span class="v">${yen(amtSum)}</span></div>
-            <div class="rc-row rc-diff"><span class="k">差異（金種合計 − 本日残）</span><span class="v">${diff===0?"±0（一致）":yen(diff)}</span></div>
+          <div class="rc-cmp ${cashTotal===0?'':diff===0?'ok':'is-diff'}">
+            <div class="rc-row"><span class="k">現金合計（実数え）</span><span class="v">${cashTotal?yen(cashTotal):"—"}</span></div>
+            <div class="rc-row rc-diff"><span class="k">差異</span><span class="v">${cashTotal===0?"金種未入力":diff===0?"±0（一致）":yen(diff)}</span></div>
           </div>
         </div>
       </div>
@@ -2243,37 +2251,109 @@ function exportDailyCashExcel(){
     const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2),amt=v*c;amtSum+=amt;cntSum+=c;
     return `<tr><td style="text-align:right">${v}</td><td>${c||""}</td><td style="text-align:right">${amt||""}</td><td>${a||""}</td><td>${z||""}</td></tr>`;
   }).join("");
-  const diff=amtSum-f.honjitsu;
-  let inSum=0;DC_IN.forEach((l,r)=>inSum+=dcVal(r,3));
-  let outSum=0;DC_OUT.forEach((l,r)=>outSum+=dcVal(r,4));
-  const inRows=DC_IN.map((l,r)=>`<tr><td>${l}</td><td style="text-align:right">${dcVal(r,3)||""}</td></tr>`).join("");
-  const outRows=DC_OUT.map((l,r)=>`<tr><td>${l}</td><td style="text-align:right">${dcVal(r,4)||""}</td></tr>`).join("");
-  const bd="border:1px solid #000;";
+  let bouCntSum=0,bouAmtSum=0;
+  DC_BOUKIN.forEach((v,r)=>{const b=dcVal(r,5);bouCntSum+=b;bouAmtSum+=DC_BOUKIN_AMT[v]*b;});
+  const cashTotal=amtSum+bouAmtSum;
+  const diff=cashTotal-f.honjitsu;
+  const dayEntries=cashEntries().filter(e=>e.date===d);
+  const rec2=(db.dailycash&&db.dailycash[d])||{};
+  const allIn2=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income}));
+  const allOut2=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense}));
+  let inSum=allIn2.reduce((s,x)=>s+x.amount,0);
+  let outSum=allOut2.reduce((s,x)=>s+x.amount,0);
+  const det=dcDetail(d);
+  const Y=v=>v?v.toLocaleString("ja-JP"):"";
+  const n="border:none;",b="border:1px solid #999;",bk="border:1px solid #999;background:#f1f1f1;font-weight:bold;",
+    nr="border:1px solid #999;text-align:right;mso-number-format:'\\#\\,\\#\\#0';";
+  const gap=`<tr><td colspan="10" style="${n}height:6px"></td></tr>`;
+  const leftRows=Math.max(DC_DENS.length+2, det.rows.length+4);
+  let rows=[];
+  for(let i=0;i<leftRows;i++) rows.push(["","","","","","","","","",""]);
+  DC_DENS.forEach((v,r)=>{
+    const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2),amt=v*c;
+    rows[r]=[v.toLocaleString("ja-JP"),c||"",amt?Y(amt):"",a||"",z||""];
+  });
+  const kr=DC_DENS.length;
+  rows[kr]=[{v:"合計",s:bk},{v:cntSum||"",s:nr},{v:Y(amtSum),s:nr},"",""];
+  // 棒金行を金種合計の下に追加
+  const bouStart=kr+2;
+  while(rows.length<=bouStart+DC_BOUKIN.length+1) rows.push(["","","","","","","","","",""]);
+  rows[bouStart]=[{v:"棒金(50枚綴)",s:bk},{v:"本数",s:bk},{v:"金額",s:bk},{v:"1本あたり",s:bk+"text-align:center;"},""];
+  DC_BOUKIN.forEach((v,r)=>{
+    const bb=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*bb;
+    rows[bouStart+1+r]=[v.toLocaleString("ja-JP"),bb||"",bAmt?Y(bAmt):"",Y(DC_BOUKIN_AMT[v])+"円",""];
+  });
+  const bouEnd=bouStart+1+DC_BOUKIN.length;
+  while(rows.length<=bouEnd) rows.push(["","","","","","","","","",""]);
+  rows[bouEnd]=[{v:"合計",s:bk},{v:bouCntSum||"",s:nr},{v:Y(bouAmtSum),s:nr},"",""];
+  const detStart=0;
+  if(det.rows.length>0||true){
+    rows[detStart][6]="摘要";rows[detStart][7]="入金";rows[detStart][8]="出金";rows[detStart][9]="残高";
+    rows[detStart+1]=[...rows[detStart+1].slice(0,6),"前日繰越","","",Y(det.carry)];
+    det.rows.forEach((x,i)=>{
+      const ri=detStart+2+i;
+      if(ri<rows.length){rows[ri][6]=esc(x.memo);rows[ri][7]=x.income?Y(x.income):"";rows[ri][8]=x.expense?Y(x.expense):"";rows[ri][9]=Y(x.bal);}
+      else rows.push(["","","","","","",esc(x.memo),x.income?Y(x.income):"",x.expense?Y(x.expense):"",Y(x.bal)]);
+    });
+    const endR=detStart+2+det.rows.length;
+    while(rows.length<=endR) rows.push(["","","","","","","","","",""]);
+    rows[endR][6]="本日残";rows[endR][7]="";rows[endR][8]="";rows[endR][9]=Y(det.end);
+  }
+  const maxIo=Math.max(allIn2.length,allOut2.length,1);
+  let trs=`<tr><td colspan="3" style="${n}font-size:14pt;font-weight:bold">現　金　日　計　表</td>
+    <td colspan="2" style="${n}"></td><td style="${n}"></td>
+    <td colspan="3" style="${n}text-align:right;font-size:11pt"><b>${store?esc(store):""}</b>　${wareki(d)}</td>
+    <td style="${n}text-align:right;font-size:9pt">株式会社 S.K.R</td></tr>${gap}`;
+  trs+=`<tr><td style="${bk}">金種</td><td style="${bk}">枚数</td><td style="${bk}">金額</td><td style="${bk}">朝追加</td><td style="${bk}">前日〜追加</td>
+    <td style="${n}width:12px"></td>
+    <td style="${bk}">摘要</td><td style="${bk}">入金</td><td style="${bk}">出金</td><td style="${bk}">残高</td></tr>`;
+  rows.forEach((r,i)=>{
+    trs+="<tr>";
+    for(let c=0;c<5;c++){
+      const cell=r[c];
+      if(typeof cell==="object") trs+=`<td style="${cell.s}">${cell.v}</td>`;
+      else if(c>=1&&c<=2&&cell) trs+=`<td style="${nr}">${cell}</td>`;
+      else trs+=`<td style="${b}">${cell}</td>`;
+    }
+    trs+=`<td style="${n}"></td>`;
+    for(let c=6;c<10;c++){
+      const cell=r[c]||"";
+      if(c>=7&&cell) trs+=`<td style="${nr}">${cell}</td>`;
+      else if(i===0&&c===6) trs+=`<td style="${bk}">${cell}</td>`;
+      else trs+=`<td style="${b}">${cell}</td>`;
+    }
+    trs+="</tr>";
+  });
+  trs+=gap;
+  trs+=`<tr><td colspan="2" style="${bk}">入金</td><td style="${n}"></td><td colspan="2" style="${bk}">出金</td><td style="${n}"></td>
+    <td colspan="4" style="${n}"></td></tr>`;
+  for(let i=0;i<maxIo;i++){
+    const il=allIn2[i],ol=allOut2[i];
+    trs+=`<tr><td style="${b}">${il?esc(il.label):""}</td><td style="${nr}">${il?Y(il.amount):""}</td><td style="${n}"></td>
+      <td style="${b}">${ol?esc(ol.label):""}</td><td style="${nr}">${ol?Y(ol.amount):""}</td>
+      <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+  }
+  trs+=`<tr><td style="${bk}">入金　計</td><td style="${nr}font-weight:bold">${Y(inSum)}</td><td style="${n}"></td>
+    <td style="${bk}">出金　計</td><td style="${nr}font-weight:bold">${Y(outSum)}</td>
+    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+  trs+=gap;
+  trs+=`<tr><td colspan="5" style="${b}padding:6px">前日繰越 <b>${Y(f.carry)}</b>　＋　入金 <b>${Y(f.dayIn)}</b>　－　出金 <b>${Y(f.dayOut)}</b></td>
+    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+  trs+=`<tr><td colspan="2" style="${bk}font-size:13pt">＝　本日残</td><td colspan="3" style="${nr}font-size:13pt;font-weight:bold">${Y(f.honjitsu)}</td>
+    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+  trs+=gap;
+  trs+=`<tr><td colspan="3" style="${b}">現金合計（実数え）</td><td colspan="2" style="${nr}font-weight:bold">${cashTotal?Y(cashTotal):"—"}</td>
+    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+  trs+=`<tr><td colspan="3" style="${bk}">差異</td><td colspan="2" style="${nr}font-weight:bold;${cashTotal&&diff!==0?"color:red;":""}">${cashTotal===0?"金種未入力":diff===0?"±0（一致）":Y(diff)}</td>
+    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
   const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>現金日計表</x:Name>
 <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
-<style>td,th{${bd}padding:3px 6px;font-family:'Yu Gothic',Meiryo,sans-serif;font-size:11pt} th{background:#e8e8e8;font-weight:bold;text-align:center}</style></head>
+<style>td,th{padding:4px 8px;font-family:'Yu Gothic',Meiryo,sans-serif;font-size:11pt;vertical-align:middle}</style></head>
 <body>
 <table style="border-collapse:collapse">
-<tr><td colspan="5" style="font-size:16pt;font-weight:bold;border:none">現金日計表</td><td colspan="2" style="border:none;text-align:right">${store?esc(store):""}　${wareki(d)}</td></tr>
-<tr><td colspan="7" style="border:none;height:6px"></td></tr>
-<tr><th>金種</th><th>枚数</th><th>金額</th><th>朝追加</th><th>前日〜追加</th><th></th><th></th></tr>
-${kinRows.replace(/<tr>/g,'<tr>').replace(/<\/tr>/g,'<td style="border:none"></td><td style="border:none"></td></tr>')}
-<tr><th>合計</th><td>${cntSum||""}</td><td style="text-align:right">${amtSum||""}</td><td></td><td></td><td style="border:none"></td><td style="border:none"></td></tr>
-<tr><th>差異</th><td colspan="4" style="text-align:right">${diff}</td><td style="border:none"></td><td style="border:none"></td></tr>
-<tr><td colspan="7" style="border:none;height:8px"></td></tr>
-<tr><th colspan="2">入金</th><th colspan="2">出金</th><th colspan="3" style="border:none"></th></tr>
-${DC_IN.map((l,r)=>`<tr><td>${l}</td><td style="text-align:right">${dcVal(r,3)||""}</td><td>${DC_OUT[r]}</td><td style="text-align:right">${dcVal(r,4)||""}</td><td colspan="3" style="border:none"></td></tr>`).join("")}
-<tr><th>入金 計</th><td style="text-align:right">${inSum}</td><th>出金 計</th><td style="text-align:right">${outSum}</td><td colspan="3" style="border:none"></td></tr>
-<tr><td colspan="7" style="border:none;height:8px"></td></tr>
-<tr><td>前日繰越</td><td style="text-align:right">${f.carry}</td><td>入金</td><td style="text-align:right">${f.dayIn}</td><td>出金</td><td style="text-align:right">${f.dayOut}</td><td></td></tr>
-<tr><th>本日残</th><td colspan="6" style="text-align:right;font-weight:bold">${f.honjitsu}</td></tr>
-<tr><td colspan="7" style="border:none;height:8px"></td></tr>
-<tr><th colspan="4">当日の現金明細（出納帳より）</th><th colspan="3" style="border:none"></th></tr>
-<tr><th>摘要</th><th>入金</th><th>出金</th><th>残高</th><th colspan="3" style="border:none"></th></tr>
-<tr><td>前日繰越</td><td></td><td></td><td style="text-align:right">${dcDetail(d).carry}</td><td colspan="3" style="border:none"></td></tr>
-${dcDetail(d).rows.map(x=>`<tr><td>${esc(x.memo)}</td><td style="text-align:right">${x.income||""}</td><td style="text-align:right">${x.expense||""}</td><td style="text-align:right">${x.bal}</td><td colspan="3" style="border:none"></td></tr>`).join("")}
-<tr><th>本日残</th><td></td><td></td><td style="text-align:right;font-weight:bold">${dcDetail(d).end}</td><td colspan="3" style="border:none"></td></tr>
+<col width="100"><col width="70"><col width="100"><col width="100"><col width="90"><col width="20"><col width="200"><col width="90"><col width="90"><col width="100">
+${trs}
 </table></body></html>`;
   const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
@@ -2767,8 +2847,6 @@ function loadSample(){
     cnt:{"10000":8,"5000":3,"1000":12,"500":4,"100":20,"50":6,"10":15,"5":2,"1":9},
     asa:{"10000":1,"5000":1},
     zen:{"1000":2},
-    inn:{"現金売上":80000,"処分代":3000},
-    out:{"現金仕入":42079,"経費":5000}
   };
   loadProductMaster(true);
   save();initAll();toast("サンプルデータを投入しました");
@@ -2979,17 +3057,14 @@ window.addEventListener("beforeunload",function(ev){
         cnt:{"10000":12,"5000":4,"1000":7,"500":3,"100":15,"50":2,"10":9,"5":1,"1":6},
         asa:{"1000":2},
         zen:{"100":5},
-        inn:{"現金売上":120000,"処分代":8000},
-        out:{"現金仕入":100851,"日当":12000}
       }
     },
     seq:{denpyo:1,sup:2,prod:3,item:1,cash:9}
   };
-  try{localStorage.setItem(KEY,JSON.stringify(seed));}catch(e){}
-
   function noPrint(fn){ var op=window.print; window.print=function(){}; try{fn();}catch(e){console.error(e);} window.print=op; }
   function run(){
     if(location.search.indexOf("__run=daily")<0) return;
+    try{localStorage.setItem(KEY,JSON.stringify(seed));}catch(e){}
     try{ if(typeof load==="function"){ db=load(); if(typeof initAll==="function") initAll(); } }catch(e){console.error(e);}
     var dt=document.getElementById("dc-date"); if(dt)dt.value="2026-06-22";
     var st=document.getElementById("dc-store"); if(st)st.value="柏ヤード";
