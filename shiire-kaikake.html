@@ -341,8 +341,9 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   .dcash .det-wrap{display:block}
   .dcash .det{width:100%}
   .dcash .det th:nth-child(1),.dcash .det .m{text-align:left;width:auto}
-  .dcash .det th:nth-child(2),.dcash .det th:nth-child(3),.dcash .det th:nth-child(4){width:24mm}
-  .dcash .det .n{text-align:right;font-variant-numeric:tabular-nums;width:24mm}
+  .dcash .det th:nth-child(2),.dcash .det .d{text-align:center;width:18mm;font-size:7.5pt;color:#555}
+  .dcash .det th:nth-child(3),.dcash .det th:nth-child(4),.dcash .det th:nth-child(5){width:22mm}
+  .dcash .det .n{text-align:right;font-variant-numeric:tabular-nums;width:22mm}
   .dcash .det .carry td,.dcash .det .end td{font-weight:700;background:#f1f1f1}
   /* ブランク行：罫線枠を下端まで満たす（文字は白で非表示・罫線だけ残す）。
      ★spacer(height:auto)は完全廃止。ブランク行は他行と同じ固定行高(6.3mm)。
@@ -555,6 +556,7 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
         <select id="cb-type"><option value="支出">支出（経費・出金）</option><option value="収入">収入（売上・入金）</option></select>
       </div>
       <div class="field"><label>金額(円)</label><input type="number" id="cb-amt" step="1" placeholder="0"></div>
+      <div class="field"><label>伝票No</label><input type="text" id="cb-denpyo" placeholder="紙伝票の番号"></div>
       <div class="field" style="grid-column:1/-1"><label>摘要（選んでください）</label>
         <select id="cb-memo" onchange="cbMemoPicked()">
           <option value="">― 選んでください ―</option>
@@ -616,7 +618,7 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
     <div class="cards" id="cb-cards"></div>
     <div class="table-wrap">
       <table><thead><tr>
-        <th>日付</th><th>摘要</th><th class="num">収入</th><th class="num">支出</th><th class="num">残高</th><th>区分</th><th></th>
+        <th>日付</th><th>摘要</th><th>伝票No</th><th class="num">収入</th><th class="num">支出</th><th class="num">残高</th><th>区分</th><th></th>
       </tr></thead><tbody id="cb-body"></tbody></table>
     </div>
   </div>
@@ -1886,20 +1888,20 @@ function dcDetail(d){
   let carry=0;const all=cashEntries();
   all.forEach(e=>{if(e.date<d)carry+=e.income-e.expense;});
   let bal=carry;const rows=[];
-  all.forEach(e=>{if(e.date===d){bal+=e.income-e.expense;rows.push({memo:e.memo,income:e.income,expense:e.expense,bal});}});
+  all.forEach(e=>{if(e.date===d){bal+=e.income-e.expense;rows.push({memo:e.memo,income:e.income,expense:e.expense,bal,denpyoNo:e.denpyoNo||""});}});
   return {carry,rows,end:bal};
 }
 // 画面用：当日明細テーブル
 function dcDetailHtml(d){
   const det=dcDetail(d);
-  let r=`<tr class="carry"><td class="m">前日繰越</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
+  let r=`<tr class="carry"><td class="m">前日繰越</td><td class="d"></td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
   if(det.rows.length){
-    r+=det.rows.map(x=>`<tr><td class="m">${esc(x.memo)}</td><td class="n">${x.income?yen(x.income):""}</td><td class="n">${x.expense?yen(x.expense):""}</td><td class="n">${yen(x.bal)}</td></tr>`).join("");
+    r+=det.rows.map(x=>`<tr><td class="m">${esc(x.memo)}</td><td class="d">${esc(x.denpyoNo)}</td><td class="n">${x.income?yen(x.income):""}</td><td class="n">${x.expense?yen(x.expense):""}</td><td class="n">${yen(x.bal)}</td></tr>`).join("");
   }else{
-    r+=`<tr><td class="empty" colspan="4">この日の現金取引はありません</td></tr>`;
+    r+=`<tr><td class="empty" colspan="5">この日の現金取引はありません</td></tr>`;
   }
-  r+=`<tr class="end"><td class="m">本日残</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.end)}</td></tr>`;
-  return `<table class="dc-det"><thead><tr><th>摘要</th><th>入金</th><th>出金</th><th>残高</th></tr></thead><tbody>${r}</tbody></table>`;
+  r+=`<tr class="end"><td class="m">本日残</td><td class="d"></td><td class="n"></td><td class="n"></td><td class="n">${yen(det.end)}</td></tr>`;
+  return `<table class="dc-det"><thead><tr><th>摘要</th><th>伝票No</th><th>入金</th><th>出金</th><th>残高</th></tr></thead><tbody>${r}</tbody></table>`;
 }
 // セル生成（矢印移動用に row/col 座標を持つ。テンキー入力＝type text+数字のみ）
 function dcCell(row,col,val){
@@ -1943,12 +1945,13 @@ function renderDailyCash(){
   });
   // 入出金: 出納帳エントリから全取得（自動=支払/仕入、手動=cashbook）
   const dayEntries=cashEntries().filter(e=>e.date===d);
-  const allIn=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income,kind:e.kind,refId:e.refId}));
-  const allOut=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense,kind:e.kind,refId:e.refId}));
+  const allIn=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income,kind:e.kind,refId:e.refId,denpyoNo:e.denpyoNo||""}));
+  const allOut=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense,kind:e.kind,refId:e.refId,denpyoNo:e.denpyoNo||""}));
 
   function dcIoRow(item,type){
     const canDel=item.kind==="手動"&&item.refId;
-    return `<tr><td class="lbl">${esc(item.label)}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px">${canDel?`<button class="line-del" onclick="dcDelIo('${type}',${item.refId})">×</button>`:`<span style="font-size:11px;color:var(--ink-soft)">自動</span>`}</td></tr>`;
+    const dnTag=item.denpyoNo?`<span style="font-size:10px;color:var(--ink-soft);margin-left:4px">[${esc(item.denpyoNo)}]</span>`:"";
+    return `<tr><td class="lbl">${esc(item.label)}${dnTag}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px">${canDel?`<button class="line-del" onclick="dcDelIo('${type}',${item.refId})">×</button>`:`<span style="font-size:11px;color:var(--ink-soft)">自動</span>`}</td></tr>`;
   }
   function dcOptsHtml(opts){return opts.map(o=>`<option value="${o}">${o}</option>`).join("");}
 
@@ -1982,6 +1985,7 @@ function renderDailyCash(){
         </select>
         <button class="btn btn-ghost btn-sm" onclick="dcEditOpts('in')" style="padding:4px 8px" title="項目を編集">✏️</button>
         <input type="number" id="dc-add-in-amt" placeholder="金額" style="width:100px;padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px;text-align:right">
+        <input type="text" id="dc-add-in-denpyo" placeholder="伝票No" style="width:90px;padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px">
         <button class="btn btn-primary btn-sm" onclick="dcAddIo('in')">＋追加</button>
       </div>
       <div class="dc-cap">出金</div>
@@ -1994,6 +1998,7 @@ function renderDailyCash(){
         </select>
         <button class="btn btn-ghost btn-sm" onclick="dcEditOpts('out')" style="padding:4px 8px" title="項目を編集">✏️</button>
         <input type="number" id="dc-add-out-amt" placeholder="金額" style="width:100px;padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px;text-align:right">
+        <input type="text" id="dc-add-out-denpyo" placeholder="伝票No" style="width:90px;padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px">
         <button class="btn btn-primary btn-sm" onclick="dcAddIo('out')">＋追加</button>
       </div>
     </div>
@@ -2059,14 +2064,16 @@ function dcAddIo(type){
   const d=(document.getElementById("dc-date").value)||today();
   const selEl=document.getElementById("dc-add-"+type+"-label");
   const amtEl=document.getElementById("dc-add-"+type+"-amt");
+  const dnEl=document.getElementById("dc-add-"+type+"-denpyo");
   let label=selEl.value;
   if(label==="__custom"){label=prompt("項目名を入力してください");if(!label)return;}
   const amount=Number(amtEl.value)||0;
   if(amount<=0){alert("金額を入力してください");return;}
+  const denpyoNo=(dnEl?dnEl.value:"").trim();
   db.cashbook=db.cashbook||[];
   if(!db.seq.cash)db.seq.cash=1;
-  db.cashbook.push({id:db.seq.cash++,date:d,type:type==="in"?"収入":"支出",amount,memo:label});
-  save();amtEl.value="";
+  db.cashbook.push({id:db.seq.cash++,date:d,type:type==="in"?"収入":"支出",amount,memo:label,denpyoNo});
+  save();amtEl.value="";if(dnEl)dnEl.value="";
   renderCashbook();renderDailyCash();
 }
 function dcDelIo(type,refId){
@@ -2156,9 +2163,9 @@ function printDailyCash(){
   const outRows=allOut.map(x=>`<tr><td class="lbl">${esc(x.label)}</td><td class="val">${yen(x.amount)}</td></tr>`).join("");
   // 明細（出納帳から自動）。摘要行＝前日繰越＋当日明細＋本日残。
   const det=dcDetail(d);
-  let detRows=`<tr class="carry"><td class="m">前日繰越</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
-  detRows+=det.rows.map(x=>`<tr><td class="m">${esc(x.memo)}</td><td class="n">${x.income?yen(x.income):""}</td><td class="n">${x.expense?yen(x.expense):""}</td><td class="n">${yen(x.bal)}</td></tr>`).join("");
-  detRows+=`<tr class="end"><td class="m">本日残</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.end)}</td></tr>`;
+  let detRows=`<tr class="carry"><td class="m">前日繰越</td><td class="d"></td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
+  detRows+=det.rows.map(x=>`<tr><td class="m">${esc(x.memo)}</td><td class="d">${esc(x.denpyoNo)}</td><td class="n">${x.income?yen(x.income):""}</td><td class="n">${x.expense?yen(x.expense):""}</td><td class="n">${yen(x.bal)}</td></tr>`).join("");
+  detRows+=`<tr class="end"><td class="m">本日残</td><td class="d"></td><td class="n"></td><td class="n"></td><td class="n">${yen(det.end)}</td></tr>`;
   // 明細のブランク行で罫線枠を下端まで満たす。常に「等倍・1ページ」を死守する設計。
   // ★行高固定・spacer廃止。A4横・余白9mm（印刷可能192mm）に収まる明細行数だけ表示。
   //   ・標準(24行以内) → 通常行高6.3mm。空行で枠を下端まで満たす。
@@ -2175,7 +2182,7 @@ function printDailyCash(){
   for(let i=0;i<blanks;i++){
     // 当日明細の続きとして通し番号を数え、1行おきに薄いゼブラ（手書き行ズレ防止）。
     const zebra=((usedRows+i)%2===1)?" zebra":"";
-    blankRows+=`<tr class="blank${zebra}"><td class="m">　</td><td class="n"></td><td class="n"></td><td class="n"></td></tr>`;
+    blankRows+=`<tr class="blank${zebra}"><td class="m">　</td><td class="d"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr>`;
   }
   const area=document.getElementById("print-area");
   area.innerHTML=`<div class="dcash ${densClass}">
@@ -2227,7 +2234,7 @@ function printDailyCash(){
         <div class="sec-ttl">当日の現金明細（出納帳より）</div>
         <div class="det-wrap">
           <table class="det">
-            <thead><tr><th>摘要</th><th>入金</th><th>出金</th><th>残高</th></tr></thead>
+            <thead><tr><th>摘要</th><th>伝票No</th><th>入金</th><th>出金</th><th>残高</th></tr></thead>
             <tbody>${detRows}${blankRows}</tbody>
           </table>
         </div>
@@ -2265,10 +2272,10 @@ function exportDailyCashExcel(){
   const Y=v=>v?v.toLocaleString("ja-JP"):"";
   const n="border:none;",b="border:1px solid #999;",bk="border:1px solid #999;background:#f1f1f1;font-weight:bold;",
     nr="border:1px solid #999;text-align:right;mso-number-format:'\\#\\,\\#\\#0';";
-  const gap=`<tr><td colspan="10" style="${n}height:6px"></td></tr>`;
+  const gap=`<tr><td colspan="11" style="${n}height:6px"></td></tr>`;
   const leftRows=Math.max(DC_DENS.length+2, det.rows.length+4);
   let rows=[];
-  for(let i=0;i<leftRows;i++) rows.push(["","","","","","","","","",""]);
+  for(let i=0;i<leftRows;i++) rows.push(["","","","","","","","","","",""]);
   DC_DENS.forEach((v,r)=>{
     const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2),amt=v*c;
     rows[r]=[v.toLocaleString("ja-JP"),c||"",amt?Y(amt):"",a||"",z||""];
@@ -2277,36 +2284,36 @@ function exportDailyCashExcel(){
   rows[kr]=[{v:"合計",s:bk},{v:cntSum||"",s:nr},{v:Y(amtSum),s:nr},"",""];
   // 棒金行を金種合計の下に追加
   const bouStart=kr+2;
-  while(rows.length<=bouStart+DC_BOUKIN.length+1) rows.push(["","","","","","","","","",""]);
+  while(rows.length<=bouStart+DC_BOUKIN.length+1) rows.push(["","","","","","","","","","",""]);
   rows[bouStart]=[{v:"棒金(50枚綴)",s:bk},{v:"本数",s:bk},{v:"金額",s:bk},{v:"1本あたり",s:bk+"text-align:center;"},""];
   DC_BOUKIN.forEach((v,r)=>{
     const bb=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*bb;
     rows[bouStart+1+r]=[v.toLocaleString("ja-JP"),bb||"",bAmt?Y(bAmt):"",Y(DC_BOUKIN_AMT[v])+"円",""];
   });
   const bouEnd=bouStart+1+DC_BOUKIN.length;
-  while(rows.length<=bouEnd) rows.push(["","","","","","","","","",""]);
+  while(rows.length<=bouEnd) rows.push(["","","","","","","","","","",""]);
   rows[bouEnd]=[{v:"合計",s:bk},{v:bouCntSum||"",s:nr},{v:Y(bouAmtSum),s:nr},"",""];
   const detStart=0;
   if(det.rows.length>0||true){
-    rows[detStart][6]="摘要";rows[detStart][7]="入金";rows[detStart][8]="出金";rows[detStart][9]="残高";
-    rows[detStart+1]=[...rows[detStart+1].slice(0,6),"前日繰越","","",Y(det.carry)];
+    rows[detStart][6]="摘要";rows[detStart][7]="伝票No";rows[detStart][8]="入金";rows[detStart][9]="出金";rows[detStart][10]="残高";
+    rows[detStart+1]=[...rows[detStart+1].slice(0,6),"前日繰越","","","",Y(det.carry)];
     det.rows.forEach((x,i)=>{
       const ri=detStart+2+i;
-      if(ri<rows.length){rows[ri][6]=esc(x.memo);rows[ri][7]=x.income?Y(x.income):"";rows[ri][8]=x.expense?Y(x.expense):"";rows[ri][9]=Y(x.bal);}
-      else rows.push(["","","","","","",esc(x.memo),x.income?Y(x.income):"",x.expense?Y(x.expense):"",Y(x.bal)]);
+      if(ri<rows.length){rows[ri][6]=esc(x.memo);rows[ri][7]=esc(x.denpyoNo);rows[ri][8]=x.income?Y(x.income):"";rows[ri][9]=x.expense?Y(x.expense):"";rows[ri][10]=Y(x.bal);}
+      else rows.push(["","","","","","",esc(x.memo),esc(x.denpyoNo),x.income?Y(x.income):"",x.expense?Y(x.expense):"",Y(x.bal)]);
     });
     const endR=detStart+2+det.rows.length;
-    while(rows.length<=endR) rows.push(["","","","","","","","","",""]);
-    rows[endR][6]="本日残";rows[endR][7]="";rows[endR][8]="";rows[endR][9]=Y(det.end);
+    while(rows.length<=endR) rows.push(["","","","","","","","","","",""]);
+    rows[endR][6]="本日残";rows[endR][7]="";rows[endR][8]="";rows[endR][9]="";rows[endR][10]=Y(det.end);
   }
   const maxIo=Math.max(allIn2.length,allOut2.length,1);
   let trs=`<tr><td colspan="3" style="${n}font-size:14pt;font-weight:bold">現　金　日　計　表</td>
     <td colspan="2" style="${n}"></td><td style="${n}"></td>
-    <td colspan="3" style="${n}text-align:right;font-size:11pt"><b>${store?esc(store):""}</b>　${wareki(d)}</td>
+    <td colspan="4" style="${n}text-align:right;font-size:11pt"><b>${store?esc(store):""}</b>　${wareki(d)}</td>
     <td style="${n}text-align:right;font-size:9pt">株式会社 S.K.R</td></tr>${gap}`;
   trs+=`<tr><td style="${bk}">金種</td><td style="${bk}">枚数</td><td style="${bk}">金額</td><td style="${bk}">朝追加</td><td style="${bk}">前日〜追加</td>
     <td style="${n}width:12px"></td>
-    <td style="${bk}">摘要</td><td style="${bk}">入金</td><td style="${bk}">出金</td><td style="${bk}">残高</td></tr>`;
+    <td style="${bk}">摘要</td><td style="${bk}">伝票No</td><td style="${bk}">入金</td><td style="${bk}">出金</td><td style="${bk}">残高</td></tr>`;
   rows.forEach((r,i)=>{
     trs+="<tr>";
     for(let c=0;c<5;c++){
@@ -2316,43 +2323,44 @@ function exportDailyCashExcel(){
       else trs+=`<td style="${b}">${cell}</td>`;
     }
     trs+=`<td style="${n}"></td>`;
-    for(let c=6;c<10;c++){
+    for(let c=6;c<11;c++){
       const cell=r[c]||"";
-      if(c>=7&&cell) trs+=`<td style="${nr}">${cell}</td>`;
-      else if(i===0&&c===6) trs+=`<td style="${bk}">${cell}</td>`;
+      if(c>=8&&cell) trs+=`<td style="${nr}">${cell}</td>`;
+      else if(i===0&&c>=6) trs+=`<td style="${bk}">${cell}</td>`;
+      else if(c===7) trs+=`<td style="${b}text-align:center;font-size:9pt">${cell}</td>`;
       else trs+=`<td style="${b}">${cell}</td>`;
     }
     trs+="</tr>";
   });
   trs+=gap;
   trs+=`<tr><td colspan="2" style="${bk}">入金</td><td style="${n}"></td><td colspan="2" style="${bk}">出金</td><td style="${n}"></td>
-    <td colspan="4" style="${n}"></td></tr>`;
+    <td colspan="5" style="${n}"></td></tr>`;
   for(let i=0;i<maxIo;i++){
     const il=allIn2[i],ol=allOut2[i];
     trs+=`<tr><td style="${b}">${il?esc(il.label):""}</td><td style="${nr}">${il?Y(il.amount):""}</td><td style="${n}"></td>
       <td style="${b}">${ol?esc(ol.label):""}</td><td style="${nr}">${ol?Y(ol.amount):""}</td>
-      <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+      <td style="${n}"></td><td colspan="5" style="${n}"></td></tr>`;
   }
   trs+=`<tr><td style="${bk}">入金　計</td><td style="${nr}font-weight:bold">${Y(inSum)}</td><td style="${n}"></td>
     <td style="${bk}">出金　計</td><td style="${nr}font-weight:bold">${Y(outSum)}</td>
-    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+    <td style="${n}"></td><td colspan="5" style="${n}"></td></tr>`;
   trs+=gap;
   trs+=`<tr><td colspan="5" style="${b}padding:6px">前日繰越 <b>${Y(f.carry)}</b>　＋　入金 <b>${Y(f.dayIn)}</b>　－　出金 <b>${Y(f.dayOut)}</b></td>
-    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+    <td style="${n}"></td><td colspan="5" style="${n}"></td></tr>`;
   trs+=`<tr><td colspan="2" style="${bk}font-size:13pt">＝　本日残</td><td colspan="3" style="${nr}font-size:13pt;font-weight:bold">${Y(f.honjitsu)}</td>
-    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+    <td style="${n}"></td><td colspan="5" style="${n}"></td></tr>`;
   trs+=gap;
   trs+=`<tr><td colspan="3" style="${b}">現金合計（実数え）</td><td colspan="2" style="${nr}font-weight:bold">${cashTotal?Y(cashTotal):"—"}</td>
-    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+    <td style="${n}"></td><td colspan="5" style="${n}"></td></tr>`;
   trs+=`<tr><td colspan="3" style="${bk}">差異</td><td colspan="2" style="${nr}font-weight:bold;${cashTotal&&diff!==0?"color:red;":""}">${cashTotal===0?"金種未入力":diff===0?"±0（一致）":Y(diff)}</td>
-    <td style="${n}"></td><td colspan="4" style="${n}"></td></tr>`;
+    <td style="${n}"></td><td colspan="5" style="${n}"></td></tr>`;
   const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>現金日計表</x:Name>
 <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
 <style>td,th{padding:4px 8px;font-family:'Yu Gothic',Meiryo,sans-serif;font-size:11pt;vertical-align:middle}</style></head>
 <body>
 <table style="border-collapse:collapse">
-<col width="100"><col width="70"><col width="100"><col width="100"><col width="90"><col width="20"><col width="200"><col width="90"><col width="90"><col width="100">
+<col width="100"><col width="70"><col width="100"><col width="100"><col width="90"><col width="20"><col width="180"><col width="80"><col width="90"><col width="90"><col width="100">
 ${trs}
 </table></body></html>`;
   const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
@@ -2404,6 +2412,7 @@ function clearCashForm(){
   document.getElementById("cb-type").value="支出";
   document.getElementById("cb-amt").value="";
   document.getElementById("cb-memo").value="";
+  const dn=document.getElementById("cb-denpyo");if(dn)dn.value="";
 }
 function addCashEntry(){
   const d=document.getElementById("cb-date").value;
@@ -2415,8 +2424,9 @@ function addCashEntry(){
   if(!m){alert("摘要を選んでください");return;}
   db.cashbook=db.cashbook||[];
   if(!db.seq.cash)db.seq.cash=1;
-  db.cashbook.push({id:db.seq.cash++,date:d,type:t,amount:a,memo:m});
-  if(!save()){ db.cashbook.pop(); db.seq.cash--; return; } // 保存失敗：取消してフォーム保持
+  const dn=(document.getElementById("cb-denpyo")?document.getElementById("cb-denpyo").value:"").trim();
+  db.cashbook.push({id:db.seq.cash++,date:d,type:t,amount:a,memo:m,denpyoNo:dn});
+  if(!save()){ db.cashbook.pop(); db.seq.cash--; return; }
   clearCashForm();
   renderCashbook();renderDailyCash();
   toast("現金エントリを登録しました");
@@ -2431,21 +2441,21 @@ function cashEntries(){
   const auto=db.payments.filter(p=>p.method==="現金").map(p=>{
     const s=db.suppliers.find(x=>x.code===p.scode);
     return {date:p.date,memo:(s?s.name+"／":"")+p.pname+(p.memo?"（"+p.memo+"）":""),
-      income:0,expense:p.amount,kind:"自動（支払）",refId:null};
+      income:0,expense:p.amount,kind:"自動（支払）",refId:null,denpyoNo:""};
   });
   // 仕入伝票を現金仕入として自動転記
   const shiire=(db.purchases||[]).map(p=>{
     const s=db.suppliers.find(x=>x.code===p.scode);
     const meisai=p.lines.map(l=>l.pname).join("、");
     return {date:p.date,memo:"現金仕入"+(s?"／"+s.name:"")+(meisai?"（"+meisai+"）":""),
-      income:0,expense:p.total,kind:"自動（仕入）",refId:null};
+      income:0,expense:p.total,kind:"自動（仕入）",refId:null,denpyoNo:p.no||""};
   });
   // 手動エントリ
   const manual=(db.cashbook||[]).map(c=>({
     date:c.date,memo:c.memo,
     income:c.type==="収入"?c.amount:0,
     expense:c.type==="支出"?c.amount:0,
-    kind:"手動",refId:c.id
+    kind:"手動",refId:c.id,denpyoNo:c.denpyoNo||""
   }));
   return [...auto,...shiire,...manual].sort((a,b)=>a.date.localeCompare(b.date)||(a.refId||0)-(b.refId||0));
 }
@@ -2463,11 +2473,12 @@ function renderCashbook(){
   // 前月末日（例: 2026-06 → 2026-05-31）
   const prevMonthEnd=(()=>{const [y,mo]=m.split("-").map(Number);return new Date(y,mo-1,0).toISOString().slice(0,10);})();
   const bodyRows=[
-    `<tr><td>${esc(prevMonthEnd)}</td><td><b>前月繰越</b></td><td class="num"></td><td class="num"></td><td class="num"><b>${yenC(carry)}</b></td><td>—</td><td></td></tr>`
+    `<tr><td>${esc(prevMonthEnd)}</td><td><b>前月繰越</b></td><td></td><td class="num"></td><td class="num"></td><td class="num"><b>${yenC(carry)}</b></td><td>—</td><td></td></tr>`
   ].concat(rows.map(e=>{
     bal+=e.income-e.expense;
     const del=e.refId!=null?`<button class="btn btn-ghost btn-sm" onclick="deleteCashEntry(${e.refId})">🗑</button>`:"";
     return `<tr><td>${esc(e.date)}</td><td style="white-space:normal">${esc(e.memo)}</td>
+      <td style="font-size:12px;color:var(--ink-soft)">${esc(e.denpyoNo||"")}</td>
       <td class="num">${e.income?yen(e.income):""}</td>
       <td class="num">${e.expense?yen(e.expense):""}</td>
       <td class="num"><b>${yenC(bal)}</b></td>
@@ -2781,11 +2792,10 @@ function exportCsv(type){
     toast("支払一覧CSV を書き出しました（"+db.payments.length+"件）");
   } else if(type==="cashbook"){
     const entries=cashEntries();
-    const rows=[csvRow(["日付","摘要","収入","支出","区分"])];
+    const rows=[csvRow(["日付","摘要","伝票No","収入","支出","区分"])];
     let carry=0;
-    // 全期間の前月繰越を0スタートで算出しない。ユーザーが月別で出す想定なので全データ出力
     entries.forEach(e=>{
-      rows.push(csvRow([e.date,e.memo,e.income||"",e.expense||"",e.kind]));
+      rows.push(csvRow([e.date,e.memo,e.denpyoNo||"",e.income||"",e.expense||"",e.kind]));
     });
     downloadCsv("skr-現金出納帳-"+m+".csv",rows);
     toast("現金出納帳CSV を書き出しました（"+entries.length+"件）");
