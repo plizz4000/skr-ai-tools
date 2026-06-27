@@ -31,6 +31,9 @@ header .clock{font-size:13px;opacity:.92;text-align:right}
 .tab:hover{border-color:var(--brand)}
 .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
 .tab .ico{margin-right:6px}
+.tab.drag-over{border-color:var(--brand);box-shadow:inset 0 0 0 2px var(--brand)}
+.tab[draggable]{cursor:grab}.tab[draggable]:active{cursor:grabbing}
+.tab.dragging{opacity:.4}
 
 /* パネル */
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:14px}
@@ -130,25 +133,62 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
 
 /* 単価履歴ポップアップ */
 #tanka-hist-popup{
-  position:absolute;z-index:200;background:#fff;border:2px solid var(--brand);border-radius:9px;
-  box-shadow:0 4px 18px rgba(0,0,0,.18);padding:8px;min-width:200px;display:none;
+  position:absolute;z-index:200;background:#eef1f4;border:1px solid #6aa0c8;border-radius:5px;
+  box-shadow:0 8px 28px rgba(0,0,0,.28);padding:0;min-width:340px;display:none;overflow:hidden;
 }
-#tanka-hist-popup .ph-title{font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
-#tanka-hist-popup .ph-row{
-  display:flex;justify-content:space-between;align-items:center;gap:12px;
-  padding:5px 8px;border-radius:6px;cursor:pointer;font-size:14px;
-}
-#tanka-hist-popup .ph-row:hover{background:var(--sel)}
-#tanka-hist-popup .ph-row .ph-date{color:var(--ink-soft);font-size:12px}
-#tanka-hist-popup .ph-row .ph-tanka{font-weight:800;color:var(--brand-d)}
-#tanka-hist-popup .ph-empty{font-size:13px;color:var(--ink-soft);text-align:center;padding:8px}
+#tanka-hist-popup .ph-bar{background:#5fa8d3;color:#fff;font-weight:700;font-size:13px;text-align:center;padding:7px}
+#tanka-hist-popup .ph-head{display:grid;grid-template-columns:92px 1fr;gap:1px;margin:8px;border:1px solid #b9c2cc;background:#b9c2cc}
+#tanka-hist-popup .ph-head .k{background:#2e8b57;color:#fff;font-weight:700;font-size:12px;padding:6px 8px;text-align:center}
+#tanka-hist-popup .ph-head .v{background:#fff;padding:6px 9px;font-size:13px;font-weight:700;color:var(--ink)}
+#tanka-hist-popup table.ph-tbl{width:calc(100% - 16px);margin:0 8px 8px;border-collapse:collapse;background:#fff}
+#tanka-hist-popup .ph-tbl th{background:#2e8b57;color:#fff;font-size:12px;font-weight:700;padding:5px;border:1px solid #277249;letter-spacing:2px}
+#tanka-hist-popup .ph-tbl td{border:1px solid #c2c7d0;padding:5px 9px;font-size:13px;font-variant-numeric:tabular-nums}
+#tanka-hist-popup .ph-tbl td.d{text-align:center;color:#333}
+#tanka-hist-popup .ph-tbl td.q{text-align:right}
+#tanka-hist-popup .ph-tbl td.t{text-align:right;font-weight:800;color:var(--brand-d)}
+#tanka-hist-popup .ph-tbl tbody tr{cursor:pointer}
+#tanka-hist-popup .ph-tbl tbody tr:nth-child(even) td{background:#f5f7f9}
+#tanka-hist-popup .ph-tbl tbody tr:hover td{background:#fff3c4}
+#tanka-hist-popup .ph-tag{font-size:10px;color:#2558a0;margin-left:4px}
+#tanka-hist-popup .ph-empty{padding:16px;text-align:center;color:#777;font-size:13px}
 .foot{text-align:center;color:var(--ink-soft);font-size:13px;margin-top:18px}
 .save-note{display:inline-flex;align-items:center;gap:6px;background:var(--green-soft);color:var(--green);padding:6px 13px;border-radius:18px;font-size:13px;font-weight:700}
 .hide{display:none}
 
+/* ===== Excel風 現金日計表（金種表）— ぱっと見やさしい淡色・広め余白 ===== */
+.dc-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.dc-sheet{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap;background:#fff;border:1px solid #e7ebf2;padding:22px;border-radius:12px;overflow-x:auto}
+.dc-grid{border-collapse:collapse;font-size:13px;font-family:"Yu Gothic","Meiryo",sans-serif;background:#fff}
+.dc-grid th,.dc-grid td{border:1px solid #eef1f6;padding:0;text-align:center;background:#fff}
+.dc-grid th{background:#f5f7fb;color:#6b7488;font-weight:600;font-size:11px;padding:7px 8px;white-space:nowrap;border-color:#e7ebf2}
+.dc-grid .den{background:#fafbfd;font-weight:600;color:#3f485c;text-align:right;padding:0 9px;font-variant-numeric:tabular-nums;min-width:64px}
+.dc-grid .lbl{background:#fafbfd;font-weight:600;color:#3f485c;text-align:left;padding:0 9px;white-space:nowrap;min-width:78px}
+.dc-grid input{width:100%;border:none;outline:none;padding:8px 9px;font-size:13px;text-align:right;font-variant-numeric:tabular-nums;background:transparent;font-family:inherit;color:var(--ink)}
+.dc-grid input:focus{background:#eef5ff;box-shadow:inset 0 0 0 2px var(--brand)}
+.dc-grid td.calc{text-align:right;padding:8px 9px;font-variant-numeric:tabular-nums;color:#3f485c;background:#fff}
+.dc-grid tr.sum td{background:#f5f7fb;font-weight:700;color:#33405c}
+.dc-grid tr.sum .den{background:#eef1f6}
+.dc-grid .colcnt{width:76px}
+.dc-grid .colamt{width:106px}
+.dc-cap{font-size:12px;font-weight:700;color:#7a8398;margin:0 0 8px;letter-spacing:.4px}
+.dc-bal{margin-top:18px;border:1px solid #dfe4ee;border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#f7f9fc;font-size:14px;color:#3f485c}
+.dc-bal b{color:var(--ink);font-weight:700}
+.dc-bal .yen{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--brand-d);margin-left:4px}
+.dc-bal .diffbox{font-weight:800;font-variant-numeric:tabular-nums}
+.dc-det{border-collapse:collapse;font-size:12px;min-width:240px}
+.dc-det th,.dc-det td{border:1px solid #eef1f6;padding:7px 9px}
+.dc-det th{background:#f5f7fb;color:#6b7488;font-size:10px;font-weight:600;border-color:#e7ebf2}
+.dc-det .m{text-align:left;max-width:160px;color:#3f485c}
+.dc-det .n{text-align:right;font-variant-numeric:tabular-nums}
+.dc-det .carry td{background:#fafbfd;font-weight:600}
+.dc-det .end td{background:#f2f6fc;font-weight:700;color:var(--brand-d)}
+.dc-det .empty{text-align:center;color:var(--ink-soft);padding:16px}
+
 /* ===== 伝票印刷 ===== */
 #print-area{display:none}
-@page{size:A5 landscape;margin:7mm}
+/* 用紙サイズは #print-page（動的@page）に一本化する。
+   ここに無名@pageを重ねると size 指定が競合し、Chrome/Edgeが用紙を
+   プリンタ既定（A5等）に落とす事故が起きるため固定@pageは置かない。 */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html,body{background:#fff;font-family:"MS Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;color:#000;font-size:9pt;margin:0;padding:0}
@@ -224,10 +264,11 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   .dp-scissors{display:none}
 }
 
-/* ===== 帳表印刷（元帳・支払一覧・分析）A4縦 ===== */
-@page report{size:A4 portrait;margin:13mm}
+/* ===== 帳表印刷（元帳・支払一覧・分析）A4縦 =====
+   用紙サイズは #print-page（動的@page）に一本化。名前付き@page（report/dcland）は
+   どの要素からも page: で参照されておらず、動的@pageと競合し得るため削除した。 */
 @media print{
-  .preport{page:report;font-family:"Meiryo","Hiragino Kaku Gothic ProN",sans-serif;color:#000}
+  .preport{font-family:"Meiryo","Hiragino Kaku Gothic ProN",sans-serif;color:#000}
   .preport h1{font-size:16pt;font-weight:800;margin-bottom:3mm;border-bottom:2px solid #000;padding-bottom:2mm}
   .preport .pr-sub{font-size:10pt;margin-bottom:5mm;color:#000}
   .preport .pr-cards{display:flex;flex-wrap:wrap;gap:4mm;margin-bottom:6mm}
@@ -239,8 +280,111 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   .preport td{border:1px solid #000;padding:1.6mm 2.5mm}
   .preport td.num,.preport th.num{text-align:right;font-variant-numeric:tabular-nums}
   .preport .pr-foot{margin-top:6mm;font-size:9pt;text-align:right;color:#000}
+  .preport button{display:none}
+
+  /* ===== 現金日計表（金種表付き）A4横・2カラム：モノクロ・セル統一・軽い見た目 =====
+     拓也さん確定指針の最終形：
+       左カラム＝集計を縦積み（金種表 → 入金 → 出金 → 残・合計の結論ブロック）
+       右カラム＝当日の現金明細を紙面の高さいっぱいに。罫線枠を用紙下端まで伸ばし
+                 ブランク行で下まで埋める（行数可変対応・帳簿らしく締まる）。
+     左右の見出し上端を横一線（align-items:stretch + 各カラム先頭の sec-ttl で揃う）。 */
+  /* A4横297×210mm・余白9mm → 印刷可能 279×192mm。
+     ★2倍スケール事故対策（最重要）：旧実装は min-height:172mm ＋ spacer行 height:auto で
+       「明細を下端まで伸ばす」設計だった。これだと spacer がコンテンツを印刷可能高さ(192mm)以上に
+       押し広げ、行が少ない日でも Chromium が用紙に収めようと全体を縮小(極小化＝実質2倍スケール)した。
+     ★新実装：高さは height/overflow で“固定クランプ”しない（=クランプすると多行日に本日残が
+       クリップされ消える）。代わりに「常に等倍・1ページ」を JS 側の行数制御で保証する：
+        ①ブランク行は「1ページに収まる最大行数(JS:MAX_DET_ROWS)まで」だけ・行高は固定(spacer廃止)。
+          → 行が少ない日は枠が下端まで埋まり、かつ絶対に1ページを超えない（縮小されない）。
+        ②行が多い日は明細の行高/フォントを段階的に詰める(.dense/.dense2)。flexは2ページ分割で
+          コンテナごと次ページへ飛び先頭が空白になる事故を起こすため改ページさせず、詰めて収める。
+          本日残を含む全行を必ず表示する。
+     これで「短い日=きっちり1ページ・等倍」「多い日=行を詰めて無損失で1ページ」を両立する。 */
+  .dcash{font-family:"Meiryo","Hiragino Kaku Gothic ProN",sans-serif;color:#000;width:279mm;max-width:279mm;margin:0 auto;
+    display:flex;flex-direction:column}
+  .dcash .dc-head{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #000;padding-bottom:1.5mm;margin-bottom:3mm}
+  .dcash .dc-title{font-size:15pt;font-weight:700;letter-spacing:3px}
+  .dcash .dc-meta{font-size:9.5pt;text-align:right;line-height:1.7}
+  .dcash .dc-meta b{font-size:11pt;font-weight:700}
+  /* 本体＝2カラム。高さを伸ばし右明細を下端まで使う（flex:1 で残り高を吸収）。 */
+  .dcash .dc-body{display:flex;gap:6mm;align-items:stretch;flex:1 1 auto;min-height:0}
+  /* min-width:0：列内テーブルの min-content が flex の既定 min-width:auto を押し広げ
+     枠を突き破るのを防ぐ（列ズレの真因対策）。 */
+  .dcash .dc-col-left{width:96mm;flex:0 0 96mm;min-width:0;display:flex;flex-direction:column}
+  .dcash .dc-col-right{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
+  /* 全表共通：行高・余白・罫線を統一（セルサイズ均一）。
+     table-layout:fixed + min-width:0 で列幅を親(各カラム幅)に確実に収める。 */
+  .dcash table{width:100%;border-collapse:collapse;font-size:9.5pt;table-layout:fixed;min-width:0}
+  .dcash th,.dcash td{word-break:break-all}
+  .dcash th,.dcash td{border:1px solid #9a9a9a;padding:0 2mm;height:6.3mm;text-align:center;vertical-align:middle;background:#fff}
+  .dcash th{background:#f1f1f1;font-weight:700;font-size:9pt}
+  /* 左カラムの集計表（金種/入金/出金）は行高を詰めて左カラム全体を1ページに収める。
+     右の明細は逆に下端まで伸ばすので別扱い（既定6.3mm）。 */
+  .dcash .kin th,.dcash .kin td,.dcash .io th,.dcash .io td{height:5.8mm}
+  .dcash .kin{table-layout:fixed}
+  .dcash .kin th,.dcash .kin td{padding:0 1.5mm}
+  .dcash .kin th{font-size:8pt;line-height:1.1}
+  .dcash .kin .den{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;width:16mm}
+  .dcash .kin .cnt{width:13mm;text-align:right;font-variant-numeric:tabular-nums}
+  .dcash .kin .amt{width:auto;text-align:right;font-variant-numeric:tabular-nums}
+  .dcash .kin .sum td{font-weight:700;background:#f1f1f1}
+  .dcash .sec-ttl{font-size:9.5pt;font-weight:700;margin:0 0 1.5mm;padding-bottom:1mm;border-bottom:1px solid #000}
+  /* 左カラム内の入金・出金は2列で横並び（縦の段数を抑え金種表とバランス）。 */
+  .dcash .io-wrap{display:flex;gap:5mm;margin-top:3mm}
+  .dcash .io-box{flex:1 1 0;min-width:0}
+  .dcash .io .lbl{width:auto;font-weight:700;text-align:left}
+  .dcash .io .val{width:20mm;text-align:right;font-variant-numeric:tabular-nums}
+  .dcash .io .total td{font-weight:700;background:#f1f1f1}
+  /* 明細：fixed配下で摘要を広く・数値3列を固定幅に（4等分の崩れ防止）。
+     高さは「行数×固定行高」で決まる（伸縮させない）。短い日はブランク行で下端まで満たし、
+     多い日はブランク0で本物の行が続き、必要なら2ページ目へ流れる。 */
+  .dcash .det-wrap{display:block}
+  .dcash .det{width:100%}
+  .dcash .det th:nth-child(1),.dcash .det .m{text-align:left;width:auto}
+  .dcash .det th:nth-child(2),.dcash .det th:nth-child(3),.dcash .det th:nth-child(4){width:24mm}
+  .dcash .det .n{text-align:right;font-variant-numeric:tabular-nums;width:24mm}
+  .dcash .det .carry td,.dcash .det .end td{font-weight:700;background:#f1f1f1}
+  /* ブランク行：罫線枠を下端まで満たす（文字は白で非表示・罫線だけ残す）。
+     ★spacer(height:auto)は完全廃止。ブランク行は他行と同じ固定行高(6.3mm)。
+       JS が「1ページに収まる最大行数」までしかブランクを足さないので、
+       合計高は印刷可能高(192mm)に収まり、決して縮小(2倍スケール)されない。 */
+  .dcash .det .blank td{color:#fff}
+  /* 手書き行ズレ防止：空行に薄いゼブラ（交互の淡い背景）。罫線・余白は不変で刷り上がりを崩さない。 */
+  .dcash .det .blank.zebra td{background:#fafbfc}
+  /* ★多行日の扱い：flexレイアウトは2ページ目へ綺麗に分割できない（コンテナごと次ページへ
+     飛び先頭が空白になる事故）。そこで「常に1ページ＝行高を段階的に詰めて収める」方式にする。
+     明細が標準(24行)を超える日は .dense / .dense2 を付け、明細の行高とフォントを段階的に縮小。
+     これで本日残を欠落させず、常に等倍・1ページを維持する（極端な件数=会計上の異常で稀）。 */
+  .dcash.dense .det th,.dcash.dense .det td{height:5.0mm;font-size:8.5pt}
+  .dcash.dense2 .det th,.dcash.dense2 .det td{height:4.0mm;font-size:7.5pt;padding:0 1.2mm}
+
+  /* ===== 残高照合パネル（結論）＝左カラム最下部 =====
+     金種表の「差異」行は廃止済み。差異はこの1箇所に集約（数字の重複をなくす）。
+     上段＝計算式と本日残（理論値・主役を大きく）、下段＝金種合計 vs 本日残＝差異。
+     margin-top:auto で左カラム下端へ寄せ、金種・入出金の下にきっちり配置。 */
+  .dcash .dc-reconcile{margin-top:auto;padding-top:3mm}
+  .dcash .rc-main{border:1.5px solid #000;border-radius:1.5mm;padding:2mm 3.5mm;margin-bottom:2.5mm}
+  .dcash .rc-main .rc-lab{font-size:8pt;font-weight:700;margin-bottom:0.5mm;color:#444}
+  .dcash .rc-main .rc-calc{font-size:9pt;font-variant-numeric:tabular-nums;line-height:1.35;white-space:nowrap}
+  .dcash .rc-main .rc-calc b{font-weight:700}
+  .dcash .rc-main .rc-eq{display:flex;align-items:baseline;justify-content:space-between;gap:3mm;margin-top:1mm;border-top:1px dashed #000;padding-top:1.2mm}
+  .dcash .rc-main .rc-eq .lab{font-size:10pt;font-weight:700}
+  .dcash .rc-main .rc-eq .yen{font-size:18pt;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .dcash .rc-cmp{border:1.5px solid #000;border-radius:1.5mm;display:flex;flex-direction:column;overflow:hidden}
+  .dcash .rc-cmp .rc-row{display:flex;justify-content:space-between;align-items:center;padding:1.2mm 3.5mm;border-bottom:1px solid #9a9a9a;font-size:9pt}
+  .dcash .rc-cmp .rc-row .k{font-weight:700}
+  .dcash .rc-cmp .rc-row .v{font-variant-numeric:tabular-nums;font-weight:700}
+  .dcash .rc-cmp .rc-diff{border-bottom:none;padding:1.6mm 3.5mm;font-size:10.5pt}
+  .dcash .rc-cmp .rc-diff .v{font-size:13pt;font-weight:800}
+  /* 差異あり＝強調（太枠＋網掛け＋下線）。一致＝淡色で安心表示。 */
+  .dcash .rc-cmp.is-diff .rc-diff{background:#e8e8e8;border-top:2px solid #000}
+  .dcash .rc-cmp.is-diff .rc-diff .v{text-decoration:underline}
+  .dcash .rc-cmp.ok .rc-diff{color:#000}
+  .dcash .dc-foot{margin-top:2.5mm;font-size:8.5pt;text-align:right;color:#000}
 }
 </style>
+<!-- 印刷直前に用紙サイズを動的指定（名前付きサイズで指定＝プリンタの用紙不一致保留を防ぐ）。既定はA5横（伝票）。 -->
+<style id="print-page">@page{size:A5 landscape;margin:7mm}</style>
 </head>
 <body>
 <div class="wrap">
@@ -250,13 +394,16 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   <div class="clock"><div id="clock-date"></div><div style="font-size:11px;opacity:.8">データはこのPC内に自動保存</div></div>
 </header>
 
-<div class="tabs">
-  <button class="tab active" data-tab="shiire"><span class="ico">📥</span>仕入入力</button>
-  <button class="tab" data-tab="shiharai"><span class="ico">💴</span>支払入力</button>
-  <button class="tab" data-tab="motocho"><span class="ico">📒</span>元帳</button>
-  <button class="tab" data-tab="seikyu"><span class="ico">📋</span>支払一覧表</button>
-  <button class="tab" data-tab="bunseki"><span class="ico">📊</span>分析帳表</button>
-  <button class="tab" data-tab="master"><span class="ico">🗂</span>マスタ</button>
+<div class="tabs" id="tab-bar">
+  <button class="tab" data-tab="cashbook" draggable="true"><span class="ico">💰</span>現金出納帳</button>
+  <button class="tab active" data-tab="shiire" draggable="true"><span class="ico">📥</span>仕入入力</button>
+  <button class="tab" data-tab="shiharai" draggable="true"><span class="ico">💴</span>支払入力</button>
+  <button class="tab" data-tab="motocho" draggable="true"><span class="ico">📒</span>元帳</button>
+  <button class="tab" data-tab="seikyu" draggable="true"><span class="ico">📋</span>支払一覧表</button>
+  <button class="tab" data-tab="bunseki" draggable="true"><span class="ico">📊</span>分析帳表</button>
+  <button class="tab" data-tab="master" draggable="true"><span class="ico">🗂</span>マスタ</button>
+  <button class="tab" data-tab="zaiko" draggable="true"><span class="ico">📦</span>在庫</button>
+  <button class="tab" data-tab="torihiki" draggable="true"><span class="ico">🤝</span>取引先</button>
 </div>
 
 <!-- ============ 仕入入力 ============ -->
@@ -272,11 +419,11 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
       </div>
       <div class="field"><label>区分</label><input id="sh-stax" readonly placeholder="仕入先を選択"></div>
       <div class="field"><label>工場・店舗名 <span class="key">伝票に印字</span></label>
-        <input id="sh-store" list="store-list" placeholder="例：○○工場" autocomplete="off">
+        <input id="sh-store" list="store-list" placeholder="例：取手工場" autocomplete="off">
         <datalist id="store-list"></datalist>
         <div class="sub">よく使う名称は次回から候補に出ます</div>
       </div>
-      <div class="field"><label>担当者</label><input id="sh-tanto" placeholder="任意"></div>
+      <div class="field"><label>担当者（取手など）</label><input id="sh-tanto" placeholder="任意"></div>
     </div>
 
     <div class="lines">
@@ -397,6 +544,84 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   </div>
 </section>
 
+<!-- ============ 現金出納帳 ============ -->
+<section class="tab-page hide" id="tab-cashbook">
+  <!-- ① 現金エントリ追加 -->
+  <div class="panel">
+    <h2>＋ 現金エントリを追加</h2>
+    <div class="form-grid">
+      <div class="field"><label>日付</label><input type="date" id="cb-date"></div>
+      <div class="field"><label>区分</label>
+        <select id="cb-type"><option value="支出">支出（経費・出金）</option><option value="収入">収入（売上・入金）</option></select>
+      </div>
+      <div class="field"><label>金額(円)</label><input type="number" id="cb-amt" step="1" placeholder="0"></div>
+      <div class="field" style="grid-column:1/-1"><label>摘要（選んでください）</label>
+        <select id="cb-memo" onchange="cbMemoPicked()">
+          <option value="">― 選んでください ―</option>
+          <optgroup label="出金">
+            <option value="現金仕入">現金仕入</option>
+            <option value="日当">日当</option>
+            <option value="経費">経費</option>
+            <option value="仮払">仮払</option>
+            <option value="家賃">家賃</option>
+            <option value="運搬費">運搬費</option>
+            <option value="ガソリン代">ガソリン代</option>
+            <option value="消耗品費">消耗品費</option>
+            <option value="出金">出金（その他）</option>
+          </optgroup>
+          <optgroup label="入金">
+            <option value="現金売上">現金売上</option>
+            <option value="事務">事務</option>
+            <option value="仮戻し">仮戻し</option>
+            <option value="処分代">処分代</option>
+            <option value="返済分">返済分</option>
+            <option value="入金">入金（その他）</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addCashEntry()">＋ 登録</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearCashForm()">クリア</button>
+    </div>
+  </div>
+
+  <!-- ② 金種表 -->
+  <div class="panel">
+    <h2>📄 現金日計表（金種表）<span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" onclick="exportDailyCashExcel()">📊 Excelで保存</button>
+      <button class="btn btn-ghost btn-sm" onclick="printDailyCash()">🖨 A4印刷</button>
+    </h2>
+    <div class="dc-tools">
+      <span class="hint">日付：</span>
+      <input type="date" class="search" style="max-width:160px" id="dc-date" onchange="renderDailyCash()">
+      <input list="store-list" class="search" style="max-width:150px" id="dc-store" placeholder="店舗（例：取手工場）" autocomplete="off" oninput="dcSave()">
+      <button class="btn btn-primary btn-sm" onclick="dcSave(true)">💾 保存</button>
+      <button class="btn btn-ghost btn-sm" onclick="dcClear()">クリア</button>
+      <span class="hint">枚数を打つと金額・合計・差異が自動計算。Enter／↓で下のセルへ。前日繰越・本日残は出納帳から自動。</span>
+    </div>
+    <div class="dc-sheet" id="dc-sheet"></div>
+    <div class="dc-bal" id="dc-bal"></div>
+  </div>
+
+  <!-- ③ 出納帳一覧（差し引き反映） -->
+  <div class="panel">
+    <h2>💰 現金出納帳<span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" onclick="printCashbook()">🖨 月次印刷</button></h2>
+    <div class="toolbar">
+      <span class="hint">対象月：</span>
+      <input type="month" class="search" style="max-width:180px" id="cb-month" onchange="renderCashbook()">
+      <span class="hint">支払入力で「現金」を選んだ取引が自動転記されます。経費・売上現金などは上のフォームから追加してください。</span>
+    </div>
+    <div class="cards" id="cb-cards"></div>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>日付</th><th>摘要</th><th class="num">収入</th><th class="num">支出</th><th class="num">残高</th><th>区分</th><th></th>
+      </tr></thead><tbody id="cb-body"></tbody></table>
+    </div>
+  </div>
+</section>
+
 <!-- ============ 分析帳表 ============ -->
 <section class="tab-page hide" id="tab-bunseki">
   <div class="panel">
@@ -494,14 +719,56 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   </div>
 </section>
 
+<!-- ========== 在庫 ========== -->
+<section class="tab-page hide" id="tab-zaiko">
+  <div class="panel">
+    <h2>📦 在庫の登録</h2>
+    <div class="form-grid">
+      <div class="field"><label>品名</label><input id="z-hinmoku" placeholder="例：銅線・鉄スクラップ"></div>
+      <div class="field"><label>数量</label><input type="number" id="z-suryo" step="0.1" placeholder="0"></div>
+      <div class="field"><label>単位</label><select id="z-tani"><option>kg</option><option>個</option><option>台</option><option>t</option></select></div>
+      <div class="field"><label>単価(円)</label><input type="number" id="z-tanka" step="1" placeholder="0"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>メモ</label><input id="z-memo" placeholder="任意"></div>
+    <button class="btn btn-primary" onclick="addZaiko()">＋ 登録する</button>
+  </div>
+  <div class="panel">
+    <h2>在庫 一覧</h2>
+    <div class="table-wrap"><table><thead><tr>
+      <th>品名</th><th class="num">数量</th><th>単位</th><th class="num">単価</th><th>メモ</th><th></th>
+    </tr></thead><tbody id="z-body"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ========== 取引先 ========== -->
+<section class="tab-page hide" id="tab-torihiki">
+  <div class="panel">
+    <h2>🤝 取引先の登録</h2>
+    <div class="form-grid">
+      <div class="field"><label>名称</label><input id="t-name" placeholder="業者・個人名"></div>
+      <div class="field"><label>連絡先</label><input id="t-renraku" placeholder="電話・メール等"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addTorihiki()">＋ 登録する</button>
+  </div>
+  <div class="panel">
+    <h2>取引先 一覧</h2>
+    <div class="table-wrap"><table><thead><tr>
+      <th>名称</th><th>連絡先</th><th></th>
+    </tr></thead><tbody id="t-body"></tbody></table></div>
+  </div>
+</section>
+
 <div class="foot">
   <span class="save-note">💾 入力すると自動保存されます（インターネット不要）</span>
   <div style="margin-top:12px" class="btn-row" style="justify-content:center">
     <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ バックアップ保存</button>
     <button class="btn btn-ghost btn-sm" onclick="document.getElementById('imp').click()">⬆ バックアップ復元</button>
     <button class="btn btn-ghost btn-sm" onclick="loadSample()">サンプルデータ投入</button>
-    <button class="btn btn-primary btn-sm" onclick="loadProductMaster()">📦 商品コード表を一括登録（67品目）</button>
+    <button class="btn btn-primary btn-sm" onclick="loadProductMaster()">📦 商品コード表を一括登録（69品目）</button>
     <button class="btn btn-green btn-sm" onclick="document.getElementById('imp-price').click()">📥 skr-price-compare.html から単価インポート</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCsv('purchases')">📊 仕入CSV書き出し</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCsv('payments')">📊 支払CSV書き出し</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCsv('cashbook')">📊 現金出納帳CSV書き出し</button>
     <input type="file" id="imp" class="hide" accept=".json" onchange="importData(event)">
     <input type="file" id="imp-price" class="hide" accept=".html,.htm" onchange="importPriceCompare(event)">
   </div>
@@ -510,7 +777,11 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
 </div>
 <!-- 単価履歴ポップアップ -->
 <div id="tanka-hist-popup">
-  <div class="ph-title">📊 単価履歴（クリックで適用）</div>
+  <div class="ph-bar">単価履歴</div>
+  <div class="ph-head">
+    <div class="k">商品コード</div><div class="v" id="ph-code"></div>
+    <div class="k">商品名</div><div class="v" id="ph-name"></div>
+  </div>
   <div id="tanka-hist-list"></div>
 </div>
 
@@ -571,21 +842,88 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   </div>
 </div>
 
+<div class="modal" id="dc-opts-modal"><div class="modal-box"></div></div>
+
 <!-- 印刷エリア -->
 <div id="print-area"></div>
 
 <script>
+/* ============ 安全印刷ヘルパー ============
+ * ① 空印刷ガード: 中身が無いまま印刷→プリンターキューに「サイズ0の空ジョブ」が
+ *    詰まり後続を全部止める事故を防ぐ（実際に発生した不具合の根治）。
+ * ② 同期reflow: offsetHeight読取でDOM反映を強制してから印刷（白紙防止）。
+ *    rAFはChrome/Edgeがユーザー操作外とみなしブロックするため使わない。
+ * ③ 確実なロック解放: afterprintで解放＋非対応環境向けタイマーフォールバック。 */
+let __printingLock=false;
+// 印刷直前に用紙サイズを動的指定。名前付きサイズ(A4/A5 + 向き)で指定する。
+function setPrintPage(size,margin){
+  // 名前付きサイズで指定＝プリンタが標準用紙(A4/A5)に紐付けでき、用紙不一致の保留を防ぐ。
+  // 旧実装はmm実寸へ変換していたが、RICOH等が「カスタム用紙」と解釈→トレイのA4と不一致→
+  // ジョブが保留になりキューが詰まる事故が出たため撤回（2026-06-23 根治）。
+  const el=document.getElementById("print-page");
+  if(el)el.textContent="@page{size:"+size+";margin:"+(margin||"7mm")+"}";
+}
+function safePrint(afterFn){
+  if(__printingLock)return;
+  const area=document.getElementById("print-area");
+  // ① 空印刷ガード
+  if(area && !area.innerHTML.trim()){
+    if(typeof toast==="function")toast("印刷する内容がありません。データを選んでからもう一度お試しください");
+    return;
+  }
+  __printingLock=true;
+  if(area) void area.offsetHeight; // ② 同期reflow強制
+  // ③ ロック解放（1回だけ）
+  let done=false;
+  const release=()=>{
+    if(done)return; done=true;
+    __printingLock=false;
+    window.removeEventListener("afterprint",release);
+    if(afterFn)afterFn();
+  };
+  window.addEventListener("afterprint",release);
+  setTimeout(release,5000); // afterprint非対応・ダイアログ即閉じ対策
+  try{window.print();}
+  catch(e){release();}
+}
+
 /* ============ データ層 ============ */
 const KEY="skr-shiire-kaikake-v1";
 let db=load();
-function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY))||{});}catch(e){return blank();}}
-function blank(){return{suppliers:[],products:[],payitems:[],contracts:[],purchases:[],payments:[],stores:[],seq:{denpyo:1,sup:1,prod:1,item:1}};}
+function load(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(KEY))||{};
+    const d=Object.assign(blank(),raw);
+    // seq は部分マージ（古いデータに cash キーが無い場合でも安全）
+    d.seq=Object.assign({denpyo:1,sup:1,prod:1,item:1,cash:1},raw.seq||{});
+    return d;
+  }catch(e){
+    // 破損データを空で上書きしない（全損防止）。生文字列を退避し、自動保存を停止。
+    try{ const broken=localStorage.getItem(KEY); if(broken) localStorage.setItem(KEY+"-broken-"+Date.now(), broken); }catch(_){}
+    window._loadFailed=true;
+    alert("⚠ 保存データを正しく読み込めませんでした（データ破損の可能性）。\n\n上書きを防ぐため自動保存を一時停止しました。\n画面の「バックアップ復元」で直近のバックアップから戻すか、管理者にご連絡ください。");
+    return blank();
+  }
+}
+function blank(){return{suppliers:[],products:[],payitems:[],contracts:[],purchases:[],payments:[],stores:[],cashbook:[],dailycash:{},zaiko:[],torihiki:[],seq:{denpyo:1,sup:1,prod:1,item:1,cash:1}};}
 function renderStoreList(){const el=document.getElementById("store-list");if(el)el.innerHTML=(db.stores||[]).map(s=>`<option value="${esc(s)}">`).join("");}
-function save(){localStorage.setItem(KEY,JSON.stringify(db));}
-const yen=n=>"¥"+Math.round(Number(n)||0).toLocaleString("ja-JP");
+function save(){
+  // 破損読込後は上書き禁止（復元するまで本物のデータを守る）
+  if(window._loadFailed){ alert("データ破損のため自動保存を停止中です。\n「バックアップ復元」から戻してください。"); return false; }
+  try{
+    localStorage.setItem(KEY,JSON.stringify(db));
+    return true;
+  }catch(e){
+    alert("⚠ 保存できませんでした（PCの保存容量がいっぱい等）。\n\n画面下の「⬇ バックアップ保存」でこの内容をファイルに残してから、古いデータを整理してください。\nこのまま閉じると入力が消えます。\n\n詳細: "+((e&&e.name)||e));
+    return false;
+  }
+}
+const yen=n=>{const v=Math.round(Number(n)||0);return(v<0?"-¥":"¥")+Math.abs(v).toLocaleString("ja-JP");};
+/* マイナス金額は赤字表示（会計表記） */
+const yenC=n=>{const v=Math.round(Number(n)||0);return v<0?`<span style="color:var(--red)">${yen(v)}</span>`:yen(v);};
 const num=n=>(Number(n)||0).toLocaleString("ja-JP");
 const today=()=>new Date().toISOString().slice(0,10);
-const esc=s=>String(s==null?"":s).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+const esc=s=>String(s==null?"":s).replace(/[<>&"'`]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;","'":"&#39;","`":"&#96;"}[c]));
 const pad=(n,l)=>String(n).padStart(l,"0");
 
 /* インボイス：免税控除率（2023.10–2026.9=80%, 2026.10–2029.9=50%, 以降=0%） */
@@ -608,8 +946,8 @@ const findItem=c=>db.payitems.find(i=>i.code===c);
 function contractTanka(sc,pc){const c=db.contracts.find(x=>x.scode===sc&&x.pcode===pc);return c?c.tanka:null;}
 function priceHist(sc,pc){
   const h=[];
-  db.purchases.forEach(pu=>pu.lines.forEach(l=>{if(pu.scode===sc&&l.pcode===pc)h.push({date:pu.date,tanka:l.tanka});}));
-  return h.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  db.purchases.forEach(pu=>pu.lines.forEach(l=>{if(pu.scode===sc&&l.pcode===pc)h.push({date:pu.date,qty:l.qty,tanka:l.tanka});}));
+  return h.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);
 }
 
 /* ---- 単価履歴ポップアップ ---- */
@@ -628,20 +966,28 @@ function showTankaHist(i,el){
   const ct=contractTanka(sc,pc);
   if(ct!=null)extras.push({date:"契約",tanka:ct,tag:"契約"});
   const all=[...extras,...hist.map(h=>({...h,tag:"履歴"}))];
+  // ヘッダー：商品コード／商品名
+  document.getElementById("ph-code").textContent=pc||"—";
+  document.getElementById("ph-name").textContent=pname||"—";
   if(!all.length){
-    list.innerHTML='<div class="ph-empty">履歴なし</div>';
+    list.innerHTML='<div class="ph-empty">この商品の単価履歴はありません</div>';
   } else {
-    list.innerHTML=all.map((h,idx)=>`
-      <div class="ph-row" onclick="applyTankaHist(${i},${h.tanka})">
-        <span class="ph-date">${h.date}${h.tag?'<span style="font-size:11px;color:var(--brand);margin-left:4px">['+h.tag+']</span>':''}</span>
-        <span class="ph-tanka">¥${Number(h.tanka).toLocaleString()}</span>
-      </div>`).join("");
+    const rows=all.map(h=>`
+      <tr onclick="applyTankaHist(${i},${Number(h.tanka)||0})">
+        <td class="d">${h.date}${(h.tag==="マスタ"||h.tag==="契約")?'<span class="ph-tag">['+h.tag+']</span>':''}</td>
+        <td class="q">${h.qty!=null&&h.qty!==""?Number(h.qty).toLocaleString():""}</td>
+        <td class="t">¥${(Number(h.tanka)||0).toLocaleString()}</td>
+      </tr>`).join("");
+    list.innerHTML=`<table class="ph-tbl"><thead><tr><th>日　付</th><th>数　量</th><th>単　価</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
   _phTarget={i,el};
-  // ポジション: input直下
+  // ポジション: input直下（右端はみ出しを補正）
   const rect=el.getBoundingClientRect();
   const scrollY=window.scrollY||document.documentElement.scrollTop;
-  popup.style.left=(rect.left+window.scrollX)+"px";
+  let left=rect.left+window.scrollX;
+  const pw=Math.max(popup.offsetWidth,340);
+  if(left+pw>window.innerWidth-8)left=Math.max(8,window.innerWidth-pw-8);
+  popup.style.left=left+"px";
   popup.style.top=(rect.bottom+scrollY+4)+"px";
   popup.style.display="block";
 }
@@ -725,15 +1071,17 @@ function importPriceCompare(event){
 }
 
 /* ============ タブ切替 ============ */
-document.querySelectorAll(".tabs .tab[data-tab]").forEach(t=>t.onclick=()=>{
+function activateTab(tab){
   document.querySelectorAll(".tab[data-tab]").forEach(x=>x.classList.remove("active"));
-  t.classList.add("active");
+  tab.classList.add("active");
   document.querySelectorAll(".tab-page").forEach(p=>p.classList.add("hide"));
-  document.getElementById("tab-"+t.dataset.tab).classList.remove("hide");
-  if(t.dataset.tab==="motocho")renderMotocho();
-  if(t.dataset.tab==="seikyu")renderSeikyu();
-  if(t.dataset.tab==="bunseki")renderBunseki();
-});
+  document.getElementById("tab-"+tab.dataset.tab).classList.remove("hide");
+  if(tab.dataset.tab==="motocho")renderMotocho();
+  if(tab.dataset.tab==="seikyu")renderSeikyu();
+  if(tab.dataset.tab==="cashbook"){renderCashbook();renderDailyCash();}
+  if(tab.dataset.tab==="bunseki")renderBunseki();
+}
+document.querySelectorAll(".tabs .tab[data-tab]").forEach(t=>t.onclick=()=>activateTab(t));
 document.querySelectorAll(".mtab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".mtab").forEach(x=>x.classList.remove("active"));
   t.classList.add("active");
@@ -741,9 +1089,58 @@ document.querySelectorAll(".mtab").forEach(t=>t.onclick=()=>{
   document.getElementById("m-"+t.dataset.m).classList.remove("hide");
 });
 
+/* ============ タブ並べ替え（ドラッグ&ドロップ） ============ */
+{
+  const bar=document.getElementById("tab-bar");
+  let dragged=null;
+  bar.addEventListener("dragstart",e=>{
+    if(!e.target.classList.contains("tab"))return;
+    dragged=e.target;
+    dragged.classList.add("dragging");
+    e.dataTransfer.effectAllowed="move";
+  });
+  bar.addEventListener("dragend",()=>{
+    if(dragged)dragged.classList.remove("dragging");
+    bar.querySelectorAll(".tab").forEach(t=>t.classList.remove("drag-over"));
+    dragged=null;
+    try{const ord=[...bar.querySelectorAll(".tab[data-tab]")].map(t=>t.dataset.tab);localStorage.setItem("skr.tab-order",JSON.stringify(ord));}catch(e){}
+  });
+  bar.addEventListener("dragover",e=>{
+    e.preventDefault();
+    e.dataTransfer.dropEffect="move";
+    const target=e.target.closest(".tab");
+    if(!target||target===dragged)return;
+    bar.querySelectorAll(".tab").forEach(t=>t.classList.remove("drag-over"));
+    target.classList.add("drag-over");
+  });
+  bar.addEventListener("drop",e=>{
+    e.preventDefault();
+    const target=e.target.closest(".tab");
+    if(!target||!dragged||target===dragged)return;
+    const tabs=[...bar.querySelectorAll(".tab")];
+    const di=tabs.indexOf(dragged),ti=tabs.indexOf(target);
+    if(di<ti)target.after(dragged);else target.before(dragged);
+    bar.querySelectorAll(".tab").forEach(t=>t.classList.remove("drag-over"));
+  });
+  try{
+    const ord=JSON.parse(localStorage.getItem("skr.tab-order"));
+    if(ord&&Array.isArray(ord)){
+      const map=new Map();bar.querySelectorAll(".tab[data-tab]").forEach(t=>map.set(t.dataset.tab,t));
+      ord.forEach(k=>{const t=map.get(k);if(t)bar.appendChild(t);});
+    }
+  }catch(e){}
+}
+
 /* ============ 仕入入力 ============ */
 let shLines=[];
-function clearShiire(){
+function clearShiire(force){
+  // 入力中の明細・仕入先があるときだけ確認（F5・クリア誤押下で消えるのを防ぐ）。
+  // force=true は保存直後のリセット用（確認不要）。
+  if(force!==true){
+    const scEl=document.getElementById("sh-scode");
+    const dirty=shLines.some(l=>l.pname||l.qty||l.tanka)||(scEl&&scEl.value);
+    if(dirty&&!confirm("入力中の伝票内容をすべて消します。よろしいですか？"))return;
+  }
   document.getElementById("sh-date").value=today();
   document.getElementById("sh-no").value="（登録時に採番）";
   document.getElementById("sh-scode").value="";
@@ -756,7 +1153,10 @@ function clearShiire(){
 }
 function addLine(){shLines.push({pcode:"",pname:"",qty:"",unit:"",tanka:"",ttype:"",dust:""});renderLines();}
 function calcLine(l){
-  const qty=Number(l.qty)||0, dust=Number(l.dust)||0, tanka=Number(l.tanka)||0;
+  let qty=Number(l.qty)||0, dust=Number(l.dust)||0; const tanka=Number(l.tanka)||0;
+  // 異常値クランプ：負の重量・0〜100%外のダストで金額がマイナスになる事故を防ぐ
+  if(qty<0)qty=0;
+  if(dust<0)dust=0; if(dust>100)dust=100;
   const dustQty=Math.round(qty*dust/100*100)/100;     // ダスト量(kg)
   const netQty=Math.round((qty-dustQty)*100)/100;     // 正味重量
   const amt=Math.round(netQty*tanka);                 // 金額
@@ -1019,11 +1419,12 @@ function saveShiire(print,pdf){
     lines:recLines,
     total,memo:document.getElementById("sh-memo").value.trim()
   };
-  db.purchases.unshift(rec);save();
+  db.purchases.unshift(rec);
+  if(!save()){ db.purchases.shift(); renderShiireList(); return; } // 保存失敗：取消してフォーム保持
   renderShiireList();refreshSelectors();
-  if(pdf){exportPdfDenpyo(rec);clearShiire();return;}
+  if(pdf){exportPdfDenpyo(rec);clearShiire(true);return;}
   if(print)printDenpyo(rec);
-  clearShiire();
+  clearShiire(true);
   if(!print)toast("伝票 "+no+" を登録しました");
 }
 function renderShiireList(){
@@ -1031,7 +1432,7 @@ function renderShiireList(){
   const rows=db.purchases.filter(r=>{
     if(!q)return true;
     const s=findSup(r.scode);
-    return (s&&s.name.toLowerCase().includes(q))||r.lines.some(l=>l.pname.toLowerCase().includes(q));
+    return (s&&String(s.name||"").toLowerCase().includes(q))||(r.lines||[]).some(l=>String(l.pname||"").toLowerCase().includes(q));
   });
   const b=document.getElementById("sh-list");
   if(!rows.length){b.innerHTML='<tr><td colspan="7" class="empty">伝票がありません</td></tr>';return;}
@@ -1047,7 +1448,14 @@ function renderShiireList(){
           <button class="btn btn-del btn-sm" onclick="delPurchase(${r.id})">削除</button></td></tr>`;
   }).join("");
 }
-function delPurchase(id){if(!confirm("この伝票を削除しますか？"))return;db.purchases=db.purchases.filter(r=>r.id!==id);save();renderShiireList();}
+function delPurchase(id){
+  const r=db.purchases.find(x=>x.id===id);
+  const s=r?findSup(r.scode):null;
+  const label=r?`${r.date}　${r.no}　${s?s.name:r.scode}　${yen(r.total)}`:"";
+  if(!confirm(`この伝票を削除しますか？\n${label}`))return;
+  db.purchases=db.purchases.filter(x=>x.id!==id);
+  save();renderShiireList();
+}
 
 /* ============ 伝票印刷（縦A4・モノクロ・2枚複写） ============ */
 function printDenpyoById(id){const r=db.purchases.find(x=>x.id===id);if(r)printDenpyo(r);}
@@ -1058,7 +1466,7 @@ function wareki(dateStr){
   const era=y>=2019?"令和":(y>=1989?"平成":"昭和");
   return `${era}${ry}年 ${m}月 ${day}日`;
 }
-function printDenpyo(rec){
+function printDenpyo(rec,skipPrint){
   const s=findSup(rec.scode)||{name:rec.scode,tel:"",addr:""};
   const hasDust=rec.lines.some(l=>(l.dust||0)>0);
   const tRecv=rec.lines.reduce((a,l)=>a+(l.qty||0),0);
@@ -1142,7 +1550,7 @@ function printDenpyo(rec){
   document.getElementById("print-area").innerHTML=
     sheet("会社保管用",true)+
     `<div class="dp-page-break">`+sheet("お客様控",false)+`</div>`;
-  window.print();
+  if(!skipPrint){ setPrintPage("A5 landscape","7mm"); safePrint(); }
 }
 
 /* ============ 空白テンプレートPDF（手書き用） ============ */
@@ -1198,68 +1606,29 @@ function exportBlankPdf(){
   <div class="dp-titlebar">仕入買取業　領収書<span class="dp-copy-lbl">${copyLabel}</span></div>
 </div>`;
   }
-  const css=Array.from(document.styleSheets).map(ss=>{
-    try{return Array.from(ss.cssRules).map(r=>r.cssText).join("\n");}catch(e){return "";}
-  }).join("\n");
-  const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-<title>SKR伝票_手書き用テンプレート</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-@page{size:A5 landscape;margin:7mm}
-html,body{background:#fff;font-family:"MS Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;color:#000;margin:0;padding:0}
-#print-area{display:block;margin:0;padding:0}
-${css}
-.denpyo{width:194mm;height:132mm;overflow:hidden}
-.denpyo:first-child{break-after:page;page-break-after:always}
-.dp-page-break{display:contents}
-</style></head><body>
-<div id="print-area">
-  ${blankSheet("会社保管用",true)}
-  <div class="dp-page-break">${blankSheet("お客様控",false)}</div>
-</div>
-<script>window.onload=function(){window.print()};<\/script>
-</body></html>`;
-  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const w=window.open(url,"_blank");
-  if(w){setTimeout(()=>URL.revokeObjectURL(url),60000);}
-  toast("空白テンプレートを開きました。「PDFとして保存」を選んでください");
+  const area=document.getElementById("print-area");
+  area.innerHTML=blankSheet("会社保管用",true)+
+    `<div class="dp-page-break">`+blankSheet("お客様控",false)+`</div>`;
+  setPrintPage("A5 landscape","7mm");
+  const cleanup=()=>{ area.innerHTML=""; window.removeEventListener("afterprint",cleanup); };
+  window.addEventListener("afterprint",cleanup);
+  safePrint();
 }
 
-/* ============ PDF出力（ネットプリント用） ============ */
+/* ============ PDF出力（ネットプリント用） ============
+ * 旧方式は window.open() で別ウィンドウ（ポップアップ）を開いて印刷していたが、
+ *   ・ポップアップブロックや blob 読込タイミングで小窓が壊れて出る（=「印刷エラー」）
+ *   ・伝票印刷（F12/🖨）とは別経路で挙動が安定しない
+ * という事故が出たため廃止。伝票印刷と同じ「直接 印刷ダイアログを出す」確実な経路に統一する。
+ * ネットプリント用PDFは、出てきた印刷ダイアログの送信先を「PDFに保存」にすれば作れる。 */
 function exportPdfDenpyo(rec){
-  // 伝票HTMLを組み立て
-  printDenpyo(rec);  // print-area にHTMLを生成
-  const body=document.getElementById("print-area").innerHTML;
-  // 現在の印刷用CSSを全部取得
-  const css=Array.from(document.styleSheets).map(ss=>{
-    try{return Array.from(ss.cssRules).map(r=>r.cssText).join("\n");}catch(e){return "";}
-  }).join("\n");
-  const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
-<title>SKR伝票_${esc(rec.no)}</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-@page{size:A5 landscape;margin:7mm}
-html,body{background:#fff;font-family:"MS Mincho","Hiragino Mincho ProN","Noto Serif CJK JP",serif;color:#000;margin:0;padding:0}
-#print-area{display:block;margin:0;padding:0}
-${css}
-.denpyo{width:194mm;height:132mm;overflow:hidden}
-.denpyo:first-child{break-after:page;page-break-after:always}
-.dp-page-break{display:contents}
-</style></head><body>
-<div id="print-area">${body}</div>
-<script>
-window.onload=function(){
-  window.print();
-};
-<\/script>
-</body></html>`;
-  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const w=window.open(url,"_blank");
-  // ウィンドウが開いたらBlobURLを解放
-  if(w){setTimeout(()=>URL.revokeObjectURL(url),60000);}
-  toast("新しいウィンドウで印刷ダイアログが開きます。「PDFとして保存」を選んでください");
+  printDenpyo(rec,true);              // #print-area に伝票HTMLを生成（印刷はまだしない）
+  setPrintPage("A5 landscape","7mm"); // 用紙=A5横を確実に指定
+  const area=document.getElementById("print-area");
+  const cleanup=()=>{ area.innerHTML=""; window.removeEventListener("afterprint",cleanup); };
+  window.addEventListener("afterprint",cleanup);
+  toast("印刷ダイアログの送信先を「PDFに保存」にすると、ネットプリント用PDFが作れます");
+  safePrint();
 }
 
 /* ============ 支払入力 ============ */
@@ -1269,7 +1638,11 @@ function supplierBalance(sc){
   db.payments.forEach(p=>{if(p.scode===sc)bal-=p.amount;});
   return bal;
 }
-function clearShiharai(){
+function clearShiharai(force){
+  if(force!==true){
+    const sc=document.getElementById("sp-scode").value, am=document.getElementById("sp-amt").value;
+    if((sc||am)&&!confirm("入力中の支払内容を消します。よろしいですか？"))return;
+  }
   document.getElementById("sp-date").value=today();
   ["sp-scode","sp-pcode","sp-amt","sp-memo"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("sp-sname").textContent="";document.getElementById("sp-pname").textContent="";
@@ -1307,9 +1680,11 @@ function saveShiharai(print){
   const rec={id:Date.now(),date:document.getElementById("sp-date").value||today(),scode:sc,
     pcode:it?it.code:"",pname:it?it.name:"買掛支払",method:document.getElementById("sp-method").value,
     amount:amt,memo:document.getElementById("sp-memo").value.trim()};
-  db.payments.unshift(rec);save();renderShiharaiList();
+  db.payments.unshift(rec);
+  if(!save()){ db.payments.shift(); renderShiharaiList(); return; } // 保存失敗：取消してフォーム保持
+  renderShiharaiList();
   if(print)printReceipt(rec,s);
-  clearShiharai();
+  clearShiharai(true);
   if(!print)toast("支払を登録しました");
 }
 function renderShiharaiList(){
@@ -1322,7 +1697,14 @@ function renderShiharaiList(){
       <td><button class="btn btn-del btn-sm" onclick="delPayment(${r.id})">削除</button></td></tr>`;
   }).join("");
 }
-function delPayment(id){if(!confirm("この支払を削除しますか？"))return;db.payments=db.payments.filter(r=>r.id!==id);save();renderShiharaiList();}
+function delPayment(id){
+  const r=db.payments.find(x=>x.id===id);
+  const s=r?findSup(r.scode):null;
+  const label=r?`${r.date}　${s?s.name:r.scode}　${yen(r.amount)}`:"";
+  if(!confirm(`この支払を削除しますか？\n${label}`))return;
+  db.payments=db.payments.filter(x=>x.id!==id);
+  save();renderShiharaiList();renderCashbook();
+}
 function printReceipt(rec,s){
   function sheet(copyLabel){
     return `<div class="denpyo">
@@ -1361,7 +1743,8 @@ function printReceipt(rec,s){
   document.getElementById("print-area").innerHTML=
     sheet("会社保管用")+
     `<div class="dp-page-break">`+sheet("お客様控")+`</div>`;
-  window.print();
+  setPrintPage("A5 landscape","7mm");
+  safePrint();
 }
 
 /* ============ 元帳 ============ */
@@ -1379,7 +1762,7 @@ function renderMotocho(){
   document.getElementById("mc-body").innerHTML=ev.length?ev.map(e=>{
     bal+=e.debit-e.credit;td+=e.debit;tc+=e.credit;
     return `<tr><td>${esc(e.date)}</td><td>${esc(e.no)}</td><td style="white-space:normal">${esc(e.memo)}</td>
-      <td class="num">${e.debit?yen(e.debit):""}</td><td class="num">${e.credit?yen(e.credit):""}</td><td class="num"><b>${yen(bal)}</b></td></tr>`;
+      <td class="num">${e.debit?yen(e.debit):""}</td><td class="num">${e.credit?yen(e.credit):""}</td><td class="num"><b>${yenC(bal)}</b></td></tr>`;
   }).join(""):'<tr><td colspan="6" class="empty">取引がありません</td></tr>';
   document.getElementById("mc-cards").innerHTML=
     `<div class="card brand"><div class="l">仕入合計（借）</div><div class="v">${yen(td)}</div></div>
@@ -1410,8 +1793,12 @@ function printReport(title,sub,bodyHtml){
     ${bodyHtml}
     <div class="pr-foot">株式会社 S.K.R　／　印刷日 ${wareki(today())}</div>
   </div>`;
-  window.print();
-  setTimeout(()=>{area.innerHTML="";},400);
+  setPrintPage("A4 portrait","13mm");
+  // クリアは「印刷ダイアログを閉じた後（afterprint）」に行う。
+  // 固定タイマーだとプレビュー描画中にコンテンツが消え白紙になる（職場PC・Edge等で発生）
+  const cleanup=()=>{ area.innerHTML=""; window.removeEventListener("afterprint",cleanup); };
+  window.addEventListener("afterprint",cleanup);
+  safePrint();
 }
 
 function printMotocho(){
@@ -1424,6 +1811,475 @@ function printSeikyu(){
   const m=document.getElementById("sk-month").value||today().slice(0,7);
   const tbl=document.querySelector("#tab-seikyu table");
   printReport("支払一覧表","対象締め月："+m,cardsToPrint("sk-cards")+tableToPrint(tbl));
+}
+function printCashbook(){
+  const m=document.getElementById("cb-month").value||today().slice(0,7);
+  const tbl=document.querySelector("#tab-cashbook table");
+  printReport("現金出納帳","対象月："+m,cardsToPrint("cb-cards")+tableToPrint(tbl));
+}
+/* ===== 現金日計表（Excel風・金種表）矢印＋テンキーだけで操作 ===== */
+const DC_DENS=[10000,5000,1000,500,100,50,10,5,1];
+const DC_BOUKIN=[500,100,50,10,5,1]; // 棒金対象（50枚綴り）
+const DC_BOUKIN_AMT={500:25000,100:5000,50:2500,10:500,5:250,1:50}; // 1本あたり金額
+const DC_IN_DEFAULT=["現金売上","事務","仮戻し","処分代","返済分"];
+const DC_OUT_DEFAULT=["現金仕入","日当","経費","仮払","家賃","運搬費","ガソリン代","消耗品費"];
+function dcLoadOpts(type){
+  try{const s=localStorage.getItem("skr.dc-opts-"+type);if(s)return JSON.parse(s);}catch(e){}
+  return type==="in"?[...DC_IN_DEFAULT]:[...DC_OUT_DEFAULT];
+}
+function dcSaveOpts(type,arr){try{localStorage.setItem("skr.dc-opts-"+type,JSON.stringify(arr));}catch(e){}}
+let DC_IN_OPTS=dcLoadOpts("in");
+let DC_OUT_OPTS=dcLoadOpts("out");
+function dcEditOpts(type){
+  const arr=type==="in"?DC_IN_OPTS:DC_OUT_OPTS;
+  const title=type==="in"?"入金項目の管理":"出金項目の管理";
+  let html=`<h3>${title}<span class="spacer"></span><button class="modal-close" onclick="this.closest('.modal').classList.remove('open')">✕</button></h3>`;
+  html+=`<div id="dc-opts-list-${type}">`;
+  arr.forEach((item,i)=>{
+    html+=`<div style="display:flex;gap:6px;align-items:center;margin:4px 0">
+      <input value="${esc(item)}" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:6px;font-size:15px" data-idx="${i}" class="dc-opt-input">
+      <button class="btn btn-del btn-sm" onclick="dcOptDel('${type}',${i})">削除</button>
+    </div>`;
+  });
+  html+=`</div>`;
+  html+=`<div style="display:flex;gap:6px;margin-top:10px">
+    <input id="dc-opt-new-${type}" placeholder="新しい項目名" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:6px;font-size:15px">
+    <button class="btn btn-primary btn-sm" onclick="dcOptAdd('${type}')">＋追加</button>
+  </div>`;
+  html+=`<div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn btn-primary" onclick="dcOptSaveAll('${type}')">保存して閉じる</button>
+  </div>`;
+  const modal=document.getElementById("dc-opts-modal");
+  modal.querySelector(".modal-box").innerHTML=html;
+  modal.classList.add("open");
+}
+function dcOptAdd(type){
+  const inp=document.getElementById("dc-opt-new-"+type);
+  const v=inp.value.trim();if(!v)return;
+  if(type==="in")DC_IN_OPTS.push(v);else DC_OUT_OPTS.push(v);
+  inp.value="";dcEditOpts(type);
+}
+function dcOptDel(type,idx){
+  if(type==="in")DC_IN_OPTS.splice(idx,1);else DC_OUT_OPTS.splice(idx,1);
+  dcEditOpts(type);
+}
+function dcOptSaveAll(type){
+  const inputs=document.querySelectorAll(`#dc-opts-list-${type} .dc-opt-input`);
+  const arr=[...inputs].map(el=>el.value.trim()).filter(Boolean);
+  if(type==="in"){DC_IN_OPTS.length=0;arr.forEach(x=>DC_IN_OPTS.push(x));}
+  else{DC_OUT_OPTS.length=0;arr.forEach(x=>DC_OUT_OPTS.push(x));}
+  dcSaveOpts(type,type==="in"?DC_IN_OPTS:DC_OUT_OPTS);
+  document.getElementById("dc-opts-modal").classList.remove("open");
+  renderDailyCash();toast("項目リストを保存しました");
+}
+// 出納帳から その日の前日繰越・入金・出金 を算出
+function dcFigures(d){
+  let carry=0,dayIn=0,dayOut=0;
+  cashEntries().forEach(e=>{
+    if(e.date<d){carry+=e.income-e.expense;}
+    else if(e.date===d){dayIn+=e.income;dayOut+=e.expense;}
+  });
+  return {carry,dayIn,dayOut,honjitsu:carry+dayIn-dayOut};
+}
+// その日の現金取引明細（伝票No・摘要・入金・出金・残高）＝出納帳から自動。元帳右側欄に相当
+function dcDetail(d){
+  let carry=0;const all=cashEntries();
+  all.forEach(e=>{if(e.date<d)carry+=e.income-e.expense;});
+  let bal=carry;const rows=[];
+  all.forEach(e=>{if(e.date===d){bal+=e.income-e.expense;rows.push({memo:e.memo,income:e.income,expense:e.expense,bal});}});
+  return {carry,rows,end:bal};
+}
+// 画面用：当日明細テーブル
+function dcDetailHtml(d){
+  const det=dcDetail(d);
+  let r=`<tr class="carry"><td class="m">前日繰越</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
+  if(det.rows.length){
+    r+=det.rows.map(x=>`<tr><td class="m">${esc(x.memo)}</td><td class="n">${x.income?yen(x.income):""}</td><td class="n">${x.expense?yen(x.expense):""}</td><td class="n">${yen(x.bal)}</td></tr>`).join("");
+  }else{
+    r+=`<tr><td class="empty" colspan="4">この日の現金取引はありません</td></tr>`;
+  }
+  r+=`<tr class="end"><td class="m">本日残</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.end)}</td></tr>`;
+  return `<table class="dc-det"><thead><tr><th>摘要</th><th>入金</th><th>出金</th><th>残高</th></tr></thead><tbody>${r}</tbody></table>`;
+}
+// セル生成（矢印移動用に row/col 座標を持つ。テンキー入力＝type text+数字のみ）
+function dcCell(row,col,val){
+  return `<input type="text" inputmode="numeric" class="dc-cell" data-row="${row}" data-col="${col}" value="${val!=null&&val!==0?val:""}" `+
+    `onfocus="this.select()" oninput="dcOnInput(this)" onkeydown="dcKey(event,this)">`;
+}
+function renderDailyCash(){
+  const sheet=document.getElementById("dc-sheet");
+  if(!sheet)return;
+  const d=(document.getElementById("dc-date").value)||today();
+  let rec=(db.dailycash&&db.dailycash[d])||{};
+  // 当日データがなければ直近の金種(cnt)を引き継ぐ（日をまたいでもリセットしない）
+  if(!db.dailycash||!db.dailycash[d]){
+    const dates=Object.keys(db.dailycash||{}).filter(k=>k<=d).sort();
+    if(dates.length){const prev=db.dailycash[dates[dates.length-1]];if(prev)rec={cnt:{...(prev.cnt||{})},bou:{...(prev.bou||{})}};}
+  }
+  const cnt=rec.cnt||{},asa=rec.asa||{},zen=rec.zen||{},inn=rec.inn||{},out=rec.out||{},bou=rec.bou||{};
+  // 店舗（前回値を引き継ぎ：キーボード入力できなくても困らないように）
+  const storeEl=document.getElementById("dc-store");
+  if(storeEl&&!storeEl.value)storeEl.value=rec.store||db._dcLastStore||"";
+  // 金種表（col0=枚数, col1=朝追加, col2=前日追加）
+  let kin="";
+  DC_DENS.forEach((v,r)=>{
+    kin+=`<tr>
+      <td class="den">${v.toLocaleString("ja-JP")}</td>
+      <td class="colcnt">${dcCell(r,0,cnt[v])}</td>
+      <td class="calc" id="dc-amt-${r}">0</td>
+      <td class="colcnt">${dcCell(r,1,asa[v])}</td>
+      <td class="colcnt">${dcCell(r,2,zen[v])}</td>
+    </tr>`;
+  });
+  // 棒金（col5）
+  let bouHtml="";
+  DC_BOUKIN.forEach((v,r)=>{
+    bouHtml+=`<tr>
+      <td class="den">${v.toLocaleString("ja-JP")}円</td>
+      <td style="font-size:11px;color:var(--ink-soft);text-align:center">1本=${DC_BOUKIN_AMT[v].toLocaleString("ja-JP")}円</td>
+      <td class="colcnt">${dcCell(r,5,bou[v])}</td>
+      <td class="calc" id="dc-bou-amt-${r}">0</td>
+    </tr>`;
+  });
+  // 入出金: 出納帳エントリから自動反映 + 手動行
+  const dayEntries=cashEntries().filter(e=>e.date===d);
+  const autoIn=dayEntries.filter(e=>e.income>0).map(e=>({label:e.memo,amount:e.income,auto:true}));
+  const autoOut=dayEntries.filter(e=>e.expense>0).map(e=>({label:e.memo,amount:e.expense,auto:true}));
+  const manualIn=(rec.manualIn||[]).map((x,i)=>({...x,auto:false,idx:i}));
+  const manualOut=(rec.manualOut||[]).map((x,i)=>({...x,auto:false,idx:i}));
+  const allIn=[...autoIn,...manualIn], allOut=[...autoOut,...manualOut];
+
+  function dcIoRow(item,type){
+    if(item.auto) return `<tr><td class="lbl">${esc(item.label)}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px;font-size:11px;color:var(--ink-soft)">自動</td></tr>`;
+    return `<tr><td class="lbl">${esc(item.label)}</td><td class="calc" style="text-align:right">${yen(item.amount)}</td><td style="width:30px"><button class="line-del" onclick="dcDelIo('${type}',${item.idx})">×</button></td></tr>`;
+  }
+  function dcOptsHtml(opts){return opts.map(o=>`<option value="${o}">${o}</option>`).join("");}
+
+  let inHtml=allIn.map(x=>dcIoRow(x,'in')).join("")||'<tr><td class="empty" colspan="3">入金なし</td></tr>';
+  let outHtml=allOut.map(x=>dcIoRow(x,'out')).join("")||'<tr><td class="empty" colspan="3">出金なし</td></tr>';
+  sheet.innerHTML=`
+    <div>
+      <div class="dc-cap">金種表（枚数をテンキーで入力）</div>
+      <table class="dc-grid">
+        <thead><tr><th>金種</th><th>枚数</th><th>金額</th><th>朝追加</th><th>前日〜追加</th></tr></thead>
+        <tbody>${kin}
+          <tr class="sum"><td class="den">合計</td><td class="calc" id="dc-cnt-sum">0</td><td class="calc" id="dc-amt-sum">0</td><td class="calc" id="dc-asa-sum">0</td><td class="calc" id="dc-zen-sum">0</td></tr>
+        </tbody>
+      </table>
+      <div class="dc-cap" style="margin-top:14px">棒金（50枚綴り）</div>
+      <table class="dc-grid">
+        <thead><tr><th>金種</th><th>1本</th><th>本数</th><th>金額</th></tr></thead>
+        <tbody>${bouHtml}
+          <tr class="sum"><td class="den" colspan="2">棒金 合計</td><td class="calc" id="dc-bou-cnt-sum">0</td><td class="calc" id="dc-bou-sum">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="dc-cap">入金</div>
+      <table class="dc-grid"><tbody>${inHtml}
+        <tr class="sum"><td class="lbl">入金 計</td><td class="calc" id="dc-in-sum">0</td><td></td></tr>
+      </tbody></table>
+      <div style="display:flex;gap:6px;margin:6px 0 14px;flex-wrap:wrap;align-items:center">
+        <select id="dc-add-in-label" style="padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px">
+          ${dcOptsHtml(DC_IN_OPTS)}<option value="__custom">その他…</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="dcEditOpts('in')" style="padding:4px 8px" title="項目を編集">✏️</button>
+        <input type="number" id="dc-add-in-amt" placeholder="金額" style="width:100px;padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px;text-align:right">
+        <button class="btn btn-primary btn-sm" onclick="dcAddIo('in')">＋追加</button>
+      </div>
+      <div class="dc-cap">出金</div>
+      <table class="dc-grid"><tbody>${outHtml}
+        <tr class="sum"><td class="lbl">出金 計</td><td class="calc" id="dc-out-sum">0</td><td></td></tr>
+      </tbody></table>
+      <div style="display:flex;gap:6px;margin:6px 0;flex-wrap:wrap;align-items:center">
+        <select id="dc-add-out-label" style="padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px">
+          ${dcOptsHtml(DC_OUT_OPTS)}<option value="__custom">その他…</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="dcEditOpts('out')" style="padding:4px 8px" title="項目を編集">✏️</button>
+        <input type="number" id="dc-add-out-amt" placeholder="金額" style="width:100px;padding:6px;border-radius:6px;border:1.5px solid var(--border);font-size:14px;text-align:right">
+        <button class="btn btn-primary btn-sm" onclick="dcAddIo('out')">＋追加</button>
+      </div>
+    </div>
+    <div>
+      <div class="dc-cap">当日の現金明細（出納帳から自動）</div>
+      ${dcDetailHtml(d)}
+    </div>`;
+  dcCalc();
+  // 最初の枚数セルに自動フォーカス（マウス不要）
+  const first=sheet.querySelector('.dc-cell[data-row="0"][data-col="0"]');
+  if(first)setTimeout(()=>first.focus(),30);
+}
+function dcOnInput(el){ el.value=el.value.replace(/[^0-9]/g,"").slice(0,9); dcCalc(); }
+function dcVal(row,col){
+  const el=document.querySelector(`#dc-sheet .dc-cell[data-row="${row}"][data-col="${col}"]`);
+  return el?(Number(el.value)||0):0;
+}
+function dcCalc(){
+  const d=(document.getElementById("dc-date").value)||today();
+  const f=dcFigures(d);
+  let cntSum=0,amtSum=0,asaSum=0,zenSum=0;
+  DC_DENS.forEach((v,r)=>{
+    const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2);
+    const amt=v*c; cntSum+=c; amtSum+=amt; asaSum+=a; zenSum+=z;
+    const ae=document.getElementById("dc-amt-"+r); if(ae)ae.textContent=amt.toLocaleString("ja-JP");
+  });
+  const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=(val||0).toLocaleString("ja-JP");};
+  set("dc-cnt-sum",cntSum);set("dc-amt-sum",amtSum);set("dc-asa-sum",asaSum);set("dc-zen-sum",zenSum);
+  // 棒金
+  let bouCntSum=0,bouAmtSum=0;
+  DC_BOUKIN.forEach((v,r)=>{
+    const b=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*b;
+    bouCntSum+=b;bouAmtSum+=bAmt;
+    const ae=document.getElementById("dc-bou-amt-"+r);if(ae)ae.textContent=bAmt.toLocaleString("ja-JP");
+  });
+  set("dc-bou-cnt-sum",bouCntSum);set("dc-bou-sum",bouAmtSum);
+  // 入出金合計（自動エントリ+手動エントリ）
+  const dcDate=(document.getElementById("dc-date").value)||today();
+  const dcDayEntries=cashEntries().filter(e=>e.date===dcDate);
+  const dcRec=(db.dailycash&&db.dailycash[dcDate])||{};
+  let inSum=dcDayEntries.filter(e=>e.income>0).reduce((s,e)=>s+e.income,0)+(dcRec.manualIn||[]).reduce((s,x)=>s+x.amount,0);
+  let outSum=dcDayEntries.filter(e=>e.expense>0).reduce((s,e)=>s+e.expense,0)+(dcRec.manualOut||[]).reduce((s,x)=>s+x.amount,0);
+  set("dc-in-sum",inSum);set("dc-out-sum",outSum);
+  // 差異 = (金種合計+棒金合計)（実際に数えた現金）− 本日残（システム理論値）
+  const diff=(amtSum+bouAmtSum)-f.honjitsu;
+  const bal=document.getElementById("dc-bal");
+  if(bal){
+    const cashTotal=amtSum+bouAmtSum;
+    bal.innerHTML=`<span>前日繰越 <b>${yen(f.carry)}</b> ＋ 入金 <b>${yen(f.dayIn)}</b> － 出金 <b>${yen(f.dayOut)}</b> ＝ 本日残 <span class="yen">${yen(f.honjitsu)}</span></span>
+      <span>現金合計（バラ${yen(amtSum)}＋棒金${yen(bouAmtSum)}）<b>${yen(cashTotal)}</b>　差異 <span class="diffbox" style="color:${diff===0?'var(--green)':'var(--red)'}">${diff===0?'±0（一致）':yen(diff)}</span></span>`;
+  }
+}
+function dcCollect(){
+  const cnt={},asa={},zen={},bou={};
+  DC_DENS.forEach((v,r)=>{const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2);if(c)cnt[v]=c;if(a)asa[v]=a;if(z)zen[v]=z;});
+  DC_BOUKIN.forEach((v,r)=>{const b=dcVal(r,5);if(b)bou[v]=b;});
+  const store=(document.getElementById("dc-store").value||"").trim();
+  const d=(document.getElementById("dc-date").value)||today();
+  const prev=(db.dailycash&&db.dailycash[d])||{};
+  return {store,cnt,asa,zen,bou,manualIn:prev.manualIn||[],manualOut:prev.manualOut||[]};
+}
+function dcAddIo(type){
+  const d=(document.getElementById("dc-date").value)||today();
+  const selEl=document.getElementById("dc-add-"+type+"-label");
+  const amtEl=document.getElementById("dc-add-"+type+"-amt");
+  let label=selEl.value;
+  if(label==="__custom"){label=prompt("項目名を入力してください");if(!label)return;}
+  const amount=Number(amtEl.value)||0;
+  if(amount<=0){alert("金額を入力してください");return;}
+  if(!db.dailycash)db.dailycash={};
+  if(!db.dailycash[d])db.dailycash[d]=dcCollect();
+  const key=type==="in"?"manualIn":"manualOut";
+  if(!db.dailycash[d][key])db.dailycash[d][key]=[];
+  db.dailycash[d][key].push({label,amount});
+  save();amtEl.value="";
+  renderDailyCash();
+}
+function dcDelIo(type,idx){
+  const d=(document.getElementById("dc-date").value)||today();
+  if(!db.dailycash||!db.dailycash[d])return;
+  const key=type==="in"?"manualIn":"manualOut";
+  if(!db.dailycash[d][key])return;
+  db.dailycash[d][key].splice(idx,1);
+  save();renderDailyCash();
+}
+function dcSave(showToast){
+  const d=(document.getElementById("dc-date").value)||today();
+  if(!db.dailycash)db.dailycash={};
+  const data=dcCollect();
+  db.dailycash[d]=data;
+  db._dcLastStore=data.store;
+  if(!save())return;
+  if(showToast)toast(d+" の日計表を保存しました");
+}
+function dcClear(){
+  if(!confirm("この日の金種表の入力をすべて消します。よろしいですか？"))return;
+  const d=(document.getElementById("dc-date").value)||today();
+  if(db.dailycash&&db.dailycash[d]){delete db.dailycash[d];save();}
+  renderDailyCash();
+}
+// 矢印＋テンキーだけで全セル移動：↑↓←→ で画面位置どおり隣のセルへ、Enterで下。
+// 3つの表（金種表/入金・出金/…）をまたいでも、実際の画面座標で一番近いセルへ飛ぶので
+// どのセルにも到達できる。←→は文字編集も両立（カーソルが端のときだけセル移動）。
+function dcKey(e,el){
+  const k=e.key;
+  let dir=null;
+  if(k==="ArrowUp")dir="up";
+  else if(k==="ArrowDown"||k==="Enter")dir="down";
+  else if(k==="ArrowLeft"){ if(el.selectionStart===0)dir="left"; else return; }   // カーソルが先頭なら左セルへ（全選択時もstart=0で移動可）
+  else if(k==="ArrowRight"){ if(el.selectionEnd===el.value.length)dir="right"; else return; } // 末尾なら右セルへ
+  else return;
+  e.preventDefault();
+  const cells=[...document.querySelectorAll("#dc-sheet .dc-cell")];
+  const cur=el.getBoundingClientRect();
+  const cx=cur.left+cur.width/2, cy=cur.top+cur.height/2;
+  let best=null,bs=Infinity;
+  cells.forEach(t=>{
+    if(t===el)return;
+    const rc=t.getBoundingClientRect();
+    const tx=rc.left+rc.width/2, ty=rc.top+rc.height/2, dx=tx-cx, dy=ty-cy;
+    if(dir==="up"   && dy>=-1) return;
+    if(dir==="down" && dy<= 1) return;
+    if(dir==="left" && dx>=-1) return;
+    if(dir==="right"&& dx<= 1) return;
+    const vert=(dir==="up"||dir==="down");
+    const primary=vert?Math.abs(dy):Math.abs(dx);   // 進む向きの距離
+    const cross  =vert?Math.abs(dx):Math.abs(dy);   // 直交方向のズレ
+    const score=primary+cross*8;                    // 同じ列/行を強く優先
+    if(score<bs){bs=score;best=t;}
+  });
+  if(best){best.focus();}
+  else if(dir==="down"){dcSave();} // 最下段で↓→自動保存
+}
+/* A4印刷：画面で入力した値をそのまま反映 */
+function printDailyCash(){
+  dcSave();
+  const d=(document.getElementById("dc-date").value)||today();
+  const store=(document.getElementById("dc-store").value||"").trim();
+  const f=dcFigures(d);
+  let amtSum=0,cntSum=0;
+  const kinRows=DC_DENS.map((v,r)=>{
+    const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2),amt=v*c;amtSum+=amt;cntSum+=c;
+    return `<tr><td class="den">${v.toLocaleString("ja-JP")}</td>
+      <td class="cnt">${c||""}</td><td class="amt">${amt?amt.toLocaleString("ja-JP"):""}</td>
+      <td class="cnt">${a||""}</td><td class="cnt">${z||""}</td></tr>`;
+  }).join("");
+  const diff=amtSum-f.honjitsu;
+  let inSum=0;DC_IN.forEach((l,r)=>inSum+=dcVal(r,3));
+  let outSum=0;DC_OUT.forEach((l,r)=>outSum+=dcVal(r,4));
+  const inRows=DC_IN.map((l,r)=>{const x=dcVal(r,3);return `<tr><td class="lbl">${l}</td><td class="val">${x?yen(x):""}</td></tr>`;}).join("");
+  const outRows=DC_OUT.map((l,r)=>{const x=dcVal(r,4);return `<tr><td class="lbl">${l}</td><td class="val">${x?yen(x):""}</td></tr>`;}).join("");
+  // 明細（出納帳から自動）。摘要行＝前日繰越＋当日明細＋本日残。
+  const det=dcDetail(d);
+  let detRows=`<tr class="carry"><td class="m">前日繰越</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.carry)}</td></tr>`;
+  detRows+=det.rows.map(x=>`<tr><td class="m">${esc(x.memo)}</td><td class="n">${x.income?yen(x.income):""}</td><td class="n">${x.expense?yen(x.expense):""}</td><td class="n">${yen(x.bal)}</td></tr>`).join("");
+  detRows+=`<tr class="end"><td class="m">本日残</td><td class="n"></td><td class="n"></td><td class="n">${yen(det.end)}</td></tr>`;
+  // 明細のブランク行で罫線枠を下端まで満たす。常に「等倍・1ページ」を死守する設計。
+  // ★行高固定・spacer廃止。A4横・余白9mm（印刷可能192mm）に収まる明細行数だけ表示。
+  //   ・標準(24行以内) → 通常行高6.3mm。空行で枠を下端まで満たす。
+  //   ・多い日 → .dense(行高5.0mm,~30行) / .dense2(行高4.0mm,~38行) を段階適用し行高を詰めて
+  //              1ページに収める（flexは2ページ分割で先頭空白事故を起こすため改ページさせない）。
+  //   どの段階でも本物の行(本日残含む)は必ず表示。空行は各段階の最大行数まで詰めて枠を下端まで。
+  const usedRows=2+det.rows.length; // 前日繰越＋本日残＋当日明細
+  // 段階別の1ページ最大明細行数（chromium実測で確定）。
+  let densClass="", MAX_DET_ROWS=24;            // 標準：行高6.3mm（25でフッタ溢れ→24が上限）
+  if(usedRows>30){ densClass="dense2"; MAX_DET_ROWS=36; } // 超多：行高4.0mm（37でフッタ溢れ→36が上限）
+  else if(usedRows>24){ densClass="dense"; MAX_DET_ROWS=30; } // 多：行高5.0mm
+  const blanks=Math.max(0,MAX_DET_ROWS-usedRows);
+  let blankRows="";
+  for(let i=0;i<blanks;i++){
+    // 当日明細の続きとして通し番号を数え、1行おきに薄いゼブラ（手書き行ズレ防止）。
+    const zebra=((usedRows+i)%2===1)?" zebra":"";
+    blankRows+=`<tr class="blank${zebra}"><td class="m">　</td><td class="n"></td><td class="n"></td><td class="n"></td></tr>`;
+  }
+  const area=document.getElementById("print-area");
+  area.innerHTML=`<div class="dcash ${densClass}">
+    <div class="dc-head">
+      <div class="dc-title">現　金　日　計　表</div>
+      <div class="dc-meta">
+        <div><b>${store?esc(store):"　　　　　　"}</b>　${wareki(d)}</div>
+        <div style="font-size:8.5pt;color:#000">株式会社 S.K.R</div>
+      </div>
+    </div>
+    <div class="dc-body">
+      <div class="dc-col-left">
+        <div class="sec-ttl">金種表（現金の枚数）</div>
+        <table class="kin">
+          <thead><tr><th>金種</th><th>枚数</th><th>金額</th><th>朝追加</th><th>前日〜<br>追加</th></tr></thead>
+          <tbody>${kinRows}
+            <tr class="sum"><td class="den">合計</td><td class="cnt">${cntSum||""}</td><td class="amt">${amtSum?yen(amtSum):""}</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="io-wrap">
+          <div class="io-box">
+            <div class="sec-ttl">入金</div>
+            <table class="io"><tbody>${inRows}
+              <tr class="total"><td class="lbl">入金　計</td><td class="val auto">${yen(inSum)}</td></tr>
+            </tbody></table>
+          </div>
+          <div class="io-box">
+            <div class="sec-ttl">出金</div>
+            <table class="io"><tbody>${outRows}
+              <tr class="total"><td class="lbl">出金　計</td><td class="val auto">${yen(outSum)}</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+        <div class="dc-reconcile">
+          <div class="rc-main">
+            <div class="rc-lab">前日繰越 ＋ 入金 － 出金 ＝ 本日残</div>
+            <div class="rc-calc">前日繰越 <b>${yen(f.carry)}</b>　＋　入金 <b>${yen(f.dayIn)}</b>　－　出金 <b>${yen(f.dayOut)}</b></div>
+            <div class="rc-eq"><span class="lab">＝　本日残</span><span class="yen">${yen(f.honjitsu)}</span></div>
+          </div>
+          <div class="rc-cmp ${diff===0?'ok':'is-diff'}">
+            <div class="rc-row"><span class="k">金種合計（実際の現金）</span><span class="v">${yen(amtSum)}</span></div>
+            <div class="rc-row rc-diff"><span class="k">差異（金種合計 − 本日残）</span><span class="v">${diff===0?"±0（一致）":yen(diff)}</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dc-col-right">
+        <div class="sec-ttl">当日の現金明細（出納帳より）</div>
+        <div class="det-wrap">
+          <table class="det">
+            <thead><tr><th>摘要</th><th>入金</th><th>出金</th><th>残高</th></tr></thead>
+            <tbody>${detRows}${blankRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="dc-foot">印刷日 ${wareki(today())}　／　前日繰越・入金/出金・本日残・明細はシステム自動、金種は実数えの集計（差異＝実際の手元現金と理論値の差）</div>
+  </div>`;
+  setPrintPage("A4 landscape","9mm");
+  const cleanup=()=>{ area.innerHTML=""; window.removeEventListener("afterprint",cleanup); };
+  window.addEventListener("afterprint",cleanup);
+  safePrint();
+}
+/* Excel(.xls)で保存：Excelが開けるHTML表形式。レイアウトと数式結果を保持 */
+function exportDailyCashExcel(){
+  dcSave();
+  const d=(document.getElementById("dc-date").value)||today();
+  const store=(document.getElementById("dc-store").value||"").trim();
+  const f=dcFigures(d);
+  let amtSum=0,cntSum=0;
+  const kinRows=DC_DENS.map((v,r)=>{
+    const c=dcVal(r,0),a=dcVal(r,1),z=dcVal(r,2),amt=v*c;amtSum+=amt;cntSum+=c;
+    return `<tr><td style="text-align:right">${v}</td><td>${c||""}</td><td style="text-align:right">${amt||""}</td><td>${a||""}</td><td>${z||""}</td></tr>`;
+  }).join("");
+  const diff=amtSum-f.honjitsu;
+  let inSum=0;DC_IN.forEach((l,r)=>inSum+=dcVal(r,3));
+  let outSum=0;DC_OUT.forEach((l,r)=>outSum+=dcVal(r,4));
+  const inRows=DC_IN.map((l,r)=>`<tr><td>${l}</td><td style="text-align:right">${dcVal(r,3)||""}</td></tr>`).join("");
+  const outRows=DC_OUT.map((l,r)=>`<tr><td>${l}</td><td style="text-align:right">${dcVal(r,4)||""}</td></tr>`).join("");
+  const bd="border:1px solid #000;";
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>現金日計表</x:Name>
+<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+<style>td,th{${bd}padding:3px 6px;font-family:'Yu Gothic',Meiryo,sans-serif;font-size:11pt} th{background:#e8e8e8;font-weight:bold;text-align:center}</style></head>
+<body>
+<table style="border-collapse:collapse">
+<tr><td colspan="5" style="font-size:16pt;font-weight:bold;border:none">現金日計表</td><td colspan="2" style="border:none;text-align:right">${store?esc(store):""}　${wareki(d)}</td></tr>
+<tr><td colspan="7" style="border:none;height:6px"></td></tr>
+<tr><th>金種</th><th>枚数</th><th>金額</th><th>朝追加</th><th>前日〜追加</th><th></th><th></th></tr>
+${kinRows.replace(/<tr>/g,'<tr>').replace(/<\/tr>/g,'<td style="border:none"></td><td style="border:none"></td></tr>')}
+<tr><th>合計</th><td>${cntSum||""}</td><td style="text-align:right">${amtSum||""}</td><td></td><td></td><td style="border:none"></td><td style="border:none"></td></tr>
+<tr><th>差異</th><td colspan="4" style="text-align:right">${diff}</td><td style="border:none"></td><td style="border:none"></td></tr>
+<tr><td colspan="7" style="border:none;height:8px"></td></tr>
+<tr><th colspan="2">入金</th><th colspan="2">出金</th><th colspan="3" style="border:none"></th></tr>
+${DC_IN.map((l,r)=>`<tr><td>${l}</td><td style="text-align:right">${dcVal(r,3)||""}</td><td>${DC_OUT[r]}</td><td style="text-align:right">${dcVal(r,4)||""}</td><td colspan="3" style="border:none"></td></tr>`).join("")}
+<tr><th>入金 計</th><td style="text-align:right">${inSum}</td><th>出金 計</th><td style="text-align:right">${outSum}</td><td colspan="3" style="border:none"></td></tr>
+<tr><td colspan="7" style="border:none;height:8px"></td></tr>
+<tr><td>前日繰越</td><td style="text-align:right">${f.carry}</td><td>入金</td><td style="text-align:right">${f.dayIn}</td><td>出金</td><td style="text-align:right">${f.dayOut}</td><td></td></tr>
+<tr><th>本日残</th><td colspan="6" style="text-align:right;font-weight:bold">${f.honjitsu}</td></tr>
+<tr><td colspan="7" style="border:none;height:8px"></td></tr>
+<tr><th colspan="4">当日の現金明細（出納帳より）</th><th colspan="3" style="border:none"></th></tr>
+<tr><th>摘要</th><th>入金</th><th>出金</th><th>残高</th><th colspan="3" style="border:none"></th></tr>
+<tr><td>前日繰越</td><td></td><td></td><td style="text-align:right">${dcDetail(d).carry}</td><td colspan="3" style="border:none"></td></tr>
+${dcDetail(d).rows.map(x=>`<tr><td>${esc(x.memo)}</td><td style="text-align:right">${x.income||""}</td><td style="text-align:right">${x.expense||""}</td><td style="text-align:right">${x.bal}</td><td colspan="3" style="border:none"></td></tr>`).join("")}
+<tr><th>本日残</th><td></td><td></td><td style="text-align:right;font-weight:bold">${dcDetail(d).end}</td><td colspan="3" style="border:none"></td></tr>
+</table></body></html>`;
+  const blob=new Blob(["﻿"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="現金日計表_"+d+".xls";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  toast("Excel（.xls）で保存しました");
 }
 function printBunseki(){
   const m=document.getElementById("bs-month").value||today().slice(0,7);
@@ -1452,8 +2308,101 @@ function renderSeikyu(){
   document.getElementById("sk-body").innerHTML=rows.length?rows.map(r=>
     `<tr><td>${esc(r.s.name)}</td><td>${esc(r.s.close||"")}</td>
       <td><span class="pill ${r.s.tax==="免税"?"free":"tax"}">${esc(r.s.tax)}</span></td>
-      <td class="num">${yen(r.carry)}</td><td class="num">${yen(r.curBuy)}</td><td class="num">${yen(r.curPay)}</td>
-      <td class="num"><b>${yen(r.bal)}</b></td></tr>`).join(""):'<tr><td colspan="7" class="empty">該当データがありません</td></tr>';
+      <td class="num">${yenC(r.carry)}</td><td class="num">${yen(r.curBuy)}</td><td class="num">${yen(r.curPay)}</td>
+      <td class="num"><b>${yenC(r.bal)}</b></td></tr>`).join(""):'<tr><td colspan="7" class="empty">該当データがありません</td></tr>';
+}
+
+/* ============ 現金出納帳 ============ */
+// 摘要を選ぶと区分（収入/支出）を自動セット（事務員の操作を減らす）
+function cbMemoPicked(){
+  const inItems=["現金売上","事務","仮戻し","処分代","返済分","入金"];
+  const m=document.getElementById("cb-memo").value;
+  if(m)document.getElementById("cb-type").value=inItems.includes(m)?"収入":"支出";
+}
+function clearCashForm(){
+  document.getElementById("cb-date").value=today();
+  document.getElementById("cb-type").value="支出";
+  document.getElementById("cb-amt").value="";
+  document.getElementById("cb-memo").value="";
+}
+function addCashEntry(){
+  const d=document.getElementById("cb-date").value;
+  const t=document.getElementById("cb-type").value;
+  const a=Number(document.getElementById("cb-amt").value)||0;
+  const m=document.getElementById("cb-memo").value.trim();
+  if(!d){alert("日付を入力してください");return;}
+  if(a<=0){alert("金額を入力してください");return;}
+  if(!m){alert("摘要を選んでください");return;}
+  db.cashbook=db.cashbook||[];
+  if(!db.seq.cash)db.seq.cash=1;
+  db.cashbook.push({id:db.seq.cash++,date:d,type:t,amount:a,memo:m});
+  if(!save()){ db.cashbook.pop(); db.seq.cash--; return; } // 保存失敗：取消してフォーム保持
+  clearCashForm();
+  renderCashbook();renderDailyCash();
+  toast("現金エントリを登録しました");
+}
+function deleteCashEntry(id){
+  if(!confirm("この現金エントリを削除しますか？"))return;
+  db.cashbook=(db.cashbook||[]).filter(x=>x.id!==id);
+  save();renderCashbook();renderDailyCash();
+}
+function cashEntries(){
+  // 支払入力の「現金」を自動転記
+  const auto=db.payments.filter(p=>p.method==="現金").map(p=>{
+    const s=db.suppliers.find(x=>x.code===p.scode);
+    return {date:p.date,memo:(s?s.name+"／":"")+p.pname+(p.memo?"（"+p.memo+"）":""),
+      income:0,expense:p.amount,kind:"自動（支払）",refId:null};
+  });
+  // 仕入伝票を現金仕入として自動転記
+  const shiire=(db.purchases||[]).map(p=>{
+    const s=db.suppliers.find(x=>x.code===p.scode);
+    const meisai=p.lines.map(l=>l.pname).join("、");
+    return {date:p.date,memo:"現金仕入"+(s?"／"+s.name:"")+(meisai?"（"+meisai+"）":""),
+      income:0,expense:p.total,kind:"自動（仕入）",refId:null};
+  });
+  // 手動エントリ
+  const manual=(db.cashbook||[]).map(c=>({
+    date:c.date,memo:c.memo,
+    income:c.type==="収入"?c.amount:0,
+    expense:c.type==="支出"?c.amount:0,
+    kind:"手動",refId:c.id
+  }));
+  return [...auto,...shiire,...manual].sort((a,b)=>a.date.localeCompare(b.date)||(a.refId||0)-(b.refId||0));
+}
+function renderCashbook(){
+  const m=document.getElementById("cb-month").value||today().slice(0,7);
+  const all=cashEntries();
+  // 前月までの累計で前月繰越を算出
+  let carry=0,inSum=0,outSum=0;
+  const rows=[];
+  all.forEach(e=>{
+    if(e.date.slice(0,7)<m){carry+=e.income-e.expense;}
+    else if(e.date.slice(0,7)===m){inSum+=e.income;outSum+=e.expense;rows.push(e);}
+  });
+  let bal=carry;
+  // 前月末日（例: 2026-06 → 2026-05-31）
+  const prevMonthEnd=(()=>{const [y,mo]=m.split("-").map(Number);return new Date(y,mo-1,0).toISOString().slice(0,10);})();
+  const bodyRows=[
+    `<tr><td>${esc(prevMonthEnd)}</td><td><b>前月繰越</b></td><td class="num"></td><td class="num"></td><td class="num"><b>${yenC(carry)}</b></td><td>—</td><td></td></tr>`
+  ].concat(rows.map(e=>{
+    bal+=e.income-e.expense;
+    const del=e.refId!=null?`<button class="btn btn-ghost btn-sm" onclick="deleteCashEntry(${e.refId})">🗑</button>`:"";
+    return `<tr><td>${esc(e.date)}</td><td style="white-space:normal">${esc(e.memo)}</td>
+      <td class="num">${e.income?yen(e.income):""}</td>
+      <td class="num">${e.expense?yen(e.expense):""}</td>
+      <td class="num"><b>${yenC(bal)}</b></td>
+      <td>${esc(e.kind)}</td><td>${del}</td></tr>`;
+  }));
+  document.getElementById("cb-body").innerHTML=bodyRows.join("");
+  const endBal=carry+inSum-outSum;
+  // 現金残高のマイナスは物理的にありえない＝収入の記帳漏れのサイン
+  const warn=endBal<0?`<div style="grid-column:1/-1;background:var(--red-soft);color:var(--red);border:1.5px solid var(--red);border-radius:9px;padding:10px 14px;font-size:14px;font-weight:700">⚠ 現金残高がマイナスです。現金売上・入金の記帳漏れがないか確認してください。</div>`:"";
+  document.getElementById("cb-cards").innerHTML=
+    `<div class="card brand"><div class="l">前月繰越</div><div class="v">${yenC(carry)}</div></div>
+     <div class="card green"><div class="l">当月収入</div><div class="v">${yen(inSum)}</div></div>
+     <div class="card red"><div class="l">当月支出</div><div class="v">${yen(outSum)}</div></div>
+     <div class="card${endBal<0?" red":""}"><div class="l">月末残高</div><div class="v">${yenC(endBal)}</div></div>
+     ${warn}`;
 }
 
 /* ============ 分析帳表 ============ */
@@ -1713,19 +2662,114 @@ function exportData(){
   const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="skr-shiire-backup-"+today()+".json";a.click();
 }
+/* ===== CSV書き出し（税理士向け） ===== */
+function csvRow(cells){
+  return cells.map(c=>{
+    const s=String(c==null?"":c);
+    return (s.includes(",")||s.includes("\n")||s.includes('"'))?'"'+s.replace(/"/g,'""')+'"':s;
+  }).join(",")+"\r\n";
+}
+function downloadCsv(filename,rows){
+  // BOM付きUTF-8（Excel で文字化けしない）
+  const bom="﻿";
+  const blob=new Blob([bom+rows.join("")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+}
+function exportCsv(type){
+  const m=today().slice(0,7);
+  if(type==="purchases"){
+    const rows=[csvRow(["日付","伝票No","仕入先コード","仕入先名","商品コード","商品名","受入重量","単位","ダスト%","ダスト量","正味重量","単価","金額","課税区分","控除率%","店舗","担当","摘要"])];
+    db.purchases.forEach(p=>{
+      const s=findSup(p.scode)||{name:p.scode};
+      if(!p.lines||!p.lines.length){
+        rows.push(csvRow([p.date,p.no,p.scode,s.name,"","","","","","","","",p.total,p.tax||"",p.kojo||"",p.store||"",p.tanto||"",p.memo||""]));
+      } else {
+        p.lines.forEach(l=>{
+          rows.push(csvRow([p.date,p.no,p.scode,s.name,l.pcode||"",l.pname||"",l.qty||"",l.unit||"",l.dust||"",l.dustQty||"",l.netQty!=null?l.netQty:l.qty,l.tanka||"",l.amount||"",p.tax||"",p.kojo||"",p.store||"",p.tanto||"",p.memo||""]));
+        });
+      }
+    });
+    downloadCsv("skr-仕入明細-"+m+".csv",rows);
+    toast("仕入明細CSV を書き出しました（"+db.purchases.length+"件）");
+  } else if(type==="payments"){
+    const rows=[csvRow(["日付","仕入先コード","仕入先名","支払項目","支払方法","金額","摘要"])];
+    db.payments.forEach(p=>{
+      const s=findSup(p.scode)||{name:p.scode};
+      rows.push(csvRow([p.date,p.scode,s.name,p.pname||"",p.method||"",p.amount||"",p.memo||""]));
+    });
+    downloadCsv("skr-支払一覧-"+m+".csv",rows);
+    toast("支払一覧CSV を書き出しました（"+db.payments.length+"件）");
+  } else if(type==="cashbook"){
+    const entries=cashEntries();
+    const rows=[csvRow(["日付","摘要","収入","支出","区分"])];
+    let carry=0;
+    // 全期間の前月繰越を0スタートで算出しない。ユーザーが月別で出す想定なので全データ出力
+    entries.forEach(e=>{
+      rows.push(csvRow([e.date,e.memo,e.income||"",e.expense||"",e.kind]));
+    });
+    downloadCsv("skr-現金出納帳-"+m+".csv",rows);
+    toast("現金出納帳CSV を書き出しました（"+entries.length+"件）");
+  }
+}
 function importData(e){
   const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{const d=JSON.parse(r.result);if(!confirm("現在のデータを上書きして復元しますか？"))return;db=Object.assign(blank(),d);save();initAll();alert("復元しました");}catch(err){alert("読み込めませんでした");}};
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      // スキーマ検証：別形式/壊れたJSONで本番データを空化・破壊するのを防ぐ
+      if(!d||typeof d!=="object"||Array.isArray(d)||!Array.isArray(d.purchases)||!Array.isArray(d.suppliers)){
+        alert("このファイルはSKR管理のバックアップ形式ではないようです。\n復元を中止しました。");return;
+      }
+      const cnt="（仕入"+d.purchases.length+"件 / 仕入先"+d.suppliers.length+"件）";
+      if(!confirm("現在のデータを、選んだバックアップ"+cnt+"で置き換えます。\n※今のデータは消えます。よろしいですか？"))return;
+      // 上書き前に現データを自動退避（取り違え時の復旧保険）
+      try{ localStorage.setItem(KEY+"-before-import-"+Date.now(), JSON.stringify(db)); }catch(_){}
+      const nd=Object.assign(blank(),d);
+      // 配列フィールドと各伝票の lines を保証（欠落データでの後続クラッシュ防止）
+      ["suppliers","products","payitems","contracts","purchases","payments","stores","cashbook","zaiko","torihiki"].forEach(k=>{ if(!Array.isArray(nd[k]))nd[k]=[]; });
+      if(!nd.dailycash||typeof nd.dailycash!=="object"||Array.isArray(nd.dailycash))nd.dailycash={};
+      nd.purchases=nd.purchases.map(p=>Object.assign({},p,{lines:Array.isArray(p&&p.lines)?p.lines:[],total:Number(p&&p.total)||0}));
+      nd.payments=nd.payments.map(p=>Object.assign({},p,{amount:Number(p&&p.amount)||0}));
+      nd.seq=Object.assign({denpyo:1,sup:1,prod:1,item:1,cash:1},(d&&d.seq)||{});
+      db=nd;
+      window._loadFailed=false; // 復元成功で破損ロック解除
+      if(!save())return;
+      initAll();
+      alert("復元しました"+cnt);
+    }catch(err){ alert("このファイルを読み込めませんでした。\nSKRのバックアップ(.json)を選んでください。"); }
+  };
   r.readAsText(f);
 }
 function loadSample(){
   if((db.suppliers.length||db.purchases.length)&&!confirm("サンプルデータを追加します。よろしいですか？"))return;
   db.suppliers.push(
-    {code:"S0001",name:"サンプル商会A",kana:"さんぷるしょうかいえー",tel:"",tanto:"",tax:"課税",close:"末日",addr:""},
-    {code:"S0002",name:"サンプル業者B",kana:"さんぷるぎょうしゃびー",tel:"",tanto:"",tax:"免税",close:"15日",addr:""});
+    {code:"S0001",name:"千葉金属商会",kana:"ちばきんぞく",tel:"04-7100-0001",tanto:"田中",tax:"課税",close:"末日",addr:"我孫子市"},
+    {code:"S0002",name:"新木解体 個人",kana:"あらきかいたい",tel:"090-0000-0002",tanto:"",tax:"免税",close:"15日",addr:"我孫子市新木"});
   db.payitems.push({code:"I001",name:"買掛支払"},{code:"I002",name:"運搬費"});
-  db.contracts.push({scode:"S0001",pcode:"1020",tanka:0});
+  db.contracts.push({scode:"S0001",pcode:"1020",tanka:1550});
   db.seq.sup=3;db.seq.item=3;
+  // 現金サンプル（方向＝金属屋の実務）：
+  //  ・お客様が金属を「持込（買取）」＝店が現金を支払う＝現金仕入＝出金
+  //  ・貯めた金属を問屋へ「販売」して受け取る＝現金売上＝入金
+  const _td=today();
+  db.cashbook=db.cashbook||[];
+  if(!db.seq.cash)db.seq.cash=1;
+  db.cashbook.push(
+    {id:db.seq.cash++,date:_td,type:"支出",amount:14693,memo:"銅真鍮 持込買取（現金仕入）"},
+    {id:db.seq.cash++,date:_td,type:"支出",amount:27386,memo:"込真鍮 持込買取（現金仕入）"},
+    {id:db.seq.cash++,date:_td,type:"収入",amount:80000,memo:"問屋へ販売（現金売上）"},
+    {id:db.seq.cash++,date:_td,type:"支出",amount:5000,memo:"経費（ガソリン）"}
+  );
+  // 現金日計表（金種表＋入出金内訳）のサンプル。out=出金側に持込買取を集約。
+  db.dailycash=db.dailycash||{};
+  db.dailycash[_td]={
+    store:"取手工場",
+    cnt:{"10000":8,"5000":3,"1000":12,"500":4,"100":20,"50":6,"10":15,"5":2,"1":9},
+    asa:{"10000":1,"5000":1},
+    zen:{"1000":2},
+    inn:{"現金売上":80000,"処分代":3000},
+    out:{"現金仕入":42079,"経費":5000}
+  };
   loadProductMaster(true);
   save();initAll();toast("サンプルデータを投入しました");
 }
@@ -1823,18 +2867,139 @@ function refreshProductDatalist(){
   const el=document.getElementById("prod-datalist");
   if(el)el.innerHTML=db.products.map(p=>`<option value="${esc(p.code)}">${esc(p.code)}：${esc(p.name)}（${esc(p.cat||"")}）</option>`).join("");
 }
+/* ============ 在庫 ============ */
+function addZaiko(){
+  const h=document.getElementById("z-hinmoku").value.trim();
+  if(!h){alert("品名を入力してください");return;}
+  db.zaiko=db.zaiko||[];
+  db.zaiko.unshift({
+    hinmoku:h,
+    suryo:Number(document.getElementById("z-suryo").value)||0,
+    tani:document.getElementById("z-tani").value,
+    tanka:Number(document.getElementById("z-tanka").value)||0,
+    memo:document.getElementById("z-memo").value.trim()
+  });
+  if(!save())return;
+  ["z-hinmoku","z-suryo","z-tanka","z-memo"].forEach(id=>document.getElementById(id).value="");
+  renderZaiko();
+  if(typeof toast==="function")toast("在庫を登録しました");
+}
+function renderZaiko(){
+  const b=document.getElementById("z-body");if(!b)return;
+  const rows=db.zaiko||[];
+  if(!rows.length){b.innerHTML='<tr><td colspan="6" class="empty">データがありません</td></tr>';return;}
+  b.innerHTML=rows.map((r,i)=>
+    `<tr><td><b>${esc(r.hinmoku)}</b></td><td class="num">${r.suryo}</td><td>${esc(r.tani)}</td>
+     <td class="num">${yen(r.tanka)}</td><td>${esc(r.memo)}</td>
+     <td><button class="btn btn-del btn-sm" onclick="delZaiko(${i})">削除</button></td></tr>`
+  ).join("");
+}
+function delZaiko(i){
+  if(!confirm("この在庫を削除しますか？"))return;
+  db.zaiko.splice(i,1);if(!save())return;renderZaiko();
+}
+
+/* ============ 取引先 ============ */
+function addTorihiki(){
+  const n=document.getElementById("t-name").value.trim();
+  if(!n){alert("名称を入力してください");return;}
+  db.torihiki=db.torihiki||[];
+  db.torihiki.unshift({
+    name:n,
+    renraku:document.getElementById("t-renraku").value.trim()
+  });
+  if(!save())return;
+  ["t-name","t-renraku"].forEach(id=>document.getElementById(id).value="");
+  renderTorihiki();
+  if(typeof toast==="function")toast("取引先を登録しました");
+}
+function renderTorihiki(){
+  const b=document.getElementById("t-body");if(!b)return;
+  const rows=db.torihiki||[];
+  if(!rows.length){b.innerHTML='<tr><td colspan="3" class="empty">データがありません</td></tr>';return;}
+  b.innerHTML=rows.map((r,i)=>
+    `<tr><td><b>${esc(r.name)}</b></td><td>${esc(r.renraku)}</td>
+     <td><button class="btn btn-del btn-sm" onclick="delTorihiki(${i})">削除</button></td></tr>`
+  ).join("");
+}
+function delTorihiki(i){
+  if(!confirm("この取引先を削除しますか？"))return;
+  db.torihiki.splice(i,1);if(!save())return;renderTorihiki();
+}
+
 function initAll(){
-  clearShiire();clearShiharai();
+  clearShiire(true);clearShiharai(true);
   renderShiireList();renderShiharaiList();renderSupplier();renderProduct();renderPayitem();renderContract();
   refreshSelectors();renderMotocho();renderStoreList();refreshProductDatalist();refreshSupplierDatalist();
   document.getElementById("sk-month").value=today().slice(0,7);
   document.getElementById("bs-month").value=today().slice(0,7);
-  renderSeikyu();renderBunseki();
+  document.getElementById("cb-month").value=today().slice(0,7);
+  document.getElementById("cb-date").value=today();
+  const dcd=document.getElementById("dc-date");if(dcd)dcd.value=today();
+  renderSeikyu();renderCashbook();renderBunseki();renderDailyCash();
+  renderZaiko();renderTorihiki();
 }
 document.getElementById("clock-date").textContent=new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
 initAll();
 // 起動時に日付欄にフォーカス
 setTimeout(()=>{const d=document.getElementById("sh-date");if(d)d.focus();},100);
+// 未登録の入力がある状態でのタブ閉じ・F5・戻るを警告（入力中の伝票/支払の取りこぼし防止）
+window.addEventListener("beforeunload",function(ev){
+  const shDirty=(typeof shLines!=="undefined")&&shLines.some(l=>l.pname||l.qty||l.tanka);
+  const spEl=document.getElementById("sp-amt");
+  const spDirty=spEl&&spEl.value;
+  if(shDirty||spDirty){ ev.preventDefault(); ev.returnValue=""; }
+});
+</script>
+<script>
+(function(){
+  var KEY="skr-shiire-kaikake-v1";
+  var D="2026-06-22";
+  // 金属屋の実務に沿った方向：
+  //  ・お客様の「銅真鍮 持込（買取）」＝店が現金を支払う＝出金（現金仕入）
+  //  ・貯めた金属を問屋へ「販売」＝現金を受け取る＝入金（現金売上）
+  var seed={
+    suppliers:[{code:"S001",name:"テスト商店",tax:"課税"}],
+    products:[{code:"P001",name:"銅",cat:"非鉄"},{code:"P002",name:"真鍮",cat:"非鉄"}],
+    payitems:[],contracts:[],purchases:[],payments:[],
+    stores:["柏ヤード"],
+    cashbook:[
+      {id:1,date:"2026-06-21",type:"収入",amount:350000,memo:"前日繰越分"},
+      {id:2,date:D,type:"支出",amount:6231,memo:"銅真鍮 持込買取（現金仕入）①"},
+      {id:3,date:D,type:"支出",amount:10462,memo:"銅真鍮 持込買取（現金仕入）②"},
+      {id:4,date:D,type:"支出",amount:14693,memo:"銅真鍮 持込買取（現金仕入）③"},
+      {id:5,date:D,type:"支出",amount:18924,memo:"銅真鍮 持込買取（現金仕入）④"},
+      {id:6,date:D,type:"支出",amount:23155,memo:"銅真鍮 持込買取（現金仕入）⑤"},
+      {id:7,date:D,type:"支出",amount:27386,memo:"込真鍮 持込買取（現金仕入）⑥"},
+      {id:8,date:D,type:"収入",amount:120000,memo:"問屋へ販売（現金売上）"}
+    ],
+    dailycash:{
+      "2026-06-22":{
+        store:"柏ヤード",
+        cnt:{"10000":12,"5000":4,"1000":7,"500":3,"100":15,"50":2,"10":9,"5":1,"1":6},
+        asa:{"1000":2},
+        zen:{"100":5},
+        inn:{"現金売上":120000,"処分代":8000},
+        out:{"現金仕入":100851,"日当":12000}
+      }
+    },
+    seq:{denpyo:1,sup:2,prod:3,item:1,cash:9}
+  };
+  try{localStorage.setItem(KEY,JSON.stringify(seed));}catch(e){}
+
+  function noPrint(fn){ var op=window.print; window.print=function(){}; try{fn();}catch(e){console.error(e);} window.print=op; }
+  function run(){
+    if(location.search.indexOf("__run=daily")<0) return;
+    try{ if(typeof load==="function"){ db=load(); if(typeof initAll==="function") initAll(); } }catch(e){console.error(e);}
+    var dt=document.getElementById("dc-date"); if(dt)dt.value="2026-06-22";
+    var st=document.getElementById("dc-store"); if(st)st.value="柏ヤード";
+    var tab=document.querySelector(".tab[data-tab=cashbook]"); if(tab)tab.click();
+    try{renderDailyCash();}catch(e){console.error(e);}
+    setTimeout(function(){ noPrint(function(){ printDailyCash(); }); },250);
+  }
+  if(document.readyState==="complete") setTimeout(run,300);
+  else window.addEventListener("load",function(){ setTimeout(run,300); });
+})();
 </script>
 </body>
 </html>
