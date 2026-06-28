@@ -59,6 +59,14 @@ p,.sub{font-size:clamp(12px,1.6vw,18px);line-height:1.7;text-align:center;max-wi
 .gallery img{width:100%;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
 .gallery .cap{font-size:clamp(9px,1.1vw,12px);color:#888;margin-top:3px;text-align:center}
 
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:660px}
+.tools-grid .tg-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 12px}
+.tools-grid .tg-item .ti-name{font-size:clamp(11px,1.3vw,14px);font-weight:700;color:#e8e8e8;margin-bottom:2px}
+.tools-grid .tg-item .ti-desc{font-size:clamp(9px,1.1vw,12px);color:#888;line-height:1.4}
+.tools-grid .tg-item.live{border-color:rgba(100,180,110,.25)}
+.tools-grid .tg-item.live .ti-name::after{content:' \2713';color:#6b6;font-size:.85em}
+@media(max-width:600px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
+
 .nr{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:700px;width:100%}
 .nc{text-align:center;min-width:100px;flex:1}
 .nc .nv{font-size:clamp(28px,4.5vw,48px);font-weight:900;color:#c9a84c;line-height:1}
@@ -152,19 +160,40 @@ p,.sub{font-size:clamp(12px,1.6vw,18px);line-height:1.7;text-align:center;max-wi
 <p style="margin-top:8px;font-size:clamp(13px,1.6vw,17px)">合計 <strong class="accent">75本</strong> — すべて内製・外注ゼロ（カタログ実数）</p>
 </section>
 
-<!-- 7: DELIVERABLES (PHOTOS) -->
+<!-- 7: TOOLS (本業向け主要9本) -->
 <section class="slide">
-<h2>制作物 — 本業用に調整した素材</h2>
-<div class="gallery">
-<div><img src="img/ba-kaitai.png" alt="解体Before/After"><div class="cap">解体Before/After投稿素材</div></div>
-<div><img src="img/lp-otasuke.png" alt="おたすけ本舗LP"><div class="cap">おたすけ本舗LP（スマホ対応）</div></div>
-<div><img src="img/carousel-line.png" alt="LINE集客カルーセル"><div class="cap">LINE集客カルーセル広告</div></div>
-<div><img src="img/hojokin-sns.png" alt="補助金告知"><div class="cap">松戸市補助金SNS告知</div></div>
+<h2>制作ツール — 本業向けに作ったもの</h2>
+<div class="tools-grid">
+<div class="tg-item live"><div class="ti-name">仕入買掛管理システム</div><div class="ti-desc">伝票・出納・日計表を一画面管理</div></div>
+<div class="tg-item"><div class="ti-name">粗利シミュレーター</div><div class="ti-desc">解体・防水・伐採の見積→粗利計算</div></div>
+<div class="tg-item"><div class="ti-name">単価比較表</div><div class="ti-desc">競合5社の買取価格を横並び比較</div></div>
+<div class="tg-item"><div class="ti-name">SCRAP COMMAND CENTER</div><div class="ti-desc">金属相場のリアルタイム監視</div></div>
+<div class="tg-item"><div class="ti-name">相場ウォッチ→メルマガ</div><div class="ti-desc">LINE配信用の相場原稿を自動生成</div></div>
+<div class="tg-item"><div class="ti-name">現金日計表</div><div class="ti-desc">取手工場の日次現金実査・金種計算</div></div>
+<div class="tg-item"><div class="ti-name">おたすけ本舗LP</div><div class="ti-desc">サービス紹介（スマホ対応）</div></div>
+<div class="tg-item"><div class="ti-name">KAITAI DECK</div><div class="ti-desc">解体工事の営業プレゼン資料</div></div>
+<div class="tg-item"><div class="ti-name">申請ガイド</div><div class="ti-desc">許認可・補助金の手順書</div></div>
 </div>
-<p class="small">現場写真の色調補正・テキスト合成・レイアウト調整まで全てAIが実行</p>
+<p class="small">他に勤怠管理・メルカリ出品・SIM管理など全75本 → カタログ参照</p>
 </section>
 
-<!-- 8: WHERE (CHANNELS + STATUS) -->
+<!-- 8: RESEARCH (調査・情報資産) -->
+<section class="slide">
+<h2>調査・情報資産 — チームが調べて得た財産</h2>
+<div class="tools-grid">
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">屋上防水 三社比較</div><div class="ti-desc">工事見積を3社で比較・最適業者選定</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">金属相場リサーチ</div><div class="ti-desc">鉄/銅/アルミの建値分析・短期見通し</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">競合買取業者調査</div><div class="ti-desc">千葉北西部8社の単価・強みを比較</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">解体補助金マップ</div><div class="ti-desc">千葉9自治体の補助金制度を網羅調査</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">集客チャネルCPA比較</div><div class="ti-desc">リスティング/MEO/ジモティーのコスト比較</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">法人MNP通信コスト削減</div><div class="ti-desc">高還元代理店の条件・落とし穴を調査</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">通信費キャッシュバック調査</div><div class="ti-desc">光回線乗換え等の法人固定費削減策</div></div>
+<div class="tg-item"><div class="ti-name" style="color:#c9a84c">営業ネタ週次リサーチ</div><div class="ti-desc">補助金・法改正・需要トレンドの定期収集</div></div>
+</div>
+<p class="small">競合動向・法改正・コスト削減の機会を常に収集</p>
+</section>
+
+<!-- 9: WHERE (CHANNELS + STATUS) -->
 <section class="slide">
 <h2>Where — どこで発信しているか</h2>
 <div class="pg">
@@ -180,7 +209,7 @@ p,.sub{font-size:clamp(12px,1.6vw,18px);line-height:1.7;text-align:center;max-wi
 <p class="small" style="margin-top:8px">下書きストック: <span class="accent">37本</span>（公開承認待ち） ／ ✓ = 稼働中 ／ … = 準備中</p>
 </section>
 
-<!-- 9: GROWTH -->
+<!-- 10: GROWTH -->
 <section class="slide">
 <h2>坂本の成長記録</h2>
 <p style="margin-bottom:.8em;color:#999">自腹でサブスクを試し、AIで何ができるか検証→会社に還元</p>
@@ -194,7 +223,7 @@ p,.sub{font-size:clamp(12px,1.6vw,18px);line-height:1.7;text-align:center;max-wi
 <div class="highlight" style="margin-top:10px">「AIで何ができるか」を自分で試し、使えるものだけ会社に導入</div>
 </section>
 
-<!-- 10: NUMBERS -->
+<!-- 11: NUMBERS -->
 <section class="slide">
 <h2>数字で見る実績</h2>
 <div class="nr">
@@ -214,10 +243,22 @@ p,.sub{font-size:clamp(12px,1.6vw,18px);line-height:1.7;text-align:center;max-wi
 </div>
 </section>
 
+<!-- 12: GALLERY (制作素材) -->
+<section class="slide">
+<h2>制作素材 — 広報用に調整した画像</h2>
+<div class="gallery">
+<div><img src="img/ba-kaitai.png" alt="解体Before/After"><div class="cap">解体Before/After投稿素材</div></div>
+<div><img src="img/lp-otasuke.png" alt="おたすけ本舗LP"><div class="cap">おたすけ本舗LP（スマホ対応）</div></div>
+<div><img src="img/carousel-line.png" alt="LINE集客カルーセル"><div class="cap">LINE集客カルーセル広告</div></div>
+<div><img src="img/hojokin-sns.png" alt="補助金告知"><div class="cap">松戸市補助金SNS告知</div></div>
+</div>
+<p class="small">現場写真の色調補正・テキスト合成・レイアウト調整まで全てAIが実行</p>
+</section>
+
 </div>
 
-<div class="arw l" onclick="go(-1)">‹</div>
-<div class="arw r" onclick="go(1)">›</div>
+<div class="arw l" onclick="go(-1)">&#8249;</div>
+<div class="arw r" onclick="go(1)">&#8250;</div>
 <div class="nav" id="nv"></div>
 <div class="pn" id="pn"></div>
 
