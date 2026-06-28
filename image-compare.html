@@ -6,16 +6,16 @@
 <title>画像比較ビューア</title>
 <style>
   :root{
-    --bg:#0e0f13; --panel:#171922; --panel2:#1f2230; --line:#2a2e3e;
-    --txt:#e6e8ef; --muted:#9aa0b4; --accent:#4f8cff; --accent2:#2d6cff;
-    --good:#3ecf8e; --ok:#f5c451; --bad:#ff6b6b; --fav:#ff5d8f;
+    --bg:#111318; --panel:#1a1d27; --panel2:#222632; --line:#2e3346;
+    --ink:#e8eaf0; --sub:#9ca0b4; --ac:#f0883e; --ac2:#e07830;
+    --gn:#3ecf8e; --yl:#f5c451; --rd:#ff6b6b; --fav:#ff5d8f;
     --radius:12px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
   body{
-    background:var(--bg); color:var(--txt);
-    font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",Meiryo,system-ui,sans-serif;
+    background:var(--bg); color:var(--ink);
+    font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans CJK JP",Meiryo,system-ui,sans-serif;
     font-size:14px; line-height:1.5;
   }
   header{
@@ -24,40 +24,40 @@
     position:sticky; top:0; z-index:50;
   }
   header h1{font-size:16px; margin:0; font-weight:600; letter-spacing:.3px;}
-  header h1 .dot{color:var(--accent);}
+  header h1 .dot{color:var(--ac);}
   .sp{flex:1;}
   button, .btn, label.btn{
-    background:var(--panel2); color:var(--txt); border:1px solid var(--line);
+    background:var(--panel2); color:var(--ink); border:1px solid var(--line);
     border-radius:8px; padding:7px 12px; cursor:pointer; font-size:13px;
     transition:.12s; user-select:none; white-space:nowrap;
   }
-  button:hover, .btn:hover, label.btn:hover{border-color:var(--accent); background:#262a3a;}
-  button.primary{background:var(--accent2); border-color:var(--accent2); color:#fff;}
-  button.primary:hover{background:var(--accent);}
+  button:hover, .btn:hover, label.btn:hover{border-color:var(--ac); background:#262a3a;}
+  button.primary{background:var(--ac2); border-color:var(--ac2); color:#fff;}
+  button.primary:hover{background:var(--ac);}
   button:disabled{opacity:.4; cursor:not-allowed;}
   .seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
   .seg button{border:none; border-radius:0; border-right:1px solid var(--line);}
   .seg button:last-child{border-right:none;}
-  .seg button.active{background:var(--accent2); color:#fff;}
+  .seg button.active{background:var(--ac2); color:#fff;}
   select, input[type=text]{
-    background:var(--panel2); color:var(--txt); border:1px solid var(--line);
+    background:var(--panel2); color:var(--ink); border:1px solid var(--line);
     border-radius:8px; padding:6px 9px; font-size:13px; font-family:inherit;
   }
-  .muted{color:var(--muted);}
+  .muted{color:var(--sub);}
   main{padding:16px 18px 60px;}
 
   /* drop zone */
   #drop{
     border:2px dashed var(--line); border-radius:var(--radius);
-    padding:40px 20px; text-align:center; color:var(--muted);
+    padding:40px 20px; text-align:center; color:var(--sub);
     margin-bottom:18px; transition:.15s; background:var(--panel);
   }
-  #drop.drag{border-color:var(--accent); background:#1a2030; color:var(--txt);}
-  #drop .big{font-size:15px; color:var(--txt); margin-bottom:6px;}
+  #drop.drag{border-color:var(--ac); background:#1a2030; color:var(--ink);}
+  #drop .big{font-size:15px; color:var(--ink); margin-bottom:6px;}
 
   .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
   .toolbar .grp{display:flex; gap:6px; align-items:center;}
-  .count{font-size:13px; color:var(--muted);}
+  .count{font-size:13px; color:var(--sub);}
 
   /* grid */
   .grid{
@@ -67,7 +67,7 @@
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
     overflow:hidden; position:relative; transition:.12s;
   }
-  .card.sel{border-color:var(--accent); box-shadow:0 0 0 2px rgba(79,140,255,.35);}
+  .card.sel{border-color:var(--ac); box-shadow:0 0 0 2px rgba(240,136,62,.35);}
   .card .thumb{
     width:100%; aspect-ratio:1/1; background:#0a0b0f center/contain no-repeat;
     cursor:pointer; display:block;
@@ -77,20 +77,20 @@
     text-shadow:0 1px 3px #000; pointer-events:none;
   }
   .card .selnum{
-    position:absolute; top:6px; left:8px; background:var(--accent2); color:#fff;
+    position:absolute; top:6px; left:8px; background:var(--ac2); color:#fff;
     font-size:12px; min-width:20px; height:20px; border-radius:10px;
     display:flex; align-items:center; justify-content:center; padding:0 5px;
   }
   .card .meta{padding:8px 9px 10px;}
-  .card .name{font-size:11px; color:var(--muted); word-break:break-all; margin-bottom:6px; line-height:1.3; max-height:2.6em; overflow:hidden;}
+  .card .name{font-size:11px; color:var(--sub); word-break:break-all; margin-bottom:6px; line-height:1.3; max-height:2.6em; overflow:hidden;}
   .rate{display:flex; gap:5px; align-items:center;}
   .rate button{padding:3px 8px; font-size:13px; line-height:1;}
-  .rate button.r-good.on{background:var(--good); border-color:var(--good); color:#06281a;}
-  .rate button.r-ok.on{background:var(--ok); border-color:var(--ok); color:#3a2c00;}
-  .rate button.r-bad.on{background:var(--bad); border-color:var(--bad); color:#3a0a0a;}
+  .rate button.r-good.on{background:var(--gn); border-color:var(--gn); color:#06281a;}
+  .rate button.r-ok.on{background:var(--yl); border-color:var(--yl); color:#3a2c00;}
+  .rate button.r-bad.on{background:var(--rd); border-color:var(--rd); color:#3a0a0a;}
   .rate button.r-fav.on{background:var(--fav); border-color:var(--fav); color:#3a0019;}
   .card textarea{
-    width:100%; margin-top:7px; background:var(--panel2); color:var(--txt);
+    width:100%; margin-top:7px; background:var(--panel2); color:var(--ink);
     border:1px solid var(--line); border-radius:6px; padding:5px 7px;
     font-size:11px; font-family:inherit; resize:vertical; min-height:30px;
   }
@@ -101,7 +101,7 @@
   .side-wrap{display:flex; gap:14px; align-items:stretch; flex-wrap:wrap;}
   .side-col{flex:1 1 300px; min-width:280px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:10px;}
   .side-col img{width:100%; max-height:62vh; object-fit:contain; background:#0a0b0f; border-radius:8px; display:block;}
-  .side-col .cap{font-size:12px; color:var(--muted); margin-top:8px; word-break:break-all;}
+  .side-col .cap{font-size:12px; color:var(--sub); margin-top:8px; word-break:break-all;}
 
   /* slider */
   #sliderBox{position:relative; max-width:900px; margin:0 auto; user-select:none; touch-action:none;}
@@ -111,29 +111,29 @@
   #sliderBox .top img{position:absolute; top:0; left:0; height:100%; width:auto;}
   #sliderBox .base img{visibility:hidden;}
   #sliderBox .handle{
-    position:absolute; top:0; bottom:0; width:3px; background:var(--accent);
+    position:absolute; top:0; bottom:0; width:3px; background:var(--ac);
     left:50%; transform:translateX(-50%); cursor:ew-resize; z-index:5;
   }
   #sliderBox .handle::after{
     content:"↔"; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:var(--accent); color:#fff; width:30px; height:30px; border-radius:50%;
+    background:var(--ac); color:#fff; width:30px; height:30px; border-radius:50%;
     display:flex; align-items:center; justify-content:center; font-size:15px;
   }
-  .slider-labels{display:flex; justify-content:space-between; max-width:900px; margin:8px auto 0; font-size:12px; color:var(--muted);}
+  .slider-labels{display:flex; justify-content:space-between; max-width:900px; margin:8px auto 0; font-size:12px; color:var(--sub);}
 
   /* parallel scroll */
   #parallel{display:flex; gap:14px; overflow-x:auto; padding-bottom:14px;}
   #parallel .pcol{flex:0 0 auto; width:300px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:10px;}
   #parallel .pcol img{width:100%; max-height:60vh; object-fit:contain; background:#0a0b0f; border-radius:8px;}
-  #parallel .pcol .cap{font-size:11px; color:var(--muted); margin-top:6px; word-break:break-all;}
+  #parallel .pcol .cap{font-size:11px; color:var(--sub); margin-top:6px; word-break:break-all;}
 
-  .empty{text-align:center; color:var(--muted); padding:40px;}
-  .hint{font-size:12px; color:var(--muted);}
+  .empty{text-align:center; color:var(--sub); padding:40px;}
+  .hint{font-size:12px; color:var(--sub);}
 
   /* lightbox */
   #lightbox{position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:200; display:none; align-items:center; justify-content:center; flex-direction:column;}
   #lightbox img{max-width:94vw; max-height:88vh; object-fit:contain;}
-  #lightbox .lbcap{color:var(--muted); margin-top:10px; font-size:13px;}
+  #lightbox .lbcap{color:var(--sub); margin-top:10px; font-size:13px;}
   #lightbox .close{position:absolute; top:18px; right:24px; font-size:26px; cursor:pointer; color:#fff;}
   kbd{background:#000; border:1px solid var(--line); border-radius:4px; padding:1px 6px; font-size:11px;}
 </style>
@@ -566,11 +566,11 @@
     if(!favs.length){ alert("お気に入り(★)が付いた画像がありません。"); return; }
     // open a printable list window with thumbnails + download links
     var html = '<html><head><meta charset="utf-8"><title>お気に入り一覧</title>'+
-      '<style>body{background:#0e0f13;color:#e6e8ef;font-family:sans-serif;padding:20px;}'+
+      '<style>body{background:#111318;color:#e8eaf0;font-family:sans-serif;padding:20px;}'+
       '.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}'+
-      '.c{background:#171922;border:1px solid #2a2e3e;border-radius:10px;padding:10px;}'+
-      'img{width:100%;border-radius:6px;}a{color:#4f8cff;font-size:12px;word-break:break-all;}</style></head><body>'+
-      '<h2>★ お気に入り '+favs.length+'枚</h2><p style="color:#9aa0b4">各画像を右クリック→「名前を付けて保存」、またはリンクから保存できます。</p><div class="g">'+
+      '.c{background:#1a1d27;border:1px solid #2e3346;border-radius:10px;padding:10px;}'+
+      'img{width:100%;border-radius:6px;}a{color:#f0883e;font-size:12px;word-break:break-all;}</style></head><body>'+
+      '<h2>★ お気に入り '+favs.length+'枚</h2><p style="color:#9ca0b4">各画像を右クリック→「名前を付けて保存」、またはリンクから保存できます。</p><div class="g">'+
       favs.map(function(im){
         return '<div class="c"><a href="'+im.url+'" download="'+im.name+'"><img src="'+im.url+'"></a><div><a href="'+im.url+'" download="'+im.name+'">'+im.name+'</a></div></div>';
       }).join("")+'</div></body></html>';

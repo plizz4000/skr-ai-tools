@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>天井ハンター | スロット期待値</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#c9d1d9;font-family:'Segoe UI','Hiragino Sans','Noto Sans JP',sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.header{background:#161b22;border-bottom:1px solid #30363d;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.header h1{font-size:1.1rem;font-weight:700;color:#e6edf3;letter-spacing:.05em}
+.header .sub{font-size:.7rem;color:#8b949e}
+.header .btn-add{background:#238636;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.8rem;font-weight:600;cursor:pointer}
+.container{max-width:600px;margin:0 auto;padding:12px}
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:1rem;padding:12px 12px 12px 36px;outline:none}
+.search-box input:focus{border-color:#58a6ff}
+.search-box::before{content:"🔍";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.9rem}
+.machine-list{display:flex;flex-direction:column;gap:8px}
+.machine-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s}
+.machine-card:hover,.machine-card.active{border-color:#58a6ff}
+.machine-card .name{font-size:1rem;font-weight:600;color:#e6edf3}
+.machine-card .meta{font-size:.78rem;color:#8b949e;margin-top:4px;display:flex;gap:12px}
+.machine-card .meta span{white-space:nowrap}
+.machine-card .tag{display:inline-block;background:#1f6feb22;color:#58a6ff;border-radius:4px;padding:1px 6px;font-size:.7rem;margin-left:6px}
+.calc-panel{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px;margin-bottom:12px;display:none}
+.calc-panel.show{display:block}
+.calc-panel .machine-title{font-size:1.15rem;font-weight:700;color:#e6edf3;margin-bottom:4px}
+.calc-panel .info-row{display:flex;gap:16px;font-size:.82rem;color:#8b949e;margin-bottom:12px;flex-wrap:wrap}
+.calc-panel .info-row b{color:#c9d1d9}
+.g-input-wrap{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.g-input-wrap label{font-size:.85rem;font-weight:600;white-space:nowrap}
+.g-input-wrap input{flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:1.4rem;font-weight:700;padding:10px 12px;text-align:center;outline:none;max-width:160px}
+.g-input-wrap input:focus{border-color:#58a6ff}
+.g-input-wrap .unit{font-size:.9rem;color:#8b949e}
+.ev-result{text-align:center;padding:16px;border-radius:10px;margin-bottom:8px}
+.ev-result.positive{background:#23863622;border:1px solid #238636}
+.ev-result.negative{background:#da363622;border:1px solid #da3636}
+.ev-result.neutral{background:#30363d44;border:1px solid #30363d}
+.ev-result .ev-label{font-size:.8rem;color:#8b949e;margin-bottom:4px}
+.ev-result .ev-value{font-size:2rem;font-weight:800;letter-spacing:1px}
+.ev-result.positive .ev-value{color:#3fb950}
+.ev-result.negative .ev-value{color:#f85149}
+.ev-result.neutral .ev-value{color:#8b949e}
+.ev-result .ev-verdict{font-size:.9rem;font-weight:600;margin-top:6px}
+.ev-result.positive .ev-verdict{color:#3fb950}
+.ev-result.negative .ev-verdict{color:#f85149}
+.ev-bar{height:6px;background:#21262d;border-radius:3px;margin:12px 0;overflow:hidden;position:relative}
+.ev-bar .fill{height:100%;border-radius:3px;transition:width .3s}
+.ev-bar .border-mark{position:absolute;top:-2px;width:2px;height:10px;background:#f0883e;border-radius:1px}
+.ev-bar .current-mark{position:absolute;top:-3px;width:3px;height:12px;background:#58a6ff;border-radius:1px}
+.bar-labels{display:flex;justify-content:space-between;font-size:.7rem;color:#8b949e;margin-bottom:8px}
+.note{font-size:.75rem;color:#8b949e;text-align:center;margin-top:4px}
+.close-btn{float:right;background:none;border:none;color:#8b949e;font-size:1.2rem;cursor:pointer;padding:4px}
+.close-btn:hover{color:#f85149}
+.quick-btns{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.quick-btns button{background:#21262d;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;padding:6px 10px;font-size:.78rem;cursor:pointer}
+.quick-btns button:hover{border-color:#58a6ff;color:#58a6ff}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:1rem;font-weight:700;color:#e6edf3;margin-bottom:12px}
+.modal .field{margin-bottom:10px}
+.modal .field label{display:block;font-size:.8rem;color:#8b949e;margin-bottom:3px}
+.modal .field input,.modal .field textarea{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-size:.9rem;padding:8px 10px;outline:none}
+.modal .field input:focus,.modal .field textarea:focus{border-color:#58a6ff}
+.modal .field textarea{height:60px;resize:vertical}
+.modal .actions{display:flex;gap:8px;margin-top:14px}
+.modal .actions button{flex:1;padding:10px;border-radius:8px;font-size:.9rem;font-weight:600;border:none;cursor:pointer}
+.modal .btn-save{background:#238636;color:#fff}
+.modal .btn-cancel{background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+.modal .btn-delete{background:#da3636;color:#fff}
+.empty{text-align:center;color:#484f58;padding:40px 16px;font-size:.9rem}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>天井ハンター</h1>
+    <div class="sub">スロット期待値計算</div>
+  </div>
+  <button class="btn-add" onclick="openAddModal()">＋ 機種追加</button>
+</div>
+
+<div class="container">
+  <div id="calc-panel" class="calc-panel"></div>
+
+  <div class="search-box">
+    <input type="text" id="search" placeholder="機種名で検索..." oninput="renderList()">
+  </div>
+
+  <div id="machine-list" class="machine-list"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">機種を追加</h2>
+    <div class="field"><label>機種名</label><input type="text" id="m-name" placeholder="例: L北斗の拳"></div>
+    <div class="field"><label>検索用エイリアス（カンマ区切り）</label><input type="text" id="m-alias" placeholder="例: 北斗,ホクト,hokuto"></div>
+    <div class="field"><label>天井G数</label><input type="number" id="m-ceiling" inputmode="numeric" placeholder="例: 1268"></div>
+    <div class="field"><label>ボーダーライン（G数）</label><input type="number" id="m-border" inputmode="numeric" placeholder="例: 600"></div>
+    <div class="field"><label>天井到達時 期待値（円）</label><input type="number" id="m-cev" inputmode="numeric" placeholder="例: 4000"></div>
+    <div class="field"><label>天井恩恵メモ</label><input type="text" id="m-note" placeholder="例: AT確定＋α"></div>
+    <div class="actions">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-delete" id="btn-del" style="display:none" onclick="deleteMachine()">削除</button>
+      <button class="btn-save" onclick="saveMachine()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_KEY="slot-ev-machines-v1";
+const DEFAULT_MACHINES=[
+  {id:1,name:"L北斗の拳",alias:"北斗,ホクト,hokuto",ceiling:1268,border:600,ceilingEV:4000,note:"天井恩恵: AT確定"},
+  {id:2,name:"Lからくりサーカス",alias:"からくり,karakuri",ceiling:800,border:350,ceilingEV:3500,note:"天井恩恵: AT確定"},
+  {id:3,name:"L甲鉄城のカバネリ",alias:"カバネリ,kabaneri",ceiling:750,border:300,ceilingEV:3000,note:"天井恩恵: AT確定"},
+  {id:4,name:"L炎炎ノ消防隊",alias:"炎炎,enen",ceiling:800,border:400,ceilingEV:3200,note:"天井恩恵: AT確定"},
+  {id:5,name:"Lリゼロ2",alias:"リゼロ,rezero",ceiling:1000,border:500,ceilingEV:3800,note:"天井恩恵: AT確定（モード不問）"},
+  {id:6,name:"L転スラ",alias:"転生したらスライムだった件,転スラ,tenslime,slime",ceiling:800,border:400,ceilingEV:3000,note:"天井恩恵: AT確定"},
+  {id:7,name:"Lモンキーターン",alias:"モンキー,monkey",ceiling:800,border:450,ceilingEV:2800,note:"天井恩恵: AT確定"},
+  {id:8,name:"L戦国乙女4",alias:"乙女,otome,戦国乙女",ceiling:1000,border:500,ceilingEV:3500,note:"天井恩恵: AT確定"},
+  {id:9,name:"Lバジリスク絆天膳",alias:"バジリスク,絆,basilisk",ceiling:800,border:350,ceilingEV:3200,note:"天井恩恵: AT確定"},
+  {id:10,name:"Lガンダムユニコーン",alias:"ガンダム,ユニコーン,gundam",ceiling:800,border:400,ceilingEV:3000,note:"天井恩恵: AT確定"},
+  {id:11,name:"Lチバリヨ2",alias:"チバリヨ,chibariyo",ceiling:1200,border:600,ceilingEV:5000,note:"天井恩恵: ボーナス確定"},
+  {id:12,name:"Lヴァルヴレイヴ",alias:"ヴヴヴ,VVV,valvrave",ceiling:800,border:400,ceilingEV:3500,note:"天井恩恵: AT確定"},
+];
+
+let machines=[];
+let editingId=null;
+let selectedId=null;
+
+function load(){
+  const raw=localStorage.getItem(LS_KEY);
+  if(raw){try{machines=JSON.parse(raw);}catch(e){machines=[...DEFAULT_MACHINES];}}
+  else{machines=[...DEFAULT_MACHINES];}
+}
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(machines));}
+
+function calcEV(m,g){
+  if(g<0)g=0;
+  if(g>=m.ceiling)return{ev:m.ceilingEV,pct:100,verdict:"天井到達！打ってください"};
+  if(g<m.border){
+    const cost=(m.border-g)*60;
+    return{ev:-cost,pct:Math.round(g/m.ceiling*100),verdict:`ボーダーまで あと${m.border-g}G`};
+  }
+  const progress=(g-m.border)/(m.ceiling-m.border);
+  const ev=Math.round(progress*m.ceilingEV);
+  return{ev,pct:Math.round(g/m.ceiling*100),verdict:ev>=2000?"期待値高い！GO":"打ってOK"};
+}
+
+function fmtYen(v){
+  const abs=Math.abs(v);
+  const s=abs.toLocaleString("ja-JP");
+  return v>=0?"+¥"+s:"-¥"+s;
+}
+
+function selectMachine(id){
+  selectedId=id;
+  const m=machines.find(x=>x.id===id);
+  if(!m)return;
+  const panel=document.getElementById("calc-panel");
+  panel.innerHTML=`
+    <button class="close-btn" onclick="closeCalc()">&times;</button>
+    <div class="machine-title">${esc(m.name)} <span style="font-size:.7rem;color:#8b949e;cursor:pointer" onclick="openEditModal(${m.id})">✏️編集</span></div>
+    <div class="info-row">
+      <span>天井: <b>${m.ceiling}G</b></span>
+      <span>ボーダー: <b>${m.border}G</b></span>
+      <span>${esc(m.note||"")}</span>
+    </div>
+    <div class="g-input-wrap">
+      <label>現在G数</label>
+      <input type="number" id="current-g" inputmode="numeric" placeholder="0" oninput="updateEV(${m.id})" autofocus>
+      <span class="unit">G</span>
+    </div>
+    <div class="quick-btns" id="quick-btns">
+      ${[100,200,300,400,500,600,700,800].filter(v=>v<=m.ceiling).map(v=>`<button onclick="setG(${v},${m.id})">${v}</button>`).join("")}
+    </div>
+    <div id="ev-result" class="ev-result neutral">
+      <div class="ev-label">期待値</div>
+      <div class="ev-value">—</div>
+      <div class="ev-verdict">G数を入力してください</div>
+    </div>
+    <div class="ev-bar" id="ev-bar">
+      <div class="fill" id="bar-fill" style="width:0;background:#30363d"></div>
+      <div class="border-mark" id="border-mark" style="left:${m.border/m.ceiling*100}%"></div>
+      <div class="current-mark" id="current-mark" style="left:0;display:none"></div>
+    </div>
+    <div class="bar-labels"><span>0G</span><span style="color:#f0883e">ボーダー${m.border}G</span><span>天井${m.ceiling}G</span></div>
+    <div class="note">※期待値は概算です。実際の値は機種・設定・状況により異なります</div>
+  `;
+  panel.classList.add("show");
+  document.querySelectorAll(".machine-card").forEach(c=>c.classList.toggle("active",Number(c.dataset.id)===id));
+  setTimeout(()=>{const inp=document.getElementById("current-g");if(inp)inp.focus();},100);
+}
+
+function setG(v,id){
+  document.getElementById("current-g").value=v;
+  updateEV(id);
+}
+
+function updateEV(id){
+  const m=machines.find(x=>x.id===id);
+  if(!m)return;
+  const g=Number(document.getElementById("current-g").value)||0;
+  const r=calcEV(m,g);
+  const el=document.getElementById("ev-result");
+  const cls=r.ev>0?"positive":r.ev<0?"negative":"neutral";
+  el.className="ev-result "+cls;
+  el.querySelector(".ev-value").textContent=fmtYen(r.ev);
+  el.querySelector(".ev-verdict").textContent=r.verdict;
+  const fill=document.getElementById("bar-fill");
+  fill.style.width=Math.min(r.pct,100)+"%";
+  fill.style.background=r.ev>0?"#238636":"#da3636";
+  const cm=document.getElementById("current-mark");
+  cm.style.left=Math.min(g/m.ceiling*100,100)+"%";
+  cm.style.display="block";
+}
+
+function closeCalc(){
+  document.getElementById("calc-panel").classList.remove("show");
+  selectedId=null;
+  document.querySelectorAll(".machine-card").forEach(c=>c.classList.remove("active"));
+}
+
+function renderList(){
+  const q=(document.getElementById("search").value||"").trim().toLowerCase();
+  const filtered=machines.filter(m=>{
+    if(!q)return true;
+    const haystack=(m.name+" "+(m.alias||"")).toLowerCase();
+    return q.split(/\s+/).every(w=>haystack.includes(w));
+  });
+  const el=document.getElementById("machine-list");
+  if(!filtered.length){el.innerHTML='<div class="empty">機種が見つかりません</div>';return;}
+  el.innerHTML=filtered.map(m=>`
+    <div class="machine-card" data-id="${m.id}" onclick="selectMachine(${m.id})">
+      <div class="name">${esc(m.name)}<span class="tag">天井${m.ceiling}G</span></div>
+      <div class="meta">
+        <span>ボーダー: ${m.border}G</span>
+        <span>天井EV: +¥${m.ceilingEV.toLocaleString("ja-JP")}</span>
+        ${m.note?`<span>${esc(m.note)}</span>`:""}
+      </div>
+    </div>
+  `).join("");
+}
+
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+
+function openAddModal(){
+  editingId=null;
+  document.getElementById("modal-title").textContent="機種を追加";
+  document.getElementById("m-name").value="";
+  document.getElementById("m-alias").value="";
+  document.getElementById("m-ceiling").value="";
+  document.getElementById("m-border").value="";
+  document.getElementById("m-cev").value="";
+  document.getElementById("m-note").value="";
+  document.getElementById("btn-del").style.display="none";
+  document.getElementById("modal-overlay").classList.add("show");
+}
+function openEditModal(id){
+  const m=machines.find(x=>x.id===id);
+  if(!m)return;
+  editingId=id;
+  document.getElementById("modal-title").textContent="機種を編集";
+  document.getElementById("m-name").value=m.name;
+  document.getElementById("m-alias").value=m.alias||"";
+  document.getElementById("m-ceiling").value=m.ceiling;
+  document.getElementById("m-border").value=m.border;
+  document.getElementById("m-cev").value=m.ceilingEV;
+  document.getElementById("m-note").value=m.note||"";
+  document.getElementById("btn-del").style.display="block";
+  document.getElementById("modal-overlay").classList.add("show");
+}
+function closeModal(){document.getElementById("modal-overlay").classList.remove("show");}
+function saveMachine(){
+  const name=document.getElementById("m-name").value.trim();
+  const alias=document.getElementById("m-alias").value.trim();
+  const ceiling=Number(document.getElementById("m-ceiling").value);
+  const border=Number(document.getElementById("m-border").value);
+  const cev=Number(document.getElementById("m-cev").value);
+  const note=document.getElementById("m-note").value.trim();
+  if(!name||!ceiling||!border){alert("機種名・天井・ボーダーは必須です");return;}
+  if(editingId){
+    const m=machines.find(x=>x.id===editingId);
+    if(m){Object.assign(m,{name,alias,ceiling,border,ceilingEV:cev||3000,note});}
+  }else{
+    const maxId=machines.reduce((mx,m)=>Math.max(mx,m.id),0);
+    machines.push({id:maxId+1,name,alias,ceiling,border,ceilingEV:cev||3000,note});
+  }
+  save();renderList();closeModal();
+  if(editingId&&selectedId===editingId)selectMachine(editingId);
+}
+function deleteMachine(){
+  if(!editingId)return;
+  if(!confirm("この機種を削除しますか？"))return;
+  machines=machines.filter(m=>m.id!==editingId);
+  save();renderList();closeModal();
+  if(selectedId===editingId)closeCalc();
+}
+
+load();
+renderList();
+</script>
+</body>
+</html>

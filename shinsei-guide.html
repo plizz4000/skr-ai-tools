@@ -5,43 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S.K.R 申請ガイド</title>
 <style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2230;--line:#2b313c;--ink:#e6edf3;--sub:#9aa7b4;--ac:#58a6ff;--ac2:#388bfd;--gn:#3fb950;--rd:#f85149;--yl:#d29922}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; font-size: 16px; }
-h1 { color: #58a6ff; font-size: 1.6em; margin-bottom: 8px; }
-h2 { color: #f0883e; font-size: 1.2em; margin: 24px 0 12px; border-bottom: 1px solid #30363d; padding-bottom: 6px; }
-h3 { color: #7ee787; font-size: 1em; margin: 16px 0 8px; }
-.subtitle { color: #8b949e; font-size: 0.85em; margin-bottom: 20px; }
+body { background: var(--bg); color: var(--ink); font-family: "Cascadia Code", Consolas, "Yu Gothic UI", Meiryo, system-ui, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; font-size: 16px; }
+h1 { color: var(--ac); font-size: 1.6em; margin-bottom: 8px; }
+h2 { color: var(--yl); font-size: 1.2em; margin: 24px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+h3 { color: var(--gn); font-size: 1em; margin: 16px 0 8px; }
+.subtitle { color: var(--sub); font-size: 0.85em; margin-bottom: 20px; }
 .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-.tab { padding: 10px 20px; background: #21262d; border: 1px solid #30363d; border-radius: 8px; cursor: pointer; font-size: 0.95em; color: #c9d1d9; transition: all 0.2s; min-height: 44px; display: flex; align-items: center; justify-content: center; }
-.tab:hover { background: #30363d; }
-.tab.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+.tab { padding: 10px 20px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; font-size: 0.95em; color: var(--ink); transition: all 0.2s; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.tab:hover { background: var(--line); }
+.tab.active { background: var(--ac2); border-color: var(--ac2); color: #fff; }
 .panel { display: none; }
 .panel.active { display: block; }
-.card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .badge { padding: 3px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 600; white-space: nowrap; }
-.badge-red { background: #da3633; color: #fff; }
-.badge-yellow { background: #d29922; color: #fff; }
-.badge-green { background: #238636; color: #fff; }
-.badge-blue { background: #1f6feb; color: #fff; }
+.badge-red { background: var(--rd); color: #fff; }
+.badge-yellow { background: var(--yl); color: #fff; }
+.badge-green { background: var(--gn); color: #fff; }
+.badge-blue { background: var(--ac2); color: #fff; }
 table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9em; }
-th { background: #21262d; color: #58a6ff; text-align: left; padding: 8px 10px; border: 1px solid #30363d; }
-td { padding: 8px 10px; border: 1px solid #30363d; }
-tr:hover { background: #1c2128; }
+th { background: var(--panel2); color: var(--ac); text-align: left; padding: 8px 10px; border: 1px solid var(--line); }
+td { padding: 8px 10px; border: 1px solid var(--line); }
+tr:hover { background: var(--panel2); }
 .checklist { list-style: none; padding: 0; }
-.checklist li { padding: 8px 0; border-bottom: 1px solid #21262d; display: flex; align-items: center; gap: 10px; min-height: 44px; }
-.checklist input[type="checkbox"] { width: 24px; height: 24px; min-width: 24px; accent-color: #238636; cursor: pointer; }
+.checklist li { padding: 8px 0; border-bottom: 1px solid var(--panel2); display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.checklist input[type="checkbox"] { width: 24px; height: 24px; min-width: 24px; accent-color: var(--gn); cursor: pointer; }
 .checklist label { cursor: pointer; flex: 1; line-height: 1.5; }
-.checklist input:checked + label { color: #8b949e; text-decoration: line-through; }
-.flow { background: #1c2128; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 0.85em; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin: 10px 0; color: #7ee787; overflow-x: auto; }
-.highlight { background: #f0883e22; border-left: 3px solid #f0883e; padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.9em; }
+.checklist input:checked + label { color: var(--sub); text-decoration: line-through; }
+.flow { background: var(--panel2); border-radius: 8px; padding: 14px; font-family: inherit; font-size: 0.85em; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin: 10px 0; color: var(--gn); overflow-x: auto; }
+.highlight { background: #f0883e22; border-left: 3px solid var(--yl); padding: 10px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.9em; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 768px) { .grid2 { grid-template-columns: 1fr; } }
-.talk-box { background: #0d2137; border: 1px solid #1f6feb; border-radius: 8px; padding: 14px; font-size: 0.9em; line-height: 1.6; margin: 10px 0; }
-.calc { background: #1c2128; padding: 12px; border-radius: 8px; margin: 8px 0; }
-.calc input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 10px; border-radius: 4px; width: 100px; font-size: 0.9em; }
-.calc-result { color: #f0883e; font-weight: 600; font-size: 1.1em; margin-top: 8px; }
-.case-table input[type="text"] { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; padding: 4px 8px; border-radius: 4px; width: 100%; font-size: 0.85em; }
+.talk-box { background: #0d2137; border: 1px solid var(--ac2); border-radius: 8px; padding: 14px; font-size: 0.9em; line-height: 1.6; margin: 10px 0; }
+.calc { background: var(--panel2); padding: 12px; border-radius: 8px; margin: 8px 0; }
+.calc input { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 6px 10px; border-radius: 4px; width: 100px; font-size: 0.9em; }
+.calc-result { color: var(--yl); font-weight: 600; font-size: 1.1em; margin-top: 8px; }
+.case-table input[type="text"] { background: var(--bg); border: 1px solid var(--line); color: var(--ink); padding: 4px 8px; border-radius: 4px; width: 100%; font-size: 0.85em; }
 
 /* === Mobile responsive (375px-414px) === */
 @media (max-width: 600px) {
@@ -68,12 +69,12 @@ tr:hover { background: #1c2128; }
   table:not(.case-table) { display: block; }
   table:not(.case-table) thead { display: none; }
   table:not(.case-table) tbody { display: block; }
-  table:not(.case-table) tr { display: block; background: #161b22; border: 1px solid #30363d; border-radius: 8px; margin-bottom: 8px; padding: 10px 12px; }
-  table:not(.case-table) tr:hover { background: #1c2128; }
+  table:not(.case-table) tr { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; padding: 10px 12px; }
+  table:not(.case-table) tr:hover { background: var(--panel2); }
   table:not(.case-table) td,
   table:not(.case-table) th { display: block; border: none; padding: 4px 0; text-align: left; background: transparent; }
   table:not(.case-table) td::before,
-  table:not(.case-table) th::before { content: attr(data-label); color: #58a6ff; font-weight: 600; display: block; font-size: 0.8em; margin-bottom: 2px; }
+  table:not(.case-table) th::before { content: attr(data-label); color: var(--ac); font-weight: 600; display: block; font-size: 0.8em; margin-bottom: 2px; }
 
   /* Case-table (tracker) stays table but scrolls horizontally */
   .case-table { font-size: 0.8em; min-width: 600px; }
@@ -213,7 +214,7 @@ tr:hover { background: #1c2128; }
     <table>
       <thead><tr><th>作業</th><th>解体での頻度</th></tr></thead>
       <tbody>
-      <tr><td data-label="作業">ブレーカー（大型）を使う作業</td><td data-label="頻度" style="color:#f0883e">★ 最多</td></tr>
+      <tr><td data-label="作業">ブレーカー（大型）を使う作業</td><td data-label="頻度" style="color:var(--yl)">★ 最多</td></tr>
       <tr><td data-label="作業">バックホウ（一定重量以上）</td><td data-label="頻度">多い</td></tr>
       <tr><td data-label="作業">くい打機・くい抜機</td><td data-label="頻度">たまに</td></tr>
       <tr><td data-label="作業">さく岩機</td><td data-label="頻度">稀</td></tr>
@@ -228,7 +229,7 @@ tr:hover { background: #1c2128; }
       <tr><td data-label="項目">作業時間</td><td data-label="基準">7:00〜19:00</td></tr>
       <tr><td data-label="項目">1日の作業</td><td data-label="基準">連続6時間以内（合計10時間以内）</td></tr>
       <tr><td data-label="項目">作業期間</td><td data-label="基準">連続6日以内</td></tr>
-      <tr><td data-label="項目">日曜・祝日</td><td data-label="基準" style="color:#da3633">作業禁止</td></tr>
+      <tr><td data-label="項目">日曜・祝日</td><td data-label="基準" style="color:var(--rd)">作業禁止</td></tr>
       <tr><td data-label="項目">騒音</td><td data-label="基準">敷地境界で 85dB 以下</td></tr>
       </tbody>
     </table>
@@ -295,7 +296,7 @@ tr:hover { background: #1c2128; }
     </table>
   </div>
   <div class="grid2">
-    <div class="card" style="border-color: #238636;">
+    <div class="card" style="border-color: var(--gn);">
       <div class="card-header"><h3>2006年9月以降の建物</h3><span class="badge badge-green">簡易</span></div>
       <p>事前調査は必要だが<br><strong>「石綿なし」で報告可（みなし）</strong></p>
       <ul class="checklist" style="margin-top: 10px;">
@@ -303,7 +304,7 @@ tr:hover { background: #1c2128; }
         <li><input type="checkbox" id="a2"><label for="a2">電子報告システムで「石綿なし」報告</label></li>
       </ul>
     </div>
-    <div class="card" style="border-color: #da3633;">
+    <div class="card" style="border-color: var(--rd);">
       <div class="card-header"><h3>2006年8月以前の建物</h3><span class="badge badge-red">要調査</span></div>
       <p><strong>書面 + 目視の事前調査が必須</strong></p>
       <ul class="checklist" style="margin-top: 10px;">
@@ -377,21 +378,21 @@ tr:hover { background: #1c2128; }
     <div class="calc">
       <h3>補助金額かんたん計算</h3>
       <p style="margin: 8px 0;">延床面積 <input type="number" id="calcArea" value="100" min="1"> ㎡ ×
-      <select id="calcType" style="background:#0d1117;border:1px solid #30363d;color:#c9d1d9;padding:6px;border-radius:4px;">
+      <select id="calcType" style="background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:6px;border-radius:4px;">
         <option value="32000">木造(32,000円/㎡)</option>
         <option value="46000">鉄骨(46,000円/㎡)</option>
       </select>
-      <button onclick="calcSubsidy()" style="background:#238636;color:#fff;border:none;padding:6px 16px;border-radius:4px;cursor:pointer;margin-left:8px;">計算</button></p>
+      <button onclick="calcSubsidy()" style="background:var(--gn);color:#fff;border:none;padding:6px 16px;border-radius:4px;cursor:pointer;margin-left:8px;">計算</button></p>
       <div id="calcResult" class="calc-result"></div>
     </div>
   </div>
 
-  <div class="card" style="border-color: #f0883e;">
+  <div class="card" style="border-color: var(--yl);">
     <h3>営業トーク例</h3>
     <div class="talk-box">「この物件、〇〇市の空き家解体補助金の対象になる可能性があります。<br>
 上限〇〇万円で、工事費の〇分の1が補助されます。<br>
 申請手続きもサポートできますので、まずは対象かどうか一緒に確認しませんか？」</div>
-    <p style="color: #8b949e; font-size: 0.85em; margin-top: 8px;">※ 補助金は施主への還元。S.K.Rの取り分は変わらない = 施主の負担減 = 受注しやすくなる</p>
+    <p style="color: var(--sub); font-size: 0.85em; margin-top: 8px;">※ 補助金は施主への還元。S.K.Rの取り分は変わらない = 施主の負担減 = 受注しやすくなる</p>
   </div>
 </div>
 
@@ -406,7 +407,7 @@ tr:hover { background: #1c2128; }
         <th>①リサイクル</th><th>②特定建設</th><th>③Gビズ</th><th>アスベスト</th>
       </tr>
       <tr>
-        <td style="color:#7ee787">（例）○○戸建</td>
+        <td style="color:var(--gn)">（例）○○戸建</td>
         <td>○○市○○X-X</td><td>7/10</td><td>1985年</td><td>120㎡</td>
         <td><span class="badge badge-red">要 7/3</span></td>
         <td><span class="badge badge-yellow">要(ブレーカー)</span></td>
@@ -441,8 +442,8 @@ tr:hover { background: #1c2128; }
 
   <div class="card">
     <h3>7/24 サンプル案件 期限カウントダウン</h3>
-    <p style="font-size: 1.3em; color: #f0883e; margin: 8px 0;" id="countdown"></p>
-    <p style="color: #8b949e;">建物使用期限までに全作業完了が必須（役員会議決定事項）</p>
+    <p style="font-size: 1.3em; color: var(--yl); margin: 8px 0;" id="countdown"></p>
+    <p style="color: var(--sub);">建物使用期限までに全作業完了が必須（役員会議決定事項）</p>
   </div>
 </div>
 

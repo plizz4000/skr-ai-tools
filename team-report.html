@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIチーム活動報告 | S.K.R</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{overflow:hidden;width:100%;height:100%}
+body{font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;background:#0b0b12;color:#e8e8e8;height:100dvh;-webkit-user-select:none;user-select:none}
+.deck{display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1);height:100%}
+.slide{width:100vw;min-width:100vw;flex-shrink:0;height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:clamp(16px,3vw,48px);padding-bottom:48px;position:relative;overflow-x:hidden;overflow-y:auto}
+
+h1{font-size:clamp(22px,4.2vw,44px);font-weight:900;line-height:1.35;text-align:center;margin-bottom:.4em}
+h2{font-size:clamp(17px,2.8vw,32px);font-weight:700;line-height:1.4;text-align:center;margin-bottom:.6em;color:#c9a84c}
+p,.sub{font-size:clamp(12px,1.6vw,18px);line-height:1.7;text-align:center;max-width:680px;color:#999}
+.accent{color:#c9a84c}
+.blue{color:#58a6ff}
+.small{font-size:clamp(10px,1.3vw,14px);color:#666;margin-top:.5em}
+.highlight{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:8px 16px;margin-top:10px;text-align:center;font-size:clamp(11px,1.4vw,15px);color:#c9a84c;font-weight:600}
+
+.org{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:520px}
+.org-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;width:100%}
+.org-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 12px;text-align:center;min-width:80px;flex:1;max-width:160px}
+.org-card.gold{border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.06)}
+.org-card .role{font-size:clamp(9px,1.1vw,12px);color:#777}
+.org-card .name{font-size:clamp(14px,1.8vw,19px);font-weight:700}
+.org-card .desc{font-size:clamp(8px,1vw,11px);color:#555;margin-top:1px}
+.arr{font-size:16px;color:#444}
+
+.tl{width:100%;max-width:620px;position:relative;padding-left:24px}
+.tl::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:rgba(201,168,76,.2)}
+.tl-item{position:relative;margin-bottom:14px;padding-left:14px}
+.tl-item::before{content:'';position:absolute;left:-22px;top:5px;width:9px;height:9px;border-radius:50%;background:#c9a84c;border:2px solid #0b0b12}
+.tl-date{font-size:clamp(9px,1.1vw,12px);color:#c9a84c;font-weight:700}
+.tl-text{font-size:clamp(11px,1.4vw,15px);color:#ccc;line-height:1.4;margin-top:1px}
+.tl-ba{display:inline-block;font-size:clamp(9px,1.1vw,12px);color:#666;margin-top:1px}
+.tl-ba b{color:#c9a84c}
+
+.rt{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;width:100%;max-width:660px}
+.rt-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:12px}
+.rt-card .rt-t{font-size:clamp(12px,1.4vw,15px);font-weight:700;color:#c9a84c;margin-bottom:4px}
+.rt-card .rt-list{font-size:clamp(10px,1.2vw,13px);color:#999;line-height:1.6}
+
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;width:100%;max-width:560px}
+.pg-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center}
+.pg-card .pg-n{font-size:clamp(12px,1.5vw,16px);font-weight:700;margin-bottom:2px}
+.pg-card .pg-d{font-size:clamp(9px,1.1vw,12px);color:#777}
+.pg-card.on{border-color:rgba(100,180,110,.25)}
+.pg-card.on .pg-n::after{content:' ✓';color:#6b6}
+.pg-card.wait .pg-n::after{content:' …';color:#a86}
+
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;width:100%;max-width:660px}
+.tg-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px}
+.tg-card .tg-t{font-size:clamp(12px,1.4vw,15px);font-weight:700;color:#c9a84c;margin-bottom:3px}
+.tg-card .tg-c{font-size:clamp(22px,3vw,34px);font-weight:900}
+.tg-card .tg-h{font-size:clamp(9px,1.1vw,13px);color:#888;margin-top:4px;line-height:1.4}
+
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;width:100%;max-width:620px}
+.gallery img{width:100%;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
+.gallery .cap{font-size:clamp(9px,1.1vw,12px);color:#888;margin-top:3px;text-align:center}
+
+.nr{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:700px;width:100%}
+.nc{text-align:center;min-width:100px;flex:1}
+.nc .nv{font-size:clamp(28px,4.5vw,48px);font-weight:900;color:#c9a84c;line-height:1}
+.nc .nl{font-size:clamp(10px,1.2vw,14px);color:#777;margin-top:2px}
+
+.nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s}
+.dot.on{background:#c9a84c;transform:scale(1.3)}
+.pn{position:fixed;bottom:14px;right:16px;font-size:11px;color:#444;z-index:10}
+.arw{position:fixed;top:50%;transform:translateY(-50%);font-size:28px;color:rgba(255,255,255,.12);cursor:pointer;z-index:10;padding:16px;transition:color .2s}
+.arw:hover{color:rgba(255,255,255,.35)}
+.arw.l{left:0}.arw.r{right:0}
+@media(max-width:600px){.arw{display:none}.slide{padding:14px 12px;padding-bottom:44px}.org-card{padding:6px 8px;min-width:65px}.org-card .name{font-size:clamp(12px,3.5vw,16px)}.arr{font-size:13px}.tl-item{margin-bottom:10px}.gallery{grid-template-columns:repeat(2,1fr);gap:6px}.tg{grid-template-columns:repeat(2,1fr)}.rt{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="deck" id="dk">
+
+<!-- 1: TITLE -->
+<section class="slide">
+<h1>AIチーム<br><span class="accent">活動報告書</span></h1>
+<p>株式会社S.K.R 広報部門<br>2026年6月</p>
+</section>
+
+<!-- 2: WHY -->
+<section class="slide">
+<h2>Why — なぜこのチームがあるのか</h2>
+<h1 style="font-size:clamp(18px,3.2vw,34px)">AIで本業の<br><span class="accent">キャッシュフロー</span>を動かし<br>継続利益を出す</h1>
+<p style="margin-top:.7em">坂本の指示で動く24時間365日の業務支援体制</p>
+<div class="highlight" style="margin-top:10px">常に進化 — 坂本が試す → チームが学ぶ → 会社に還元<br><span style="color:#888;font-weight:400">全データ社内完結・機密は外部に出さない設計</span></div>
+</section>
+
+<!-- 3: WHO -->
+<section class="slide">
+<h2>Who — 誰がやっているのか</h2>
+<div class="org">
+<div class="org-row"><div class="org-card" style="border-color:rgba(88,166,255,.4);background:rgba(88,166,255,.08)"><div class="role">統括・最終判断</div><div class="name blue">坂本（1人）</div><div class="desc">全指示の起点・承認・方針決定</div></div></div>
+<div class="arr">▼ 指示</div>
+<div class="org-row">
+<div class="org-card gold"><div class="role">AI司令塔</div><div class="name">カイ</div><div class="desc">窓口・采配</div></div>
+<div class="org-card gold"><div class="role">品質管理</div><div class="name">クロエ</div><div class="desc">検閲・差戻し</div></div>
+</div>
+<div class="arr">▼ 検証済みタスクのみ実行</div>
+<div class="org-row">
+<div class="org-card"><div class="role">ワーカー</div><div class="name">最大16体</div><div class="desc">同時並行で稼働</div></div>
+</div>
+</div>
+<div class="highlight">ワーカーが何体いても、検証は必ず通す。<br>統括は常に坂本1人。</div>
+</section>
+
+<!-- 4: WHEN -->
+<section class="slide">
+<h2>When — いつ何をやってきたか</h2>
+<div class="tl">
+<div class="tl-item"><div class="tl-date">5/20</div><div class="tl-text">プロジェクト開始・仮想組織7部署を設立</div><div class="tl-ba">Before: AIなし → <b>会社bot発足</b></div></div>
+<div class="tl-item"><div class="tl-date">6月初旬</div><div class="tl-text">仕入買掛管理システム開発（20回以上の改良）</div><div class="tl-ba">Before: 手書き伝票 → <b>テンキーだけで操作</b></div></div>
+<div class="tl-item"><div class="tl-date">6/14</div><div class="tl-text">24時間常駐体制へ移行</div><div class="tl-ba">Before: 都度起動 → <b>24/7自動稼働</b></div></div>
+<div class="tl-item"><div class="tl-date">6/17</div><div class="tl-text">agmsg導入（bot間通信開始）</div><div class="tl-ba">Before: 単独動作 → <b>2体が連携する体制</b></div></div>
+<div class="tl-item"><div class="tl-date">6/22</div><div class="tl-text">品質管理パイプライン確定・補助金事業計画書を下書き</div><div class="tl-ba">Before: 指示散在 → <b>采配→検閲→実行の管理体制</b></div></div>
+<div class="tl-item"><div class="tl-date">6/24</div><div class="tl-text">Gemini・Codex参加（5体チーム）</div><div class="tl-ba">Before: 2体 → <b>役割別5系統のAI使い分け</b></div></div>
+<div class="tl-item"><div class="tl-date">6/24</div><div class="tl-text">音声ツール（VibeVoice/Viberec）自作で稼働</div><div class="tl-ba">Before: 月¥6,027の外部ツール → <b>自作で代替・削減</b></div></div>
+<div class="tl-item"><div class="tl-date">6/25-27</div><div class="tl-text">自己進化システム稼働・YouTube字幕→データ取込</div><div class="tl-ba">坂本の指示で → <b>組織が自ら学習・進化する仕組み</b></div></div>
+<div class="tl-item"><div class="tl-date">6/28</div><div class="tl-text">75本のツール完成・本報告書を作成</div><div class="tl-ba">39日間・171回の改修 → <b>業務システム化完了</b></div></div>
+</div>
+</section>
+
+<!-- 5: WHAT (DAILY) -->
+<section class="slide">
+<h2>What — 毎日何をやっているか</h2>
+<div class="rt">
+<div class="rt-card"><div class="rt-t">常時（毎分〜5分）</div><div class="rt-list">システム自動監視・異常時自動復旧<br>X/SNSリプライ監視<br>bot間通信の健全性確認<br>メモリ保護（OOM防止）</div></div>
+<div class="rt-card"><div class="rt-t">朝（6:30〜7:33）</div><div class="rt-list">API消費量チェック<br>公式ツール更新確認<br>朝の状況レポート送信<br>リサーチ素材の収集</div></div>
+<div class="rt-card"><div class="rt-t">日中（3時間ごと）</div><div class="rt-list">YouTube字幕→データ取込<br>金属相場の自動取得<br>ジモティー案件監視<br>SNS素材リサーチ・収集</div></div>
+<div class="rt-card"><div class="rt-t">夜間（自律稼働）</div><div class="rt-list">下書き作成（公開は翌日）<br>組織ルール見直し<br>記憶の整理・重複除去<br>自己進化（週2回の学習更新）</div></div>
+</div>
+<p class="small">坂本が寝ている間も、集客・監視・情報収集を継続</p>
+</section>
+
+<!-- 6: HOW (TOOLS) -->
+<section class="slide">
+<h2>How — どうやっているか（自作ツール）</h2>
+<div class="tg">
+<div class="tg-card"><div class="tg-t">集客・投稿</div><div class="tg-c">11</div><div class="tg-h">ジモティー自動監視<br>SNS一括投稿<br>LINE自動応答</div></div>
+<div class="tg-card"><div class="tg-t">音声・会議</div><div class="tg-c">3</div><div class="tg-h">VibeVoice（声→文字）<br>Viberec（会議→要約）</div></div>
+<div class="tg-card"><div class="tg-t">リサーチ</div><div class="tg-c">10</div><div class="tg-h">金属相場の自動収集<br>AI技術ウォッチ</div></div>
+<div class="tg-card"><div class="tg-t">bot運用</div><div class="tg-c">16</div><div class="tg-h">bot間通信・タスクボード<br>スマホ遠隔操作</div></div>
+<div class="tg-card"><div class="tg-t">監視・復旧</div><div class="tg-c">22</div><div class="tg-h">24時間自動監視<br>異常時自動復旧</div></div>
+<div class="tg-card"><div class="tg-t">知識・進化・他</div><div class="tg-c">13</div><div class="tg-h">自己学習・朝ブリーフィング<br>記憶管理・ユーティリティ</div></div>
+</div>
+<p style="margin-top:8px;font-size:clamp(13px,1.6vw,17px)">合計 <strong class="accent">75本</strong> — すべて内製・外注ゼロ（カタログ実数）</p>
+</section>
+
+<!-- 7: DELIVERABLES (PHOTOS) -->
+<section class="slide">
+<h2>制作物 — 本業用に調整した素材</h2>
+<div class="gallery">
+<div><img src="img/ba-kaitai.png" alt="解体Before/After"><div class="cap">解体Before/After投稿素材</div></div>
+<div><img src="img/lp-otasuke.png" alt="おたすけ本舗LP"><div class="cap">おたすけ本舗LP（スマホ対応）</div></div>
+<div><img src="img/carousel-line.png" alt="LINE集客カルーセル"><div class="cap">LINE集客カルーセル広告</div></div>
+<div><img src="img/hojokin-sns.png" alt="補助金告知"><div class="cap">松戸市補助金SNS告知</div></div>
+</div>
+<p class="small">現場写真の色調補正・テキスト合成・レイアウト調整まで全てAIが実行</p>
+</section>
+
+<!-- 8: WHERE (CHANNELS + STATUS) -->
+<section class="slide">
+<h2>Where — どこで発信しているか</h2>
+<div class="pg">
+<div class="pg-card on"><div class="pg-n">公式LINE</div><div class="pg-d">おたすけ本舗・35人</div></div>
+<div class="pg-card on"><div class="pg-n">ジモティー</div><div class="pg-d">リード自動発掘</div></div>
+<div class="pg-card on"><div class="pg-n">Instagram</div><div class="pg-d">ビジュアル広報</div></div>
+<div class="pg-card on"><div class="pg-n">X</div><div class="pg-d">情報発信・リプ監視</div></div>
+<div class="pg-card wait"><div class="pg-n">TikTok</div><div class="pg-d">動画広報（準備中）</div></div>
+<div class="pg-card wait"><div class="pg-n">YouTube</div><div class="pg-d">Shorts横展開</div></div>
+<div class="pg-card on"><div class="pg-n">Telegram</div><div class="pg-d">チーム司令・監視</div></div>
+<div class="pg-card on"><div class="pg-n">Postiz</div><div class="pg-d">SNS一括予約投稿</div></div>
+</div>
+<p class="small" style="margin-top:8px">下書きストック: <span class="accent">37本</span>（公開承認待ち） ／ ✓ = 稼働中 ／ … = 準備中</p>
+</section>
+
+<!-- 9: GROWTH -->
+<section class="slide">
+<h2>坂本の成長記録</h2>
+<p style="margin-bottom:.8em;color:#999">自腹でサブスクを試し、AIで何ができるか検証→会社に還元</p>
+<div class="tl" style="max-width:580px">
+<div class="tl-item"><div class="tl-date">検証①</div><div class="tl-text">Aqua Voice（月¥1,827）を契約・音声入力を体験</div><div class="tl-ba">学び → <b>仕組みを理解し、自作VibeVoiceで代替</b></div></div>
+<div class="tl-item"><div class="tl-date">検証②</div><div class="tl-text">Circleback（月¥4,200）で会議録音・要約を体験</div><div class="tl-ba">学び → <b>自作Viberecで代替（機密データを外に出さない設計）</b></div></div>
+<div class="tl-item"><div class="tl-date">検証③</div><div class="tl-text">Anthropic Proプランで試験運用 → 成果確認後Maxプランへ</div><div class="tl-ba">段階的投資 → <b>効果を確認してから本格導入</b></div></div>
+<div class="tl-item"><div class="tl-date">検証④</div><div class="tl-text">Claude Codeで業務自動化チームを構築</div><div class="tl-ba">学び → <b>指示1つでチームが動く仕組みを習得</b></div></div>
+<div class="tl-item"><div class="tl-date">結果</div><div class="tl-text">月¥6,027の外部ツールを自作で代替＋知見を蓄積</div><div class="tl-ba">個人の勉強投資 → <b>会社の業務効率化に還元</b></div></div>
+</div>
+<div class="highlight" style="margin-top:10px">「AIで何ができるか」を自分で試し、使えるものだけ会社に導入</div>
+</section>
+
+<!-- 10: NUMBERS -->
+<section class="slide">
+<h2>数字で見る実績</h2>
+<div class="nr">
+<div class="nc"><div class="nv">75</div><div class="nl">自作ツール（実数）</div></div>
+<div class="nc"><div class="nv">171<span style="font-size:.5em">回</span></div><div class="nl">改修コミット</div></div>
+<div class="nc"><div class="nv">16<span style="font-size:.5em">体</span></div><div class="nl">最大同時稼働</div></div>
+</div>
+<div class="nr" style="margin-top:12px">
+<div class="nc"><div class="nv">39<span style="font-size:.5em">日</span></div><div class="nl">構築期間</div></div>
+<div class="nc"><div class="nv">24/7</div><div class="nl">常時稼働</div></div>
+<div class="nc"><div class="nv">¥6,027<span style="font-size:.4em">/月</span></div><div class="nl">SaaS代替で削減</div></div>
+</div>
+<div class="highlight" style="margin-top:10px">
+<strong>実稼働中の成果</strong>：仕入買掛管理システム（事務所で毎日使用中）<br>
+<span style="color:#999;font-weight:400">統括は常に坂本1人 ／ 検証を通さないものは公開しない</span><br>
+<span style="color:#888;font-weight:400;font-size:.85em">現在地：体制構築に39日間を投下・広報運用はこれから着手<br>省力化投資補助金の事業計画書：下書き完了（提出準備中）</span>
+</div>
+</section>
+
+</div>
+
+<div class="arw l" onclick="go(-1)">‹</div>
+<div class="arw r" onclick="go(1)">›</div>
+<div class="nav" id="nv"></div>
+<div class="pn" id="pn"></div>
+
+<script>
+const dk=document.getElementById('dk'),nv=document.getElementById('nv'),pn=document.getElementById('pn');
+const ss=dk.querySelectorAll('.slide'),N=ss.length;
+let c=0,t0=0;
+function r(){dk.style.transform=`translateX(-${c*100}vw)`;nv.innerHTML='';for(let i=0;i<N;i++){const d=document.createElement('div');d.className='dot'+(i===c?' on':'');d.onclick=()=>{c=i;r()};nv.appendChild(d)}pn.textContent=`${c+1} / ${N}`}
+function go(d){c=Math.max(0,Math.min(N-1,c+d));r()}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1)});
+dk.addEventListener('touchstart',e=>{t0=e.touches[0].clientX},{passive:true});
+dk.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-t0;if(Math.abs(d)>40)go(d<0?1:-1)},{passive:true});
+r();
+</script>
+</body>
+</html>

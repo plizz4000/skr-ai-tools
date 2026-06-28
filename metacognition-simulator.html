@@ -7,24 +7,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a28;
-    --border: #2a2a40;
-    --accent: #7c6fff;
-    --accent2: #ff6b9d;
-    --accent3: #00e5c3;
-    --text: #e8e8f0;
-    --muted: #6a6a8a;
-    --warn: #ffb347;
+    --bg: #111318;
+    --panel: #1a1d27;
+    --panel2: #222632;
+    --line: #2e3346;
+    --ac: #f0883e;
+    --ac2: #e07830;
+    --gn: #3ecf8e;
+    --ink: #e8eaf0;
+    --sub: #9ca0b4;
+    --yl: #f5c451;
+    --rd: #ff6b6b;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--ink);
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", Meiryo, system-ui, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -35,8 +36,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(124,111,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,111,255,0.04) 1px, transparent 1px);
+      linear-gradient(rgba(240,136,62,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240,136,62,0.04) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -61,7 +62,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 6px;
-    color: var(--accent);
+    color: var(--ac);
     text-transform: uppercase;
     margin-bottom: 16px;
   }
@@ -75,11 +76,11 @@
   }
 
   .title span {
-    color: var(--accent);
+    color: var(--ac);
   }
 
   .subtitle {
-    color: var(--muted);
+    color: var(--sub);
     font-size: 14px;
     font-weight: 300;
     line-height: 1.7;
@@ -96,28 +97,28 @@
     justify-content: space-between;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
-    color: var(--muted);
+    color: var(--sub);
     margin-bottom: 8px;
   }
 
   .progress-bar {
     height: 2px;
-    background: var(--border);
+    background: var(--line);
     border-radius: 2px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    background: linear-gradient(90deg, var(--ac), var(--ac2));
     border-radius: 2px;
     transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
   }
 
   /* Scenario card */
   .scenario-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--line);
     border-radius: 16px;
     padding: 28px 32px;
     margin-bottom: 24px;
@@ -128,7 +129,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 3px;
-    color: var(--accent3);
+    color: var(--gn);
     text-transform: uppercase;
     margin-bottom: 14px;
   }
@@ -136,14 +137,14 @@
   .scenario-text {
     font-size: 16px;
     line-height: 1.8;
-    color: var(--text);
+    color: var(--ink);
     font-weight: 300;
   }
 
   /* Questions */
   .question-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--line);
     border-radius: 16px;
     padding: 28px 32px;
     margin-bottom: 16px;
@@ -152,13 +153,13 @@
   }
 
   .question-block:hover {
-    border-color: var(--accent);
+    border-color: var(--ac);
   }
 
   .q-label {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
-    color: var(--accent);
+    color: var(--ac);
     letter-spacing: 2px;
     margin-bottom: 10px;
   }
@@ -167,12 +168,12 @@
     font-size: 15px;
     line-height: 1.7;
     margin-bottom: 20px;
-    color: var(--text);
+    color: var(--ink);
   }
 
   .q-subtext {
     font-size: 12px;
-    color: var(--muted);
+    color: var(--sub);
     margin-bottom: 16px;
     font-style: italic;
   }
@@ -186,7 +187,7 @@
 
   .scale-label {
     font-size: 11px;
-    color: var(--muted);
+    color: var(--sub);
     white-space: nowrap;
     font-family: 'DM Mono', monospace;
     min-width: 60px;
@@ -205,9 +206,9 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 1px solid var(--border);
+    border: 1px solid var(--line);
     background: transparent;
-    color: var(--muted);
+    color: var(--sub);
     font-family: 'DM Mono', monospace;
     font-size: 13px;
     cursor: pointer;
@@ -216,27 +217,27 @@
   }
 
   .scale-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(124,111,255,0.1);
+    border-color: var(--ac);
+    color: var(--ac);
+    background: rgba(240,136,62,0.1);
   }
 
   .scale-btn.selected {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--ac);
+    border-color: var(--ac);
     color: #fff;
     transform: scale(1.1);
-    box-shadow: 0 0 16px rgba(124,111,255,0.4);
+    box-shadow: 0 0 16px rgba(240,136,62,0.4);
   }
 
   /* Text answer */
   .text-answer {
     width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
+    background: var(--panel2);
+    border: 1px solid var(--line);
     border-radius: 10px;
-    color: var(--text);
-    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--ink);
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", Meiryo, system-ui, sans-serif;
     font-size: 14px;
     padding: 14px 16px;
     resize: vertical;
@@ -246,7 +247,7 @@
   }
 
   .text-answer:focus {
-    border-color: var(--accent);
+    border-color: var(--ac);
   }
 
   /* Nav buttons */
@@ -270,24 +271,24 @@
 
   .btn-outline {
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
+    border: 1px solid var(--line);
+    color: var(--sub);
   }
 
   .btn-outline:hover {
-    border-color: var(--muted);
-    color: var(--text);
+    border-color: var(--sub);
+    color: var(--ink);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: linear-gradient(135deg, var(--ac), var(--ac2));
     color: #fff;
-    box-shadow: 0 4px 20px rgba(124,111,255,0.3);
+    box-shadow: 0 4px 20px rgba(240,136,62,0.3);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(124,111,255,0.4);
+    box-shadow: 0 8px 28px rgba(240,136,62,0.4);
   }
 
   .btn-primary:disabled {
@@ -315,14 +316,14 @@
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 4px;
-    color: var(--accent3);
+    color: var(--gn);
     text-transform: uppercase;
   }
 
   /* Score radar */
   .radar-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--line);
     border-radius: 16px;
     padding: 32px;
     margin-bottom: 24px;
@@ -359,18 +360,18 @@
     justify-content: space-between;
     font-size: 13px;
     margin-bottom: 6px;
-    color: var(--text);
+    color: var(--ink);
   }
 
   .score-name span:last-child {
     font-family: 'DM Mono', monospace;
     font-size: 12px;
-    color: var(--accent);
+    color: var(--ac);
   }
 
   .score-bar {
     height: 4px;
-    background: var(--border);
+    background: var(--line);
     border-radius: 4px;
     overflow: hidden;
   }
@@ -394,8 +395,8 @@
   }
 
   .analysis-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--line);
     border-radius: 14px;
     padding: 22px 24px;
     animation: slideUp 0.4s ease both;
@@ -412,7 +413,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 2px;
-    color: var(--muted);
+    color: var(--sub);
     text-transform: uppercase;
     margin-bottom: 8px;
   }
@@ -425,14 +426,14 @@
 
   .card-desc {
     font-size: 12px;
-    color: var(--muted);
+    color: var(--sub);
     line-height: 1.6;
   }
 
   /* Insights */
   .insights-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--line);
     border-radius: 16px;
     padding: 28px 32px;
     margin-bottom: 16px;
@@ -443,7 +444,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 3px;
-    color: var(--accent2);
+    color: var(--ac2);
     text-transform: uppercase;
     margin-bottom: 16px;
   }
@@ -466,7 +467,7 @@
   .insight-text {
     font-size: 14px;
     line-height: 1.7;
-    color: var(--text);
+    color: var(--ink);
     font-weight: 300;
   }
 
@@ -493,13 +494,13 @@
   .score-ring-num {
     font-family: 'DM Mono', monospace;
     font-size: 36px;
-    color: var(--text);
+    color: var(--ink);
     line-height: 1;
   }
 
   .score-ring-sub {
     font-size: 11px;
-    color: var(--muted);
+    color: var(--sub);
     font-family: 'DM Mono', monospace;
   }
 
@@ -529,7 +530,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 4px;
-    color: var(--muted);
+    color: var(--sub);
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 16px;
@@ -546,8 +547,8 @@
   }
 
   .mbti-card {
-    background: var(--surface);
-    border: 1px solid #7c6fff55;
+    background: var(--panel);
+    border: 1px solid #f0883e55;
     border-radius: 20px;
     padding: 28px 24px;
     position: relative;
@@ -560,13 +561,13 @@
     position: absolute;
     top: -40px; left: -40px;
     width: 120px; height: 120px;
-    background: radial-gradient(circle, rgba(124,111,255,0.15), transparent 70%);
+    background: radial-gradient(circle, rgba(240,136,62,0.15), transparent 70%);
     pointer-events: none;
   }
 
   .shichusuimei-card {
-    background: var(--surface);
-    border: 1px solid #ff6b9d55;
+    background: var(--panel);
+    border: 1px solid #e0783055;
     border-radius: 20px;
     padding: 28px 24px;
     position: relative;
@@ -579,7 +580,7 @@
     position: absolute;
     top: -40px; right: -40px;
     width: 120px; height: 120px;
-    background: radial-gradient(circle, rgba(255,107,157,0.15), transparent 70%);
+    background: radial-gradient(circle, rgba(224,120,48,0.15), transparent 70%);
     pointer-events: none;
   }
 
@@ -601,7 +602,7 @@
     letter-spacing: 4px;
     line-height: 1;
     margin-bottom: 6px;
-    background: linear-gradient(135deg, #7c6fff, #a78bff);
+    background: linear-gradient(135deg, #f0883e, #f5a050);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -609,14 +610,14 @@
 
   .mbti-name {
     font-size: 14px;
-    color: var(--text);
+    color: var(--ink);
     margin-bottom: 4px;
     font-weight: 400;
   }
 
   .mbti-nickname {
     font-size: 11px;
-    color: var(--muted);
+    color: var(--sub);
     font-family: 'DM Mono', monospace;
     margin-bottom: 14px;
   }
@@ -639,7 +640,7 @@
   .axis-bar {
     flex: 1;
     height: 4px;
-    background: var(--border);
+    background: var(--line);
     border-radius: 4px;
     overflow: hidden;
     position: relative;
@@ -650,7 +651,7 @@
     right: 50%;
     top: 0; bottom: 0;
     border-radius: 4px 0 0 4px;
-    background: linear-gradient(90deg, #7c6fff, #a78bff);
+    background: linear-gradient(90deg, #f0883e, #f5a050);
   }
 
   .axis-fill-right {
@@ -658,15 +659,15 @@
     left: 50%;
     top: 0; bottom: 0;
     border-radius: 0 4px 4px 0;
-    background: linear-gradient(90deg, #a78bff, #7c6fff);
+    background: linear-gradient(90deg, #f5a050, #f0883e);
   }
 
-  .axis-lo { color: var(--muted); min-width: 10px; text-align: right; }
-  .axis-hi { color: var(--accent); min-width: 10px; }
+  .axis-lo { color: var(--sub); min-width: 10px; text-align: right; }
+  .axis-hi { color: var(--ac); min-width: 10px; }
 
   .mbti-desc {
     font-size: 12px;
-    color: var(--muted);
+    color: var(--sub);
     line-height: 1.6;
     text-align: left;
   }
@@ -682,7 +683,7 @@
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 4px;
-    background: linear-gradient(135deg, #ff6b9d, #ffb347);
+    background: linear-gradient(135deg, #e07830, #ffb347);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -690,14 +691,14 @@
 
   .gogyo-type {
     font-size: 13px;
-    color: var(--text);
+    color: var(--ink);
     margin-bottom: 4px;
   }
 
   .gogyo-kanji {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
-    color: var(--muted);
+    color: var(--sub);
     letter-spacing: 2px;
     margin-bottom: 14px;
   }
@@ -719,7 +720,7 @@
 
   .gogyo-desc {
     font-size: 12px;
-    color: var(--muted);
+    color: var(--sub);
     line-height: 1.6;
     text-align: left;
   }
@@ -730,7 +731,7 @@
     justify-content: center;
     margin-top: 10px;
     font-size: 11px;
-    color: var(--muted);
+    color: var(--sub);
     font-family: 'DM Mono', monospace;
   }
 
@@ -770,19 +771,19 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--border);
+    background: var(--line);
     transition: all 0.3s;
   }
 
   .phase-dot.active {
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
+    background: var(--ac);
+    box-shadow: 0 0 10px var(--ac);
     width: 24px;
     border-radius: 4px;
   }
 
   .phase-dot.done {
-    background: var(--accent3);
+    background: var(--gn);
   }
 </style>
 </head>
@@ -826,20 +827,20 @@
   <div id="results">
     <div class="result-header">
       <div class="result-tag">Analysis Complete</div>
-      <h2 class="result-title">あなたの<span style="color:var(--accent)">思考プロフィール</span></h2>
+      <h2 class="result-title">あなたの<span style="color:var(--ac)">思考プロフィール</span></h2>
     </div>
 
     <div class="overall-score">
       <div class="score-ring-wrap">
         <svg width="140" height="140" id="ring-svg">
-          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--border)" stroke-width="8"/>
+          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--line)" stroke-width="8"/>
           <circle cx="70" cy="70" r="56" fill="none" stroke="url(#rg)" stroke-width="8"
             stroke-linecap="round" stroke-dasharray="351.858" stroke-dashoffset="351.858"
             transform="rotate(-90 70 70)" id="ring-circle"/>
           <defs>
             <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#7c6fff"/>
-              <stop offset="100%" stop-color="#ff6b9d"/>
+              <stop offset="0%" stop-color="#f0883e"/>
+              <stop offset="100%" stop-color="#e07830"/>
             </linearGradient>
           </defs>
         </svg>
@@ -848,7 +849,7 @@
           <div class="score-ring-sub">/ 100</div>
         </div>
       </div>
-      <div style="margin-top:12px; font-size:13px; color:var(--muted); font-family:'Space Mono',monospace;" id="overall-label"></div>
+      <div style="margin-top:12px; font-size:13px; color:var(--sub); font-family:'Space Mono',monospace;" id="overall-label"></div>
     </div>
 
     <div class="radar-wrap">
@@ -1134,11 +1135,11 @@ function calcScores() {
 
   // Biases
   const biases = [];
-  if(get('q7') >= 4) biases.push({ name: 'アンカリング効果', color: '#ff6b9d' });
+  if(get('q7') >= 4) biases.push({ name: 'アンカリング効果', color: '#e07830' });
   if(get('q8') >= 4) biases.push({ name: '過信バイアス', color: '#ffb347' });
-  if(get('q5') >= 4) biases.push({ name: '損失回避バイアス', color: '#7c6fff' });
+  if(get('q5') >= 4) biases.push({ name: '損失回避バイアス', color: '#f0883e' });
   if(get('q1') <= 2) biases.push({ name: '分析麻痺', color: '#00e5c3' });
-  if(get('q2') <= 2) biases.push({ name: '確証バイアス', color: '#ff6b9d' });
+  if(get('q2') <= 2) biases.push({ name: '確証バイアス', color: '#e07830' });
   if(biases.length === 0) biases.push({ name: 'バイアス傾向は低い', color: '#00e5c3' });
 
   return { scores, overall, biases, raw: { speed, flex, stability, riskTake, lossAv, uncert, anchor, overconf, metacog } };
@@ -1171,7 +1172,7 @@ function showResults() {
   drawRadar(Object.values(scores));
 
   // Score list
-  const colors = ['#7c6fff','#ff6b9d','#00e5c3','#ffb347','#a8ff78'];
+  const colors = ['#f0883e','#e07830','#00e5c3','#ffb347','#a8ff78'];
   let slHtml = '';
   Object.entries(scores).forEach(([name, val], i) => {
     slHtml += `<div class="score-item">
@@ -1191,25 +1192,25 @@ function showResults() {
     <div class="analysis-card">
       <div class="card-icon">🧠</div>
       <div class="card-title">判断スタイル</div>
-      <div class="card-value" style="color:var(--accent)">${styleType}</div>
+      <div class="card-value" style="color:var(--ac)">${styleType}</div>
       <div class="card-desc">情報処理と意思決定のアプローチ</div>
     </div>
     <div class="analysis-card">
       <div class="card-icon">⚡</div>
       <div class="card-title">リスク態度</div>
-      <div class="card-value" style="color:var(--accent2)">${riskType}</div>
+      <div class="card-value" style="color:var(--ac2)">${riskType}</div>
       <div class="card-desc">不確実な状況での行動傾向</div>
     </div>
     <div class="analysis-card">
       <div class="card-icon">🔍</div>
       <div class="card-title">メタ認知力</div>
-      <div class="card-value" style="color:var(--accent3)">${metacogLevel}</div>
+      <div class="card-value" style="color:var(--gn)">${metacogLevel}</div>
       <div class="card-desc">自分の思考を観察する能力</div>
     </div>
     <div class="analysis-card">
       <div class="card-icon">🎯</div>
       <div class="card-title">プレッシャー耐性</div>
-      <div class="card-value" style="color:var(--warn)">${stabType}</div>
+      <div class="card-value" style="color:var(--yl)">${stabType}</div>
       <div class="card-desc">時間的制約下での判断安定性</div>
     </div>
   `;
@@ -1232,13 +1233,13 @@ function showResults() {
     <div class="bias-tags">${biases.map(b =>
       `<span class="bias-tag" style="background:${b.color}22;border:1px solid ${b.color};color:${b.color}">${b.name}</span>`
     ).join('')}</div>
-    <div style="margin-top:16px;font-size:13px;line-height:1.7;color:var(--muted)">${generateBiasDesc(biases, raw)}</div>
+    <div style="margin-top:16px;font-size:13px;line-height:1.7;color:var(--sub)">${generateBiasDesc(biases, raw)}</div>
   `;
 
   // Training
   document.getElementById('train-content').innerHTML = generateTraining(raw, scores).map(t =>
     `<div class="insight-item">
-      <div class="insight-dot" style="background:var(--accent3)"></div>
+      <div class="insight-dot" style="background:var(--gn)"></div>
       <div class="insight-text">${t}</div>
     </div>`
   ).join('');
@@ -1265,19 +1266,19 @@ function calcMBTI(raw) {
   const mbtiData = {
     'ENFJ': { name: '主人公', nick: 'The Protagonist', desc: '人を鼓舞し引っ張るカリスマ。共感力と決断力を兼ね備えたリーダータイプ。', color: '#00c896' },
     'ENFP': { name: '広報運動家', nick: 'The Campaigner', desc: '情熱的で創造的。可能性を見出すアイデアマン。柔軟な判断で周囲を巻き込む。', color: '#ff9f43' },
-    'ENTJ': { name: '指揮官', nick: 'The Commander', desc: '戦略的思考と強い意志で組織を動かす。目標達成に向けて徹底的に行動する。', color: '#7c6fff' },
+    'ENTJ': { name: '指揮官', nick: 'The Commander', desc: '戦略的思考と強い意志で組織を動かす。目標達成に向けて徹底的に行動する。', color: '#f0883e' },
     'ENTP': { name: '討論者', nick: 'The Debater', desc: '知的好奇心旺盛で議論を楽しむ。既存の枠を超えた発想で問題を解決する。', color: '#00e5c3' },
-    'ESFJ': { name: '領事', nick: 'The Consul', desc: '協調性と責任感が強く、周囲の調和を大切にする。信頼と安定を重視する。', color: '#ff6b9d' },
+    'ESFJ': { name: '領事', nick: 'The Consul', desc: '協調性と責任感が強く、周囲の調和を大切にする。信頼と安定を重視する。', color: '#e07830' },
     'ESFP': { name: '芸能人', nick: 'The Entertainer', desc: '明るくエネルギッシュ。現在の瞬間を楽しみ、周囲を盛り上げる存在。', color: '#ffb347' },
     'ESTJ': { name: '幹部', nick: 'The Executive', desc: '秩序と規律を重視する実務家。計画的かつ効率的に目標を達成する。', color: '#a8ff78' },
-    'ESTP': { name: '起業家', nick: 'The Entrepreneur', desc: '行動力とリスク感覚に優れる。現実的な問題解決と即断即決が得意。', color: '#ff6b9d' },
-    'INFJ': { name: '提唱者', nick: 'The Advocate', desc: '深い洞察力と理想主義を持つ。静かながら強い信念で人を動かす。', color: '#7c6fff' },
-    'INFP': { name: '仲介者', nick: 'The Mediator', desc: '内なる価値観と豊かな想像力。真摯に人と向き合い、共感を大切にする。', color: '#ff6b9d' },
+    'ESTP': { name: '起業家', nick: 'The Entrepreneur', desc: '行動力とリスク感覚に優れる。現実的な問題解決と即断即決が得意。', color: '#e07830' },
+    'INFJ': { name: '提唱者', nick: 'The Advocate', desc: '深い洞察力と理想主義を持つ。静かながら強い信念で人を動かす。', color: '#f0883e' },
+    'INFP': { name: '仲介者', nick: 'The Mediator', desc: '内なる価値観と豊かな想像力。真摯に人と向き合い、共感を大切にする。', color: '#e07830' },
     'INTJ': { name: '建築家', nick: 'The Architect', desc: '戦略的・長期的視野で物事を設計する。独立心が強く、深く考え抜く。', color: '#00e5c3' },
     'INTP': { name: '論理学者', nick: 'The Logician', desc: '純粋な知的探求を好む。理論と分析で複雑な問題を解体する思考家。', color: '#a8ff78' },
     'ISFJ': { name: '擁護者', nick: 'The Defender', desc: '献身的で信頼性が高い。細部への注意と責任感で周囲をサポートする。', color: '#ffb347' },
     'ISFP': { name: '冒険家', nick: 'The Adventurer', desc: '感受性豊かで柔軟。自分のペースで美と体験を探求するアーティスト。', color: '#ff9f43' },
-    'ISTJ': { name: '管理者', nick: 'The Logistician', desc: '誠実で几帳面。ルールと責任を重んじる実直な実務家タイプ。', color: '#7c6fff' },
+    'ISTJ': { name: '管理者', nick: 'The Logistician', desc: '誠実で几帳面。ルールと責任を重んじる実直な実務家タイプ。', color: '#f0883e' },
     'ISTP': { name: '巨匠', nick: 'The Virtuoso', desc: '冷静な観察力と実践的スキル。問題を論理的に分解し手を動かして解決する。', color: '#00e5c3' },
   };
 
@@ -1308,14 +1309,14 @@ function renderMBTI(raw) {
       ? `<div class="axis-fill-right" style="width:${fillPct/2}%"></div>`
       : `<div class="axis-fill-left" style="width:${fillPct/2}%"></div>`;
     return `<div class="mbti-axis">
-      <span class="axis-lo" style="color:${!isRight?'var(--accent)':'var(--muted)'}">${ax.lo}</span>
+      <span class="axis-lo" style="color:${!isRight?'var(--ac)':'var(--sub)'}">${ax.lo}</span>
       <div class="axis-bar">${fillHtml}</div>
-      <span class="axis-hi" style="color:${isRight?'var(--accent)':'var(--muted)'}">${ax.hi}</span>
+      <span class="axis-hi" style="color:${isRight?'var(--ac)':'var(--sub)'}">${ax.hi}</span>
     </div>`;
   }).join('');
 
   document.getElementById('mbti-card').innerHTML = `
-    <span class="pcard-badge" style="background:rgba(124,111,255,0.15);border:1px solid #7c6fff44;color:#a78bff">MBTI TYPE</span>
+    <span class="pcard-badge" style="background:rgba(240,136,62,0.15);border:1px solid #f0883e44;color:#f0883e">MBTI TYPE</span>
     <div class="mbti-type">${type}</div>
     <div class="mbti-name">${data.name}</div>
     <div class="mbti-nickname">${data.nick}</div>
@@ -1381,7 +1382,7 @@ function calcGogyo(raw) {
     sui: {
       symbol: '🌊', name: '水気', type: '知恵と内省の人',
       kanji: 'すいき — WATER',
-      color: '#0099cc', color2: '#7c6fff',
+      color: '#0099cc', color2: '#f0883e',
       traits: ['洞察力', '内省', '知恵', '適応力'],
       desc: '深く考え、物事の本質を見抜く洞察力を持つ。表面に現れない情報を読み取り、静かに行動する。',
       compat: ['木気と相性◎', '土気に注意'],
@@ -1401,10 +1402,10 @@ function renderGogyo(raw) {
 
   const compatHtml = data.compat.map(c =>
     `<span>${c}</span>`
-  ).join('<span style="color:var(--border)"> | </span>');
+  ).join('<span style="color:var(--line)"> | </span>');
 
   document.getElementById('gogyo-card').innerHTML = `
-    <span class="pcard-badge" style="background:rgba(255,107,157,0.12);border:1px solid #ff6b9d44;color:#ff9fbe">四柱推命 五行</span>
+    <span class="pcard-badge" style="background:rgba(224,120,48,0.12);border:1px solid #e0783044;color:#f5a050">四柱推命 五行</span>
     <div class="gogyo-symbol">${data.symbol}</div>
     <div class="gogyo-name">${data.name}</div>
     <div class="gogyo-type">${data.type}</div>
@@ -1412,7 +1413,7 @@ function renderGogyo(raw) {
     <div class="gogyo-traits">${traitHtml}</div>
     <div class="gogyo-desc">${data.desc}</div>
     <div class="compat-row">${compatHtml}</div>
-    <div style="margin-top:10px;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace">
+    <div style="margin-top:10px;font-size:10px;color:var(--sub);font-family:'Space Mono',monospace">
       ${data.season} ／ ${data.direction} ／ ${data.planet}
     </div>
   `;
@@ -1422,7 +1423,7 @@ function generateInsights(raw, scores) {
   const ins = [];
 
   if(raw.speed >= 4 && raw.metacog <= 2) {
-    ins.push({ color: '#ff6b9d', text: '直感的判断が速い一方、その判断を振り返るメタ認知力が低めです。決断後に「なぜそう判断したか」を記録する習慣をつけると精度が上がります。' });
+    ins.push({ color: '#e07830', text: '直感的判断が速い一方、その判断を振り返るメタ認知力が低めです。決断後に「なぜそう判断したか」を記録する習慣をつけると精度が上がります。' });
   }
   if(raw.flex >= 4) {
     ins.push({ color: '#00e5c3', text: '意見の変更に柔軟なのは強みですが、過度な迎合や意見の一貫性低下につながる可能性があります。自分のコアな判断基準を明文化しておくと良いでしょう。' });
@@ -1434,7 +1435,7 @@ function generateInsights(raw, scores) {
     ins.push({ color: '#a8ff78', text: 'プレッシャー下でも判断が安定しているのは大きな強みです。複雑なシナリオでのシミュレーション訓練でさらに能力を高められます。' });
   }
   if(raw.overconf >= 4 && raw.metacog <= 3) {
-    ins.push({ color: '#7c6fff', text: '自信は高い一方でメタ認知が追いついていない場合、過信バイアスが生じやすくなります。決断前に「この判断が間違っている可能性は何%か」と自問する習慣が有効です。' });
+    ins.push({ color: '#f0883e', text: '自信は高い一方でメタ認知が追いついていない場合、過信バイアスが生じやすくなります。決断前に「この判断が間違っている可能性は何%か」と自問する習慣が有効です。' });
   }
   if(ins.length === 0) {
     ins.push({ color: '#00e5c3', text: 'バランスの取れた意思決定スタイルを持っています。さらなる成長のためには、より複雑なシナリオで自分の思考プロセスを意図的に観察することが推奨されます。' });
@@ -1466,7 +1467,7 @@ function drawRadar(vals) {
   const cx = 100, cy = 100, R = 75;
   const n = vals.length;
   const labels = ['速度','柔軟性','リスク','バイアス耐性','認知力'];
-  const colors = ['#7c6fff','#ff6b9d','#00e5c3','#ffb347','#a8ff78'];
+  const colors = ['#f0883e','#e07830','#00e5c3','#ffb347','#a8ff78'];
 
   let html = '';
 
@@ -1476,16 +1477,16 @@ function drawRadar(vals) {
       const a = (Math.PI*2*i/n) - Math.PI/2;
       return [cx + R*(r/4)*Math.cos(a), cy + R*(r/4)*Math.sin(a)];
     });
-    html += `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="rgba(124,111,255,0.15)" stroke-width="1"/>`;
+    html += `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="rgba(240,136,62,0.15)" stroke-width="1"/>`;
   }
 
   // Axes
   for(let i = 0; i < n; i++) {
     const a = (Math.PI*2*i/n) - Math.PI/2;
     const x = cx + R*Math.cos(a), y = cy + R*Math.sin(a);
-    html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(124,111,255,0.2)" stroke-width="1"/>`;
+    html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(240,136,62,0.2)" stroke-width="1"/>`;
     const lx = cx + (R+18)*Math.cos(a), ly = cy + (R+18)*Math.sin(a);
-    html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="#6a6a8a" font-size="9" font-family="Space Mono">${labels[i]}</text>`;
+    html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="#9ca0b4" font-size="9" font-family="Space Mono">${labels[i]}</text>`;
   }
 
   // Data polygon
@@ -1494,7 +1495,7 @@ function drawRadar(vals) {
     const r = R * (v/100);
     return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
   });
-  html += `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="rgba(124,111,255,0.2)" stroke="#7c6fff" stroke-width="2"/>`;
+  html += `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="rgba(240,136,62,0.2)" stroke="#f0883e" stroke-width="2"/>`;
 
   // Points
   pts.forEach(([x,y], i) => {

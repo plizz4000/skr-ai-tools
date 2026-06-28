@@ -7,35 +7,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0e1a;--s:#111827;--s2:#1a2235;--bd:#1e293b;--cy:#00f0ff;--gn:#00ff88;--am:#ffb800;--rd:#ff3355;--pp:#a855f7;--tx:#e2e8f0;--td:#94a3b8}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2230;--line:#2b313c;--ink:#e6edf3;--sub:#9aa7b4;--ac:#58a6ff;--ac2:#388bfd;--gn:#3fb950;--rd:#f85149;--yl:#d29922}
+body{font-family:"Cascadia Code",Consolas,"Yu Gothic UI",Meiryo,system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
 .c{max-width:1200px;margin:0 auto;padding:16px}
 .hdr{text-align:center;padding:32px 16px 24px;position:relative}
-.hdr::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80%;height:1px;background:linear-gradient(90deg,transparent,var(--cy),transparent)}
-.hdr h1{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,3.5vw,1.8rem);font-weight:900;background:linear-gradient(135deg,var(--cy),var(--gn));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px}
-.hdr p{color:var(--td);font-size:.8rem;margin-top:6px}
-.badge{display:inline-block;background:rgba(0,240,255,.1);border:1px solid var(--cy);color:var(--cy);font-family:'Orbitron',monospace;font-size:.55rem;padding:3px 10px;border-radius:16px;margin-top:8px;letter-spacing:2px}
+.hdr::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80%;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent)}
+.hdr h1{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,3.5vw,1.8rem);font-weight:900;background:linear-gradient(135deg,var(--ac),var(--gn));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px}
+.hdr p{color:var(--sub);font-size:.8rem;margin-top:6px}
+.badge{display:inline-block;background:rgba(0,240,255,.1);border:1px solid var(--ac);color:var(--ac);font-family:'Orbitron',monospace;font-size:.55rem;padding:3px 10px;border-radius:16px;margin-top:8px;letter-spacing:2px}
 .section{margin:20px 0}
-.stitle{font-family:'Orbitron',monospace;font-size:.7rem;color:var(--cy);letter-spacing:2px;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px}
-.stitle::before{content:'';width:3px;height:14px;background:var(--cy);border-radius:2px}
+.stitle{font-family:'Orbitron',monospace;font-size:.7rem;color:var(--ac);letter-spacing:2px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px}
+.stitle::before{content:'';width:3px;height:14px;background:var(--ac);border-radius:2px}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:750px}
-th{background:var(--s2);color:var(--cy);font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:1px;padding:8px 6px;text-align:center;border-bottom:2px solid var(--cy);white-space:nowrap}
+th{background:var(--panel2);color:var(--ac);font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:1px;padding:8px 6px;text-align:center;border-bottom:2px solid var(--ac);white-space:nowrap}
 th:first-child{text-align:left}
-td{padding:8px 6px;border-bottom:1px solid var(--bd);text-align:center;vertical-align:middle}
+td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
 td:first-child{text-align:left;font-weight:600;font-size:.7rem}
 tr:hover td{background:rgba(0,240,255,.03)}
 .p{font-family:'Orbitron',monospace;font-weight:700;font-size:.78rem}
-.u{font-size:.55rem;color:var(--td);font-weight:400}
-.skr{background:rgba(168,85,247,.08);color:var(--pp)}
+.u{font-size:.55rem;color:var(--sub);font-weight:400}
+.skr{background:rgba(168,85,247,.08);color:var(--ac2)}
 .cur{background:rgba(0,240,255,.06)}
 .best{color:var(--gn)}
 .w{background:rgba(0,255,136,.06);border-left:3px solid var(--gn)}
 .profit{color:var(--gn);font-family:'Orbitron',monospace;font-weight:900;font-size:.8rem}
-.et{display:inline-block;background:rgba(255,184,0,.15);color:var(--am);font-size:.45rem;padding:1px 3px;border-radius:2px;font-weight:700}
-.note{background:rgba(255,184,0,.06);border-left:3px solid var(--am);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;font-size:.72rem;color:var(--td)}
-.note strong{color:var(--am)}
-.legend{display:flex;flex-wrap:wrap;gap:12px;padding:10px 14px;background:var(--s);border:1px solid var(--bd);border-top:none;border-radius:0 0 10px 10px;font-size:.65rem;color:var(--td)}
+.et{display:inline-block;background:rgba(255,184,0,.15);color:var(--yl);font-size:.45rem;padding:1px 3px;border-radius:2px;font-weight:700}
+.note{background:rgba(255,184,0,.06);border-left:3px solid var(--yl);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;font-size:.72rem;color:var(--sub)}
+.note strong{color:var(--yl)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;font-size:.65rem;color:var(--sub)}
 .legend-item{display:flex;align-items:center;gap:5px}
 .ld{width:10px;height:10px;border-radius:2px}
 @media(max-width:600px){.c{padding:10px}table{font-size:.6rem;min-width:600px}th,td{padding:6px 4px}}
@@ -57,11 +57,11 @@ tr:hover td{background:rgba(0,240,255,.03)}
   <div class="tw"><table>
     <thead><tr>
       <th>品目</th>
-      <th style="color:var(--pp)">SKR受入<br><span style="font-size:.45rem">お客様→SKR</span></th>
+      <th style="color:var(--ac2)">SKR受入<br><span style="font-size:.45rem">お客様→SKR</span></th>
       <th style="color:var(--gn)">出荷先</th>
       <th style="color:var(--gn)">出荷単価<br><span style="font-size:.45rem">SKR→取引先</span></th>
-      <th>競合X<br><span style="font-size:.45rem;color:var(--td)">競合参考</span></th>
-      <th>競合Y<br><span style="font-size:.45rem;color:var(--td)">競合参考</span></th>
+      <th>競合X<br><span style="font-size:.45rem;color:var(--sub)">競合参考</span></th>
+      <th>競合Y<br><span style="font-size:.45rem;color:var(--sub)">競合参考</span></th>
       <th>利益/kg</th>
     </tr></thead>
     <tbody>
@@ -236,8 +236,8 @@ tr:hover td{background:rgba(0,240,255,.03)}
     </tbody>
   </table></div>
   <div class="legend">
-    <div class="legend-item"><div class="ld" style="background:var(--pp)"></div>SKR受入（買取）単価</div>
-    <div class="legend-item"><div class="ld" style="background:var(--cy)"></div>出荷（売却）単価</div>
+    <div class="legend-item"><div class="ld" style="background:var(--ac2)"></div>SKR受入（買取）単価</div>
+    <div class="legend-item"><div class="ld" style="background:var(--ac)"></div>出荷（売却）単価</div>
     <div class="legend-item"><div class="ld" style="background:var(--gn)"></div>利益/kg</div>
     <div class="legend-item"><span class="et">概算</span> 推定値</div>
   </div>
@@ -249,21 +249,21 @@ tr:hover td{background:rgba(0,240,255,.03)}
   <div class="tw"><table>
     <thead><tr><th>順位</th><th>品目</th><th>受入</th><th>出荷</th><th>利益/kg</th><th>利益率</th></tr></thead>
     <tbody>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">01</td><td>ガラアルミ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">02</td><td>ステンレス</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">03</td><td>A線（雑線A）</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">04</td><td>エアコン</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">05</td><td>ラジエーター</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">06</td><td>鉄くず</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">07</td><td>モーター</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">08</td><td>アルミサッシ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">09</td><td>B線（雑線B）</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">10</td><td>アルミ缶</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">11</td><td>給湯器</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">12</td><td>真鍮</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">13</td><td>エアコンラジ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">14</td><td>2号銅/Bパイプ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
-      <tr><td style="color:var(--am);font-family:'Orbitron',monospace">15</td><td>Aパイプ(銅管)</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">01</td><td>ガラアルミ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">02</td><td>ステンレス</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">03</td><td>A線（雑線A）</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">04</td><td>エアコン</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">05</td><td>ラジエーター</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">06</td><td>鉄くず</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">07</td><td>モーター</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">08</td><td>アルミサッシ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">09</td><td>B線（雑線B）</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">10</td><td>アルミ缶</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">11</td><td>給湯器</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">12</td><td>真鍮</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">13</td><td>エアコンラジ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">14</td><td>2号銅/Bパイプ</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
+      <tr><td style="color:var(--yl);font-family:'Orbitron',monospace">15</td><td>Aパイプ(銅管)</td><td>¥---</td><td>¥---</td><td class="profit">+¥---</td><td class="profit">---%</td></tr>
     </tbody>
   </table></div>
 </div>
@@ -277,9 +277,9 @@ tr:hover td{background:rgba(0,240,255,.03)}
       <tr><td style="color:var(--gn)">取引先A</td><td>鉄くず</td><td>○○市</td><td>工場から定期出荷（3〜13t/回）</td></tr>
       <tr><td style="color:var(--gn)">取引先B</td><td>非鉄金属全般</td><td>○○市</td><td>本社からプレス物・銅・アルミ等出荷</td></tr>
       <tr><td style="color:var(--gn)">取引先C</td><td>給湯器/エアコン/雑品</td><td>○○市</td><td>製品系スクラップ</td></tr>
-      <tr><td style="color:var(--am)">取引先D</td><td>廃プラ/木くず</td><td>○○市</td><td>マニフェスト管理・定期搬入</td></tr>
-      <tr><td style="color:var(--am)">取引先E</td><td>発泡スチロール</td><td>○○市</td><td>減容処理</td></tr>
-      <tr><td style="color:var(--am)">取引先F</td><td>断熱材</td><td>○○</td><td>特殊処分</td></tr>
+      <tr><td style="color:var(--yl)">取引先D</td><td>廃プラ/木くず</td><td>○○市</td><td>マニフェスト管理・定期搬入</td></tr>
+      <tr><td style="color:var(--yl)">取引先E</td><td>発泡スチロール</td><td>○○市</td><td>減容処理</td></tr>
+      <tr><td style="color:var(--yl)">取引先F</td><td>断熱材</td><td>○○</td><td>特殊処分</td></tr>
     </tbody>
   </table></div>
 </div>

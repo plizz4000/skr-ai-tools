@@ -3,20 +3,21 @@
    Dark theme / Scroll-based product pages
    ======================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Shippori+Mincho:wght@400;700;900&family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
+/* 副業(美容・ウェルネス)トンマナ = 温かみ+親しみ。クリーム地 / 丸ゴシック / キャラメル＆ローズのアクセント */
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #141414;
-  --bg-tertiary: #1f1f1f;
-  --text-primary: #f5f5f5;
-  --text-secondary: #a0a0a0;
-  --text-muted: #6a6a6a;
-  --accent: #d4b062;       /* ゴールド基調 */
-  --accent-alt: #c9524a;   /* 深紅 */
-  --border: #2a2a2a;
-  --serif-jp: 'Shippori Mincho', 'Noto Serif JP', serif;
-  --sans: 'Archivo', 'Helvetica Neue', sans-serif;
+  --bg-primary: #fdf9f3;     /* クリーム */
+  --bg-secondary: #f6efe4;   /* 温かいパネル */
+  --bg-tertiary: #ece1d2;
+  --text-primary: #463c33;   /* 温かいブラウン */
+  --text-secondary: #7a6f63;
+  --text-muted: #a89c8d;
+  --accent: #c98a5e;         /* キャラメル */
+  --accent-alt: #cf8a83;     /* くすみローズ */
+  --border: #e7dccc;
+  --serif-jp: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Noto Sans JP', sans-serif;
+  --sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
   --mono: 'JetBrains Mono', monospace;
 }
 
@@ -46,7 +47,7 @@ body {
   right: 0;
   z-index: 100;
   padding: 1.2rem 2rem;
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(253, 249, 243, 0.88);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -100,8 +101,8 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(212, 176, 98, 0.08), transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(201, 82, 74, 0.06), transparent 50%);
+    radial-gradient(circle at 20% 30%, rgba(201, 138, 94, 0.10), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(207, 138, 131, 0.08), transparent 50%);
   pointer-events: none;
 }
 

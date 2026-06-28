@@ -302,7 +302,7 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
      これで「短い日=きっちり1ページ・等倍」「多い日=行を詰めて無損失で1ページ」を両立する。 */
   .dcash{font-family:"Meiryo","Hiragino Kaku Gothic ProN",sans-serif;color:#000;width:279mm;max-width:279mm;margin:0 auto;
     display:flex;flex-direction:column}
-  .dcash .dc-head{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #000;padding-bottom:1.5mm;margin-bottom:3mm}
+  .dcash .dc-head{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #000;padding-bottom:1mm;margin-bottom:2mm}
   .dcash .dc-title{font-size:15pt;font-weight:700;letter-spacing:3px}
   .dcash .dc-meta{font-size:9.5pt;text-align:right;line-height:1.7}
   .dcash .dc-meta b{font-size:11pt;font-weight:700}
@@ -320,7 +320,7 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   .dcash th{background:#f1f1f1;font-weight:700;font-size:9pt}
   /* 左カラムの集計表（金種/入金/出金）は行高を詰めて左カラム全体を1ページに収める。
      右の明細は逆に下端まで伸ばすので別扱い（既定6.3mm）。 */
-  .dcash .kin th,.dcash .kin td,.dcash .io th,.dcash .io td{height:5.8mm}
+  .dcash .kin th,.dcash .kin td,.dcash .io th,.dcash .io td{height:4.8mm;font-size:8.5pt}
   .dcash .kin{table-layout:fixed}
   .dcash .kin th,.dcash .kin td{padding:0 1.5mm}
   .dcash .kin th{font-size:8pt;line-height:1.1}
@@ -328,9 +328,9 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   .dcash .kin .cnt{width:13mm;text-align:right;font-variant-numeric:tabular-nums}
   .dcash .kin .amt{width:auto;text-align:right;font-variant-numeric:tabular-nums}
   .dcash .kin .sum td{font-weight:700;background:#f1f1f1}
-  .dcash .sec-ttl{font-size:9.5pt;font-weight:700;margin:0 0 1.5mm;padding-bottom:1mm;border-bottom:1px solid #000}
+  .dcash .sec-ttl{font-size:9pt;font-weight:700;margin:0 0 1mm;padding-bottom:0.5mm;border-bottom:1px solid #000}
   /* 左カラム内の入金・出金は2列で横並び（縦の段数を抑え金種表とバランス）。 */
-  .dcash .io-wrap{display:flex;gap:5mm;margin-top:3mm}
+  .dcash .io-wrap{display:flex;gap:4mm;margin-top:1.5mm}
   .dcash .io-box{flex:1 1 0;min-width:0}
   .dcash .io .lbl{width:auto;font-weight:700;text-align:left}
   .dcash .io .val{width:20mm;text-align:right;font-variant-numeric:tabular-nums}
@@ -359,29 +359,28 @@ select.inline{padding:10px 12px;font-size:15px;border:2px solid var(--border);bo
   .dcash.dense .det th,.dcash.dense .det td{height:5.0mm;font-size:8.5pt}
   .dcash.dense2 .det th,.dcash.dense2 .det td{height:4.0mm;font-size:7.5pt;padding:0 1.2mm}
 
-  /* ===== 残高照合パネル（結論）＝左カラム最下部 =====
-     金種表の「差異」行は廃止済み。差異はこの1箇所に集約（数字の重複をなくす）。
-     上段＝計算式と本日残（理論値・主役を大きく）、下段＝金種合計 vs 本日残＝差異。
-     margin-top:auto で左カラム下端へ寄せ、金種・入出金の下にきっちり配置。 */
-  .dcash .dc-reconcile{margin-top:auto;padding-top:3mm}
-  .dcash .rc-main{border:1.5px solid #000;border-radius:1.5mm;padding:2mm 3.5mm;margin-bottom:2.5mm}
-  .dcash .rc-main .rc-lab{font-size:8pt;font-weight:700;margin-bottom:0.5mm;color:#444}
-  .dcash .rc-main .rc-calc{font-size:9pt;font-variant-numeric:tabular-nums;line-height:1.35;white-space:nowrap}
-  .dcash .rc-main .rc-calc b{font-weight:700}
-  .dcash .rc-main .rc-eq{display:flex;align-items:baseline;justify-content:space-between;gap:3mm;margin-top:1mm;border-top:1px dashed #000;padding-top:1.2mm}
-  .dcash .rc-main .rc-eq .lab{font-size:10pt;font-weight:700}
-  .dcash .rc-main .rc-eq .yen{font-size:18pt;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px}
-  .dcash .rc-cmp{border:1.5px solid #000;border-radius:1.5mm;display:flex;flex-direction:column;overflow:hidden}
-  .dcash .rc-cmp .rc-row{display:flex;justify-content:space-between;align-items:center;padding:1.2mm 3.5mm;border-bottom:1px solid #9a9a9a;font-size:9pt}
-  .dcash .rc-cmp .rc-row .k{font-weight:700}
-  .dcash .rc-cmp .rc-row .v{font-variant-numeric:tabular-nums;font-weight:700}
-  .dcash .rc-cmp .rc-diff{border-bottom:none;padding:1.6mm 3.5mm;font-size:10.5pt}
-  .dcash .rc-cmp .rc-diff .v{font-size:13pt;font-weight:800}
-  /* 差異あり＝強調（太枠＋網掛け＋下線）。一致＝淡色で安心表示。 */
-  .dcash .rc-cmp.is-diff .rc-diff{background:#e8e8e8;border-top:2px solid #000}
-  .dcash .rc-cmp.is-diff .rc-diff .v{text-decoration:underline}
-  .dcash .rc-cmp.ok .rc-diff{color:#000}
-  .dcash .dc-foot{margin-top:2.5mm;font-size:8.5pt;text-align:right;color:#000}
+  /* ===== 入出金＋残高照合パネル＝左カラム最下部 =====
+     左: 入金項目→入金計→出金項目→出金計→前日繰越式→本日残（箇条書き・スペース付き）
+     右: 現金合計（実数え）＋差異 */
+  .dcash .dc-reconcile{margin-top:auto;padding-top:1.5mm;padding:1.5mm 0;display:flex;justify-content:space-between;align-items:flex-start}
+  .dcash .rc-left{text-align:left;flex:1;min-width:0;padding-right:3mm}
+  .dcash .rc-left .rc-sec{font-size:8.5pt;font-weight:700;margin-top:1mm;margin-bottom:0.3mm;border-bottom:0.5px solid #999;padding-bottom:0.3mm}
+  .dcash .rc-left .rc-item{display:flex;justify-content:space-between;font-size:8pt;line-height:1.7;font-variant-numeric:tabular-nums}
+  .dcash .rc-left .rc-item .rc-k{font-weight:400}
+  .dcash .rc-left .rc-item .rc-v{margin-left:2mm;white-space:nowrap}
+  .dcash .rc-left .rc-subtotal{display:flex;justify-content:space-between;font-size:8.5pt;font-weight:700;line-height:1.7;border-top:1px solid #999;padding-top:0.3mm;margin-bottom:1.5mm;font-variant-numeric:tabular-nums}
+  .dcash .rc-left .rc-subtotal .rc-v{margin-left:2mm;white-space:nowrap}
+  .dcash .rc-left .rc-calc{font-size:8pt;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:1mm;padding-top:1mm;border-top:1px dashed #999}
+  .dcash .rc-left .rc-calc b{font-weight:700}
+  .dcash .rc-left .rc-eq{margin-top:0.5mm;font-size:9pt;font-weight:700}
+  .dcash .rc-left .rc-eq .yen{font-size:14pt;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:1px;margin-left:2mm}
+  .dcash .rc-right{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dcash .rc-right .rc-row{font-size:8.5pt;font-weight:700;line-height:1.6}
+  .dcash .rc-right .rc-row .v{margin-left:3mm}
+  .dcash .rc-right .rc-diff{font-size:10pt;font-weight:800;line-height:1.6}
+  .dcash .rc-right .rc-diff .v{margin-left:3mm;font-size:12pt}
+  .dcash .rc-right .v.is-diff{text-decoration:underline;font-weight:900}
+  .dcash .dc-foot{margin-top:1.5mm;font-size:7.5pt;text-align:right;color:#000}
 }
 </style>
 <!-- 印刷直前に用紙サイズを動的指定（名前付きサイズで指定＝プリンタの用紙不一致保留を防ぐ）。既定はA5横（伝票）。 -->
@@ -2200,33 +2199,24 @@ function printDailyCash(){
           <thead><tr><th>金種</th><th>枚数</th><th>金額</th><th>朝追加</th><th>前日〜<br>追加</th></tr></thead>
           <tbody>${kinRows}
             <tr class="sum"><td class="den">バラ計</td><td class="cnt">${cntSum||""}</td><td class="amt">${amtSum?yen(amtSum):""}</td><td></td><td></td></tr>
-            ${DC_BOUKIN.map((v,r)=>{const b=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*b;return b?`<tr><td class="den">棒${v.toLocaleString("ja-JP")}</td><td class="cnt">${b}</td><td class="amt">${yen(bAmt)}</td><td colspan="2"></td></tr>`:"";}).join("")}
-            ${bouCntSum?`<tr class="sum"><td class="den">棒金計</td><td class="cnt">${bouCntSum}</td><td class="amt">${yen(bouAmtSum)}</td><td></td><td></td></tr>`:""}
+            ${DC_BOUKIN.map((v,r)=>{const b=dcVal(r,5),bAmt=DC_BOUKIN_AMT[v]*b;return `<tr><td class="den">棒${v.toLocaleString("ja-JP")}</td><td class="cnt">${b||""}</td><td class="amt">${bAmt?yen(bAmt):""}</td><td colspan="2" style="font-size:7pt;color:#888;text-align:center">1本=${DC_BOUKIN_AMT[v].toLocaleString("ja-JP")}円</td></tr>`;}).join("")}
+            <tr class="sum"><td class="den">棒金計</td><td class="cnt">${bouCntSum||""}</td><td class="amt">${bouAmtSum?yen(bouAmtSum):""}</td><td></td><td></td></tr>
           </tbody>
         </table>
-        <div class="io-wrap">
-          <div class="io-box">
-            <div class="sec-ttl">入金</div>
-            <table class="io"><tbody>${inRows}
-              <tr class="total"><td class="lbl">入金　計</td><td class="val auto">${yen(inSum)}</td></tr>
-            </tbody></table>
-          </div>
-          <div class="io-box">
-            <div class="sec-ttl">出金</div>
-            <table class="io"><tbody>${outRows}
-              <tr class="total"><td class="lbl">出金　計</td><td class="val auto">${yen(outSum)}</td></tr>
-            </tbody></table>
-          </div>
-        </div>
         <div class="dc-reconcile">
-          <div class="rc-main">
-            <div class="rc-lab">前日繰越 ＋ 入金 － 出金 ＝ 本日残</div>
-            <div class="rc-calc">前日繰越 <b>${yen(f.carry)}</b>　＋　入金 <b>${yen(f.dayIn)}</b>　－　出金 <b>${yen(f.dayOut)}</b></div>
-            <div class="rc-eq"><span class="lab">＝　本日残</span><span class="yen">${yen(f.honjitsu)}</span></div>
+          <div class="rc-left">
+            <div class="rc-sec">入金</div>
+            ${allIn.map(x=>`<div class="rc-item"><span class="rc-k">${esc(x.label)}</span><span class="rc-v">${yen(x.amount)}</span></div>`).join("")}
+            <div class="rc-subtotal"><span class="rc-k">入金計</span><span class="rc-v">${yen(inSum)}</span></div>
+            <div class="rc-sec">出金</div>
+            ${allOut.map(x=>`<div class="rc-item"><span class="rc-k">${esc(x.label)}</span><span class="rc-v">${yen(x.amount)}</span></div>`).join("")}
+            <div class="rc-subtotal"><span class="rc-k">出金計</span><span class="rc-v">${yen(outSum)}</span></div>
+            <div class="rc-calc">前日繰越 <b>${yen(f.carry)}</b> ＋ 入金 <b>${yen(f.dayIn)}</b> － 出金 <b>${yen(f.dayOut)}</b></div>
+            <div class="rc-eq">＝ 本日残 <span class="yen">${yen(f.honjitsu)}</span></div>
           </div>
-          <div class="rc-cmp ${cashTotal===0?'':diff===0?'ok':'is-diff'}">
+          <div class="rc-right">
             <div class="rc-row"><span class="k">現金合計（実数え）</span><span class="v">${cashTotal?yen(cashTotal):"—"}</span></div>
-            <div class="rc-row rc-diff"><span class="k">差異</span><span class="v">${cashTotal===0?"金種未入力":diff===0?"±0（一致）":yen(diff)}</span></div>
+            <div class="rc-diff"><span class="k">差異</span> <span class="v ${cashTotal&&diff!==0?'is-diff':''}">${cashTotal===0?"金種未入力":diff===0?"±0（一致）":yen(diff)}</span></div>
           </div>
         </div>
       </div>
